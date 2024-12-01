@@ -18,7 +18,7 @@ A Python tool for performing searches using the Perplexity API, optimized for re
 ```bash
 git clone https://github.com/tom-doerr/perplexity_search.git
 cd perplexity_search
-pip install -r requirements.txt
+pip install requests
 ```
 
 ## Usage
