@@ -46,10 +46,14 @@ def perform_search(query: str, api_key: Optional[str] = None, model: Optional[st
     
     Args:
         query: The search query
-        api_key: Optional API key (will use environment variable if not provided)
+        api_key: Optional API key (will use PERPLEXITY_API_KEY environment variable if not provided)
+        model: Optional model name to override the default
     
     Returns:
         Dict containing the API response
+        
+    Raises:
+        ValueError: If no API key is provided via argument or PERPLEXITY_API_KEY environment variable
     """
     if not api_key:
         api_key = os.getenv('PERPLEXITY_API_KEY')
