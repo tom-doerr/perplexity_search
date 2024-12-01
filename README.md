@@ -3,7 +3,7 @@
 [![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Python tool for performing searches using the Perplexity API, optimized for retrieving accurate pricing information.
+A Python tool for performing technical searches using the Perplexity API, optimized for retrieving precise facts, code examples, and numerical data.
 
 ## Features
 
@@ -11,7 +11,9 @@ A Python tool for performing searches using the Perplexity API, optimized for re
 - Configurable API key support via environment variable or direct input
 - Customizable search queries with temperature and other parameters
 - Command-line interface for easy usage
-- Focused on retrieving precise pricing information
+- Focused on retrieving technical information with code examples
+- Returns responses formatted in markdown
+- Optimized for factual and numerical data
 
 ## Installation
 
@@ -29,26 +31,26 @@ pip install requests
 from perplexity_search import perform_search
 
 # Using environment variable for API key
-result = perform_search("What is the price of Bitcoin?")
+result = perform_search("What is Python's time complexity for list operations?")
 
 # Or passing API key directly
-result = perform_search("What is the price of Bitcoin?", api_key="your-api-key")
+result = perform_search("What are the differences between Python 3.11 and 3.12?", api_key="your-api-key")
 
 # Specify a different model
-result = perform_search("What is the price of Bitcoin?", model="llama-3.1-sonar-huge-128k-online")
+result = perform_search("Show me example code for Python async/await", model="llama-3.1-sonar-huge-128k-online")
 ```
 
 ### Command Line Interface
 
 ```bash
 # Basic search
-python perplexity_search.py "What is the price of Bitcoin?"
+python perplexity_search.py "What is Python's time complexity for list operations?"
 
 # Specify model
-python perplexity_search.py --model huge "What is the price of Bitcoin?"
+python perplexity_search.py --model huge "What are the differences between Python 3.11 and 3.12?"
 
 # Use specific API key
-python perplexity_search.py --api-key your-api-key "What is the price of Bitcoin?"
+python perplexity_search.py --api-key your-api-key "Show me example code for Python async/await"
 ```
 
 ## Configuration
