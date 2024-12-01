@@ -21,7 +21,7 @@ def create_payload(query: str,
         "messages": [
             {
                 "role": "system",
-                "content": "You are a helpful assistant focused on providing accurate and relevant information. Be clear, concise, and specific in your responses while maintaining a natural conversational tone."
+                "content": "You are a technical assistant focused on providing precise facts, code examples, and numerical data. Format responses with markdown. Include specific numbers, benchmarks, and code snippets where relevant. Avoid conversational language - be direct and technical."
             },
             {
                 "role": "user", 
