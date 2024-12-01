@@ -57,8 +57,13 @@ python perplexity_search.py --api-key your-api-key "Show me example code for Pyt
 
 ### API Key
 
-Set your Perplexity API key in one of two ways:
-1. Environment variable: `export PERPLEXITY_API_KEY=your-api-key`
+Set your Perplexity API key in one of these ways:
+1. Environment variable: 
+   ```bash
+   export PERPLEXITY_API_KEY=your-api-key
+   # Or add to your ~/.bashrc or ~/.zshrc for persistence
+   echo 'export PERPLEXITY_API_KEY=your-api-key' >> ~/.bashrc
+   ```
 2. Pass directly in code or CLI: `--api-key your-api-key`
 
 ### Available Models
