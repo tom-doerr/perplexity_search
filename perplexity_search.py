@@ -72,7 +72,7 @@ def main():
     parser = argparse.ArgumentParser(description='Search using Perplexity API')
     parser.add_argument('query', nargs='+', help='The search query')
     parser.add_argument('--model', choices=list(LLAMA_MODELS.keys()), default='large',
-                      help='Model to use (default: huge)')
+                      help='Model to use (default: large)')
     parser.add_argument('--api-key', help='Perplexity API key (optional, can use PERPLEXITY_API_KEY env var)')
     args = parser.parse_args()
 
