@@ -1,5 +1,8 @@
 # Perplexity Search
 
+[![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A Python tool for performing searches using the Perplexity API, optimized for retrieving accurate pricing information.
 
 ## Features
@@ -13,8 +16,8 @@ A Python tool for performing searches using the Perplexity API, optimized for re
 ## Installation
 
 ```bash
-git clone [your-repository-url]
-cd [repository-name]
+git clone https://github.com/tom-doerr/perplexity_search.git
+cd perplexity_search
 pip install -r requirements.txt
 ```
 
@@ -66,7 +69,7 @@ Set your Perplexity API key in one of two ways:
 
 - Python 3.x
 - requests library
-- Perplexity API key (obtain from [Perplexity API website])
+- Perplexity API key (obtain from [Perplexity API](https://docs.perplexity.ai/))
 
 ## Error Handling
 
@@ -78,4 +81,4 @@ The tool includes error handling for:
 
 ## License
 
-[Add your chosen license]
+MIT License - see the [LICENSE](LICENSE) file for details
