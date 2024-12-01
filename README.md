@@ -67,8 +67,8 @@ Set your Perplexity API key in one of two ways:
 
 ## Requirements
 
-- Python 3.8 or higher
-- requests library (>=2.31.0)
+- Python 3.x
+- requests library
 - Perplexity API key (obtain from [Perplexity API](https://docs.perplexity.ai/))
 
 ## Error Handling
