@@ -75,17 +75,21 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
                         if content.startswith('# ') or content.startswith('## '):
                             # Start buffering heading
                             heading_buffer = content
+                            # Buffer the heading content
+                            heading_lines = []
                             for line in response.iter_lines():
                                 if not line:
-                                    break
+                                    continue
                                 try:
                                     next_data = json.loads(line.decode('utf-8').removeprefix('data: '))
                                     next_content = next_data.get('choices', [{}])[0].get('delta', {}).get('content', '')
-                                    if next_content.startswith('\n') or not next_content:
+                                    if next_content.startswith('\n'):
                                         break
-                                    heading_buffer += next_content
+                                    heading_lines.append(next_content)
                                 except (json.JSONDecodeError, AttributeError):
-                                    break
+                                    continue
+                            
+                            heading_buffer += ''.join(heading_lines)
                             
                             # Now center the complete heading
                             marker = '# ' if heading_buffer.startswith('# ') else '## '
