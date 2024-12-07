@@ -77,19 +77,32 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
                             heading_buffer = content
                             # Buffer the heading content
                             heading_lines = []
-                            for line in response.iter_lines():
-                                if not line:
-                                    continue
-                                try:
-                                    next_data = json.loads(line.decode('utf-8').removeprefix('data: '))
-                                    next_content = next_data.get('choices', [{}])[0].get('delta', {}).get('content', '')
-                                    if next_content.startswith('\n'):
-                                        break
-                                    heading_lines.append(next_content)
-                                except (json.JSONDecodeError, AttributeError):
-                                    continue
+                            # Create a new response for heading content
+                            heading_response = requests.post(
+                                "https://api.perplexity.ai/chat/completions",
+                                headers=headers,
+                                json={
+                                    "model": model,
+                                    "messages": [{"role": "user", "content": query}],
+                                    "stream": True
+                                },
+                                stream=True
+                            )
                             
-                            heading_buffer += ''.join(heading_lines)
+                            if heading_response.status_code == 200:
+                                for line in heading_response.iter_lines():
+                                    if not line:
+                                        continue
+                                    try:
+                                        next_data = json.loads(line.decode('utf-8').removeprefix('data: '))
+                                        next_content = next_data.get('choices', [{}])[0].get('delta', {}).get('content', '')
+                                        if next_content.startswith('\n'):
+                                            break
+                                        heading_lines.append(next_content)
+                                    except (json.JSONDecodeError, AttributeError):
+                                        continue
+                                
+                                heading_buffer += ''.join(heading_lines)
                             
                             # Now center the complete heading
                             marker = '# ' if heading_buffer.startswith('# ') else '## '
