@@ -1,9 +1,11 @@
 import os
+import json
 import requests
+from typing import Optional, Dict, Any, Iterator
+from rich.console import Console
+from rich.markdown import Markdown
 
-from typing import Optional, Dict, Any
-
-def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online") -> str:
+def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False) -> Iterator[str]:
     """
     Perform a search using the Perplexity API.
     
@@ -38,8 +40,10 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         headers=headers,
         json={
             "model": model,
-            "messages": [{"role": "user", "content": query}]
-        }
+            "messages": [{"role": "user", "content": query}],
+            "stream": stream
+        },
+        stream=stream
     )
     
     if response.status_code != 200:
@@ -50,8 +54,18 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         except:
             pass
         raise Exception(error_msg)
-        
-    return response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+
+    if stream:
+        for line in response.iter_lines():
+            if line:
+                try:
+                    data = json.loads(line.decode('utf-8').removeprefix('data: '))
+                    if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
+                        yield content
+                except:
+                    continue
+    else:
+        yield response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
 
 def main():
     """CLI entry point"""
@@ -63,16 +77,30 @@ def main():
     parser.add_argument("--api-key", help="Perplexity API key")
     parser.add_argument("--model", default="llama-3.1-sonar-large-128k-online",
                        help="Model to use for search")
+    parser.add_argument("--no-stream", action="store_true",
+                       help="Disable streaming output")
     
     args = parser.parse_args()
-    # Join multiple words into a single query
     query = " ".join(args.query)
     
+    console = Console()
+    
     try:
-        result = perform_search(query, api_key=args.api_key, model=args.model)
-        print(result)
+        buffer = []
+        for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
+            if args.no_stream:
+                buffer.append(chunk)
+            else:
+                console.print(chunk, end="")
+                sys.stdout.flush()
+        
+        if args.no_stream:
+            # Print full response with markdown formatting
+            md = Markdown("".join(buffer))
+            console.print(md)
+            
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
