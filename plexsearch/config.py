@@ -1,6 +1,7 @@
 """Configuration handling for plexsearch."""
 from typing import Optional
 import os
+from .exceptions import ConfigError
 
 DEFAULT_MODEL = "llama-3.1-sonar-large-128k-online"
 API_URL = "https://api.perplexity.ai/chat/completions"
