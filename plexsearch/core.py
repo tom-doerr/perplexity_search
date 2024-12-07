@@ -109,14 +109,46 @@ def main():
             logging.debug("Debug mode enabled")
             logging.debug(f"Arguments: {args}")
             
+        # Always perform the main search first
+        buffer = []
+        accumulated_text = ""
+        with Live("", refresh_per_second=10) as live:
+            live.update(Spinner("dots", text="Searching..."))
+            for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
+                if args.no_stream:
+                    buffer.append(chunk)
+                else:
+                    accumulated_text += chunk
+                    live.update(accumulated_text)
+
+        # Show the search results
+        if args.no_stream:
+            content = "".join(buffer)
+            # Make headings bold by adding ** around them
+            # Add formatting
+            lines = content.split("\n")
+            for i, line in enumerate(lines):
+                if line.startswith("## "):
+                    lines[i] = "\n[bold cyan]┌──────────────────────┐[/bold cyan]\n**## " + line[3:] + "**\n[bold cyan]└──────────────────────┘[/bold cyan]"
+                elif line.startswith("### "):
+                    lines[i] = "\n   [cyan]▶[/cyan] **### " + line[4:] + "**"
+                elif line.startswith("- "):
+                    lines[i] = "   [cyan]•[/cyan] " + line[2:]
+                elif "`" in line:
+                    lines[i] = line.replace("`", "[bold magenta]").replace("`", "[/bold magenta]")
+                elif line.startswith("# "):
+                    lines[i] = "\n[bold cyan]════════════════════════════════[/bold cyan]\n**# " + line[2:] + "**\n[bold cyan]════════════════════════════════[/bold cyan]\n"
+            content = "\n".join(lines)
+            md = Markdown(content)
+            console.print(md)
+
+        # Then show related questions if requested
         if args.related:
             # Get related questions from API
             related_questions = []
             with Live("", refresh_per_second=10) as live:
                 live.update(Spinner("dots", text="Finding related questions..."))
                 response_text = next(perform_search(query, api_key=args.api_key, model=args.model, stream=False, get_related=True))
-                # Parse the response text into a list of questions, removing any numbering
-                related_questions = []
                 for line in response_text.split('\n'):
                     line = line.strip()
                     if line:
@@ -125,53 +157,12 @@ def main():
                         related_questions.append(cleaned)
             
             if related_questions:
-                # Display questions and get selection
+                # Display questions
                 console.print("\n[bold cyan]Related Questions:[/bold cyan]")
                 for i, q in enumerate(related_questions, 1):
                     # Skip any lines that look like headers or formatting
                     if not q.lower().startswith(('here', 'related', '-')):
                         console.print(f"{i}. {q}")
-            
-            # Get user selection for related question
-            while True:
-                choice = console.input("\n[bold yellow]Select a question number (or press Enter to keep original):[/bold yellow] ")
-                if not choice:
-                    break
-                try:
-                    idx = int(choice) - 1
-                    if 0 <= idx < len(related_questions):
-                        query = related_questions[idx].lstrip("0123456789. ")
-                        break
-                    else:
-                        console.print("[red]Invalid selection. Try again.[/red]")
-                except ValueError:
-                    console.print("[red]Please enter a valid number.[/red]")
-            
-            console.print(f"\n[bold cyan]Searching:[/bold cyan] {query}\n")
-            
-            # Perform the actual search with selected or original query
-            buffer = []
-            accumulated_text = ""
-            with Live("", refresh_per_second=10) as live:
-                live.update(Spinner("dots", text="Searching..."))
-                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
-                    if args.no_stream:
-                        buffer.append(chunk)
-                    else:
-                        accumulated_text += chunk
-                        live.update(accumulated_text)
-        
-        if not args.related:
-            buffer = []
-            accumulated_text = ""
-            with Live("", refresh_per_second=10) as live:
-                live.update(Spinner("dots", text="Searching..."))
-                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
-                    if args.no_stream:
-                        buffer.append(chunk)
-                    else:
-                        accumulated_text += chunk
-                        live.update(accumulated_text)
         
         if args.no_stream:
             content = "".join(buffer)
