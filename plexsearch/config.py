@@ -13,5 +13,7 @@ def get_api_key(api_key: Optional[str] = None) -> str:
     if api_key is None:
         api_key = os.environ.get("PERPLEXITY_API_KEY")
         if not api_key:
-            raise ConfigError("API key must be provided via PERPLEXITY_API_KEY env var or directly")
+            raise ConfigError(
+                "API key must be provided via PERPLEXITY_API_KEY env var"
+            )
     return api_key

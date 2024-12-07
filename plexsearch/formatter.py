@@ -20,7 +20,9 @@ def format_markdown(content: str) -> str:
             formatted_lines.append("   [cyan]•[/cyan] " + line[2:])
         # Highlight key terms with different style
         elif "`" in line:
-            formatted_lines.append(line.replace("`", "[bold magenta]").replace("`", "[/bold magenta]"))
+            formatted_lines.append(
+                line.replace("`", "[bold magenta]").replace("`", "[/bold magenta]")
+            )
         # Add decorative separator for main sections
         elif line.startswith("# "):
             formatted_lines.append("\n[bold cyan]════════════════════════════════[/bold cyan]")
