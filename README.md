@@ -1,11 +1,13 @@
+<div style="text-align: center;">
 # Perplexity Search
 
-[![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![GitHub stars](https://img.shields.io/github/stars/tom-doerr/perplexity_search?style=social)](https://github.com/tom-doerr/perplexity_search)
+[![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square&logo=mit&logoColor=white)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square&logo=black&logoColor=white)](https://github.com/psf/black)
+[![GitHub stars](https://img.shields.io/github/stars/tom-doerr/perplexity_search?style=social&logo=github)](https://github.com/tom-doerr/perplexity_search)
 
 A Python tool for performing technical searches using the Perplexity API, optimized for retrieving precise facts, code examples, and numerical data.
+</div>
 
 ## Table of Contents
 
