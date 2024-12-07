@@ -1,9 +1,13 @@
 """Text formatting utilities."""
+import logging
 from typing import List
 from rich.markdown import Markdown
 
+logger = logging.getLogger(__name__)
+
 def format_markdown(content: str) -> str:
     """Format markdown content with enhanced styling."""
+    logger.debug("Formatting markdown content: %s", content)
     lines = content.split("\n")
     formatted_lines: List[str] = []
     

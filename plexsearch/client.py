@@ -1,13 +1,16 @@
 """Perplexity API client implementation."""
 import json
+import logging
 import requests
 from typing import Optional, Iterator
 from .exceptions import APIError, ConfigError
 from .config import API_URL, get_api_key
 
+logger = logging.getLogger(__name__)
+
 def perform_search(query: str, api_key: Optional[str] = None, 
                   model: str = "llama-3.1-sonar-large-128k-online", 
-                  stream: bool = False) -> Iterator[str]:
+                  stream: bool = False, debug: bool = False) -> Iterator[str]:
     """
     Perform a search using the Perplexity API.
     
@@ -24,7 +27,12 @@ def perform_search(query: str, api_key: Optional[str] = None,
         APIError: If the API request fails
         ConfigError: If API key is missing
     """
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    
+    logger.debug("Starting search with query: %s", query)
     api_key = get_api_key(api_key)  # This will raise ConfigError if no key found
+    logger.debug("API key obtained")
     
     headers = {
         "Authorization": f"Bearer {api_key}",
