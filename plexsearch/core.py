@@ -115,14 +115,22 @@ def main():
             with Live("", refresh_per_second=10) as live:
                 live.update(Spinner("dots", text="Finding related questions..."))
                 response_text = next(perform_search(query, api_key=args.api_key, model=args.model, stream=False, get_related=True))
-                # Parse the response text into a list of questions
-                related_questions = [line.strip() for line in response_text.split('\n') if line.strip()]
+                # Parse the response text into a list of questions, removing any numbering
+                related_questions = []
+                for line in response_text.split('\n'):
+                    line = line.strip()
+                    if line:
+                        # Remove leading numbers and dots if present
+                        cleaned = line.lstrip("0123456789. ")
+                        related_questions.append(cleaned)
             
             if related_questions:
                 # Display questions and get selection
                 console.print("\n[bold cyan]Related Questions:[/bold cyan]")
                 for i, q in enumerate(related_questions, 1):
-                    console.print(f"{i}. {q}")
+                    # Skip any lines that look like headers or formatting
+                    if not q.lower().startswith(('here', 'related', '-')):
+                        console.print(f"{i}. {q}")
             
             while True:
                 choice = console.input("\n[bold yellow]Select a question number (or press Enter to keep original):[/bold yellow] ")
