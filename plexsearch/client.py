@@ -24,9 +24,7 @@ def perform_search(query: str, api_key: Optional[str] = None,
         APIError: If the API request fails
         ConfigError: If API key is missing
     """
-    api_key = get_api_key(api_key)
-    if not api_key:
-        raise ConfigError("API key is required")
+    api_key = get_api_key(api_key)  # This will raise ConfigError if no key found
     
     headers = {
         "Authorization": f"Bearer {api_key}",
