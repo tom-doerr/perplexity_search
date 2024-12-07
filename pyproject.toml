@@ -27,6 +27,7 @@ rich = "^13.7.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
+pytest-xdist = "^3.5.0"
 
 [tool.poetry.scripts]
 plexsearch = "plexsearch.core:main"
