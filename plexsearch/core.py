@@ -75,14 +75,16 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
                         if content.startswith('# ') or content.startswith('## '):
                             # Start buffering heading
                             heading_buffer = content
-                            while True:
+                            for line in response.iter_lines():
+                                if not line:
+                                    break
                                 try:
-                                    next_data = json.loads(next(response.iter_lines()).decode('utf-8').removeprefix('data: '))
+                                    next_data = json.loads(line.decode('utf-8').removeprefix('data: '))
                                     next_content = next_data.get('choices', [{}])[0].get('delta', {}).get('content', '')
                                     if next_content.startswith('\n') or not next_content:
                                         break
                                     heading_buffer += next_content
-                                except:
+                                except (json.JSONDecodeError, AttributeError):
                                     break
                             
                             # Now center the complete heading
