@@ -158,7 +158,8 @@ def main():
             console.print(md)
             
     except Exception as e:
-        console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
+        error_console = Console(stderr=True)
+        error_console.print(f"[red]Error:[/red] {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
