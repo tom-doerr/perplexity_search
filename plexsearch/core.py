@@ -93,6 +93,8 @@ def main():
                        help="Disable streaming output")
     parser.add_argument("-r", "--related", action="store_true",
                        help="Show related questions and select one")
+    parser.add_argument("--debug", action="store_true",
+                       help="Enable debug output")
     
     args = parser.parse_args()
     query = " ".join(args.query)
@@ -107,6 +109,12 @@ def main():
     signal.signal(signal.SIGINT, handle_interrupt)
     
     try:
+        if args.debug:
+            import logging
+            logging.basicConfig(level=logging.DEBUG)
+            logging.debug("Debug mode enabled")
+            logging.debug(f"Arguments: {args}")
+            
         if args.related:
             # Get related questions from API
             related_questions = []
