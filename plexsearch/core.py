@@ -41,7 +41,8 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
     
     data = {
         "query": query,
-        "model": model
+        "model": model,
+        "return_related_questions": get_related
     }
     
     response = requests.post(
@@ -107,19 +108,20 @@ def main():
     
     try:
         if args.related:
-            # First get related questions
+            # Get related questions from API
             related_questions = []
             with Live("", refresh_per_second=10) as live:
                 live.update(Spinner("dots", text="Finding related questions..."))
                 for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False, get_related=True):
-                    related_questions = [q.strip() for q in chunk.split('\n') if q.strip()]
+                    data = json.loads(chunk)
+                    if 'related_questions' in data:
+                        related_questions = data['related_questions']
             
-            # Display questions and get selection
-            console.print("\n[bold cyan]Related Questions:[/bold cyan]")
-            for i, q in enumerate(related_questions, 1):
-                # Remove number if present at start of question
-                q = q.lstrip("0123456789. ")
-                console.print(f"{i}. {q}")
+            if related_questions:
+                # Display questions and get selection
+                console.print("\n[bold cyan]Related Questions:[/bold cyan]")
+                for i, q in enumerate(related_questions, 1):
+                    console.print(f"{i}. {q}")
             
             while True:
                 choice = console.input("\n[bold yellow]Select a question number (or press Enter to keep original):[/bold yellow] ")
