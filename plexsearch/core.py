@@ -98,12 +98,24 @@ def main():
             # Print full response with markdown formatting and bold headings
             content = "".join(buffer)
             # Make headings bold by adding ** around them
-            content = content.replace("\n## ", "\n**## ").replace("\n# ", "\n**# ")
-            content = content.replace("\n### ", "\n**### ")
+            # Add formatting
             lines = content.split("\n")
             for i, line in enumerate(lines):
-                if line.startswith("**#"):
-                    lines[i] = line + "**"
+                # Bold headings with indentation for subheadings
+                if line.startswith("## "):
+                    lines[i] = "\n**## " + line[3:] + "**"
+                elif line.startswith("### "):
+                    lines[i] = "\n   **### " + line[4:] + "**"
+                # Add bullet points indentation
+                elif line.startswith("- "):
+                    lines[i] = "   • " + line[2:]
+                # Highlight key terms
+                elif "`" in line:
+                    lines[i] = line.replace("`", "[bold]").replace("`", "[/bold]")
+                # Add separator between main sections
+                elif line.startswith("# "):
+                    lines[i] = "\n─────────────────────────\n**# " + line[2:] + "**\n"
+            
             content = "\n".join(lines)
             md = Markdown(content)
             console.print(md)
