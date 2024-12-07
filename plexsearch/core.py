@@ -87,6 +87,8 @@ def main():
                        help="Model to use for search")
     parser.add_argument("--no-stream", action="store_true",
                        help="Disable streaming output")
+    parser.add_argument("-r", "--related", action="store_true",
+                       help="Show related questions and select one")
     
     args = parser.parse_args()
     query = " ".join(args.query)
@@ -101,6 +103,37 @@ def main():
     signal.signal(signal.SIGINT, handle_interrupt)
     
     try:
+        if args.related:
+            # First get related questions
+            related_questions = []
+            with Live("", refresh_per_second=10) as live:
+                live.update(Spinner("dots", text="Finding related questions..."))
+                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False, get_related=True):
+                    related_questions = [q.strip() for q in chunk.split('\n') if q.strip()]
+            
+            # Display questions and get selection
+            console.print("\n[bold cyan]Related Questions:[/bold cyan]")
+            for i, q in enumerate(related_questions, 1):
+                # Remove number if present at start of question
+                q = q.lstrip("0123456789. ")
+                console.print(f"{i}. {q}")
+            
+            while True:
+                choice = console.input("\n[bold yellow]Select a question number (or press Enter to keep original):[/bold yellow] ")
+                if not choice:
+                    break
+                try:
+                    idx = int(choice) - 1
+                    if 0 <= idx < len(related_questions):
+                        query = related_questions[idx].lstrip("0123456789. ")
+                        break
+                    else:
+                        console.print("[red]Invalid selection. Try again.[/red]")
+                except ValueError:
+                    console.print("[red]Please enter a valid number.[/red]")
+            
+            console.print(f"\n[bold cyan]Searching:[/bold cyan] {query}\n")
+        
         buffer = []
         accumulated_text = ""
         with Live("", refresh_per_second=10) as live:
