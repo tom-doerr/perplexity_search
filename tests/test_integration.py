@@ -1,37 +1,44 @@
 import os
 import pytest
-from plexsearch.core import perform_search
+import subprocess
+from pathlib import Path
+
+def run_cli_command(args):
+    """Helper to run the CLI command"""
+    cmd = ["poetry", "run", "plexsearch"] + args
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return result
 
 @pytest.mark.integration
-def test_basic_search():
-    """Test a basic search with the API"""
-    api_key = os.environ.get("PERPLEXITY_API_KEY")
-    if not api_key:
+def test_cli_basic_search():
+    """Test basic search using CLI"""
+    if "PERPLEXITY_API_KEY" not in os.environ:
         pytest.skip("PERPLEXITY_API_KEY environment variable not set")
     
-    result = perform_search("What is Python?", api_key=api_key)
-    assert result is not None
-    assert isinstance(result, str)
-    assert len(result) > 0
+    result = run_cli_command(["What is Python?"])
+    assert result.returncode == 0
+    assert len(result.stdout) > 0
 
 @pytest.mark.integration
-def test_search_with_model_selection():
-    """Test search with different model selection"""
-    api_key = os.environ.get("PERPLEXITY_API_KEY")
-    if not api_key:
+def test_cli_with_model():
+    """Test CLI search with specific model"""
+    if "PERPLEXITY_API_KEY" not in os.environ:
         pytest.skip("PERPLEXITY_API_KEY environment variable not set")
     
-    result = perform_search(
-        "What is Python?",
-        api_key=api_key,
-        model="llama-3.1-sonar-small-128k-online"
-    )
-    assert result is not None
-    assert isinstance(result, str)
-    assert len(result) > 0
+    result = run_cli_command([
+        "--model", "llama-3.1-sonar-small-128k-online",
+        "What is Python?"
+    ])
+    assert result.returncode == 0
+    assert len(result.stdout) > 0
 
 @pytest.mark.integration
-def test_error_handling():
-    """Test error handling with invalid API key"""
-    with pytest.raises(Exception):
-        perform_search("test query", api_key="invalid_key")
+def test_cli_error_handling():
+    """Test CLI error handling with invalid API key"""
+    # Temporarily override API key
+    env = os.environ.copy()
+    env["PERPLEXITY_API_KEY"] = "invalid_key"
+    
+    cmd = ["poetry", "run", "plexsearch", "test query"]
+    result = subprocess.run(cmd, env=env, capture_output=True, text=True)
+    assert result.returncode != 0
