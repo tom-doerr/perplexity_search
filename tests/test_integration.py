@@ -20,6 +20,15 @@ def test_cli_basic_search():
     assert len(result.stdout) > 0
 
 @pytest.mark.integration
+def test_cli_related_questions():
+    """Test CLI related questions functionality"""
+    if "PERPLEXITY_API_KEY" not in os.environ:
+        pytest.skip("PERPLEXITY_API_KEY environment variable not set")
+    
+    result = run_cli_command(["--related", "What is Python?"])
+    assert result.returncode == 0
+    assert "Related Questions:" in result.stdout
+
 def test_cli_with_model():
     """Test CLI search with specific model"""
     if "PERPLEXITY_API_KEY" not in os.environ:

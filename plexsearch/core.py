@@ -178,7 +178,8 @@ def main():
                             selected = related_questions[idx].replace('*', '').replace('**', '')
                             console.print(f"\n[bold cyan]Selected:[/bold cyan] {selected}")
                             # Recursively perform search with selected question
-                            return perform_search(selected, api_key=api_key, model=model, stream=stream, get_related=get_related)
+                            return perform_search(selected, api_key=args.api_key, model=args.model, 
+                                               stream=not args.no_stream, get_related=args.related)
                     except ValueError:
                         pass
                 return query
