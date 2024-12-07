@@ -25,9 +25,18 @@ def test_cli_related_questions():
     if "PERPLEXITY_API_KEY" not in os.environ:
         pytest.skip("PERPLEXITY_API_KEY environment variable not set")
     
-    result = run_cli_command(["--related", "What is Python?"])
-    assert result.returncode == 0
-    assert "Related Questions:" in result.stdout
+    # Test without selecting a question (just press enter)
+    process = subprocess.Popen(
+        ["poetry", "run", "plexsearch", "--related", "What is Python?"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    stdout, stderr = process.communicate(input="\n")
+    
+    assert process.returncode == 0
+    assert "Related Questions:" in stdout
 
 def test_cli_with_model():
     """Test CLI search with specific model"""
