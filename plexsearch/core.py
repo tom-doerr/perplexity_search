@@ -1,7 +1,9 @@
 import os
 import requests
 
-def perform_search(query, api_key=None, model="llama-3.1-sonar-large-128k-online"):
+from typing import Optional, Dict, Any
+
+def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online") -> str:
     """
     Perform a search using the Perplexity API.
     

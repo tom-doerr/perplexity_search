@@ -5,7 +5,11 @@ from plexsearch.core import perform_search
 def test_perform_search_success():
     with patch('requests.post') as mock_post:
         mock_response = MagicMock()
-        mock_response.json.return_value = {"text": "Test response"}
+        mock_response.json.return_value = {
+            "choices": [
+                {"message": {"content": "Test response"}}
+            ]
+        }
         mock_response.status_code = 200
         mock_post.return_value = mock_response
         
