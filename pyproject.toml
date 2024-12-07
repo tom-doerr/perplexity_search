@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "plexsearch"
-version = "0.1.1"
+version = "0.1.2"
 description = "A powerful Python tool for performing technical searches using the Perplexity API"
 authors = ["Tom Doerr"]
 license = "MIT"
@@ -29,9 +29,6 @@ pytest = "^7.4.0"
 
 [tool.poetry.scripts]
 plexsearch = "plexsearch.core:main"
-
-[tool.poetry]
-scripts = { plexsearch = "plexsearch.core:main" }
 
 [tool.poetry.urls]
 "Homepage" = "https://github.com/tom-doerr/perplexity_search"
