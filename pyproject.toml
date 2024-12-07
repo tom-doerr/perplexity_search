@@ -22,8 +22,8 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.7"
-requests = ">=2.25.0"
-rich = ">=13.0.0"
+requests = "^2.25.0"
+rich = "^13.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
