@@ -2,7 +2,7 @@
 import json
 import requests
 from typing import Optional, Iterator
-from .exceptions import APIError
+from .exceptions import APIError, ConfigError
 from .config import API_URL, get_api_key
 
 def perform_search(query: str, api_key: Optional[str] = None, 
