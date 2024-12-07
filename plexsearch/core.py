@@ -56,15 +56,24 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
 def main():
     """CLI entry point"""
     import argparse
+    import sys
+    
     parser = argparse.ArgumentParser(description="Perform searches using Perplexity API")
-    parser.add_argument("query", help="The search query")
+    parser.add_argument("query", nargs="+", help="The search query")
     parser.add_argument("--api-key", help="Perplexity API key")
     parser.add_argument("--model", default="llama-3.1-sonar-large-128k-online",
                        help="Model to use for search")
     
     args = parser.parse_args()
-    result = perform_search(args.query, api_key=args.api_key, model=args.model)
-    print(result)
+    # Join multiple words into a single query
+    query = " ".join(args.query)
+    
+    try:
+        result = perform_search(query, api_key=args.api_key, model=args.model)
+        print(result)
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
