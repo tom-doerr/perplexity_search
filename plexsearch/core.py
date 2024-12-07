@@ -38,13 +38,7 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
     
     if get_related:
         query = f"Generate 5 related questions to: {query}\nFormat as a numbered list 1-5."
-    
-    data = {
-        "query": query,
-        "model": model,
-        "return_related_questions": get_related
-    }
-    
+
     response = requests.post(
         "https://api.perplexity.ai/chat/completions",
         headers=headers,
@@ -120,10 +114,9 @@ def main():
             related_questions = []
             with Live("", refresh_per_second=10) as live:
                 live.update(Spinner("dots", text="Finding related questions..."))
-                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False, get_related=True):
-                    data = json.loads(chunk)
-                    if 'related_questions' in data:
-                        related_questions = data['related_questions']
+                response_text = next(perform_search(query, api_key=args.api_key, model=args.model, stream=False, get_related=True))
+                # Parse the response text into a list of questions
+                related_questions = [line.strip() for line in response_text.split('\n') if line.strip()]
             
             if related_questions:
                 # Display questions and get selection
