@@ -19,17 +19,19 @@ A Python tool for performing technical searches using the Perplexity API, optimi
   - [Available Models](#available-models)
 - [Requirements](#requirements)
 - [Error Handling](#error-handling)
+- [Contributing](#contributing)
+- [FAQ](#faq)
 - [License](#license)
 
 ## Features
 
-- Perform searches using different LLaMA models (small, large, huge)
-- Configurable API key support via environment variable or direct input
-- Customizable search queries with temperature and other parameters
-- Command-line interface for easy usage
-- Focused on retrieving technical information with code examples
-- Returns responses formatted in markdown
-- Optimized for factual and numerical data
+- **Perform searches using different LLaMA models (small, large, huge)**
+- **Configurable API key support via environment variable or direct input**
+- **Customizable search queries with temperature and other parameters**
+- **Command-line interface for easy usage**
+- **Focused on retrieving technical information with code examples**
+- **Returns responses formatted in markdown**
+- **Optimized for factual and numerical data**
 
 ## Installation
 
@@ -74,33 +76,47 @@ python perplexity_search.py --api-key your-api-key "Show me example code for Pyt
 ### API Key
 
 Set your Perplexity API key in one of these ways:
-1. Environment variable: 
+1. **Environment variable:**
    ```bash
    export PERPLEXITY_API_KEY=your-api-key
    # Or add to your ~/.bashrc or ~/.zshrc for persistence
    echo 'export PERPLEXITY_API_KEY=your-api-key' >> ~/.bashrc
    ```
-2. Pass directly in code or CLI: `--api-key your-api-key`
+2. **Pass directly in code or CLI:** `--api-key your-api-key`
 
 ### Available Models
 
-- small: llama-3.1-sonar-small-128k-online
-- large: llama-3.1-sonar-large-128k-online
-- huge: llama-3.1-sonar-huge-128k-online
+- **small:** llama-3.1-sonar-small-128k-online
+- **large:** llama-3.1-sonar-large-128k-online
+- **huge:** llama-3.1-sonar-huge-128k-online
 
 ## Requirements
 
-- Python 3.x
-- requests library
-- Perplexity API key (obtain from [Perplexity API](https://docs.perplexity.ai/))
+- **Python 3.x**
+- **requests library**
+- **Perplexity API key** (obtain from [Perplexity API](https://docs.perplexity.ai/))
 
 ## Error Handling
 
 The tool includes error handling for:
-- Missing API keys
-- Invalid API responses
-- Network issues
-- Invalid model selections
+- **Missing API keys**
+- **Invalid API responses**
+- **Network issues**
+- **Invalid model selections**
+
+## Contributing
+
+We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more details on how to contribute to this project.
+
+## FAQ
+
+**Q:** How do I get an API key for Perplexity?
+
+**A:** You can obtain an API key by signing up on the [Perplexity API](https://docs.perplexity.ai/) website.
+
+**Q:** What models are available for search?
+
+**A:** The available models are `small`, `large`, and `huge`.
 
 ## License
 
