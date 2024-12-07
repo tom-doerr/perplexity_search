@@ -68,12 +68,18 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
                     data = json.loads(line.decode('utf-8').removeprefix('data: '))
                     if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
                         # Center headlines in streamed output
-                        if content.startswith('# '):
+                        if content.startswith('# ') or content.startswith('## '):
+                            # Strip the heading markers and spaces
+                            text = content.lstrip('#').lstrip()
+                            # Get terminal width
                             terminal_width = os.get_terminal_size().columns
-                            content = content.center(terminal_width)
-                        elif content.startswith('## '):
-                            terminal_width = os.get_terminal_size().columns
-                            content = content.center(terminal_width - 4)  # Account for indentation
+                            # Calculate padding
+                            padding = (terminal_width - len(text)) // 2
+                            # Rebuild centered heading with original markers
+                            if content.startswith('# '):
+                                content = ' ' * padding + '# ' + text
+                            else:
+                                content = ' ' * padding + '## ' + text
                         yield content
                 except:
                     continue
