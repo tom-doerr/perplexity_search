@@ -21,6 +21,7 @@ def main() -> None:
     parser.add_argument('--version', action='version', version=f'%(prog)s {version_str}')
     parser.add_argument("query", nargs="+", help="The search query")
     parser.add_argument("--api-key", help="Perplexity API key")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     parser.add_argument("--model", default="llama-3.1-sonar-large-128k-online",
                        help="Model to use for search")
     parser.add_argument("--no-stream", action="store_true",
