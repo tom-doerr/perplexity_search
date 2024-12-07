@@ -20,8 +20,8 @@ def test_perform_search_success():
         mock_response.status_code = 200
         mock_post.return_value = mock_response
         
-        result = perform_search("test query", api_key="test_key")
-        assert result == "Test response"
+        result = list(perform_search("test query", api_key="test_key", stream=False))
+        assert result[0] == "Test response"
         mock_post.assert_called_once()
 
 def test_perform_search_error():
@@ -30,5 +30,6 @@ def test_perform_search_error():
         mock_response.status_code = 400
         mock_post.return_value = mock_response
         
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as exc_info:
+            list(perform_search("test query", api_key="test_key", stream=False))
             perform_search("test query", api_key="test_key")
