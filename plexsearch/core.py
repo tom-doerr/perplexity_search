@@ -1,11 +1,17 @@
 import os
 import json
+import signal
 import requests
 from typing import Optional, Dict, Any, Iterator
 from rich.console import Console
 from rich.markdown import Markdown
+from rich.live import Live
+from rich.spinner import Spinner
 
 def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False) -> Iterator[str]:
+    """
+    Perform a search using the Perplexity API with improved error handling and streaming display.
+    """
     """
     Perform a search using the Perplexity API.
     
