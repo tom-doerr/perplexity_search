@@ -1,16 +1,21 @@
-<div style="text-align: center;">
-# Perplexity Search
+<div align="center">
+
+# 🔍 Perplexity Search
 
 [![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square&logo=mit&logoColor=white)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square&logo=black&logoColor=white)](https://github.com/psf/black)
 [![GitHub stars](https://img.shields.io/github/stars/tom-doerr/perplexity_search?style=social&logo=github)](https://github.com/tom-doerr/perplexity_search)
 
-A Python tool for performing technical searches using the Perplexity API, optimized for retrieving precise facts, code examples, and numerical data.
+A powerful Python tool for performing technical searches using the Perplexity API, optimized for retrieving precise facts, code examples, and numerical data.
+
+<img src="assets/images/demo.png" alt="Perplexity Search Demo" width="800"/>
+
 </div>
 
-## Table of Contents
+## 📋 Table of Contents
 
+- [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -25,7 +30,11 @@ A Python tool for performing technical searches using the Perplexity API, optimi
 - [FAQ](#faq)
 - [License](#license)
 
-## Features
+## 🌟 Overview
+
+Perplexity Search is a command-line tool and Python library that leverages the power of Perplexity AI to provide accurate, technical search results. It's designed for developers, researchers, and technical users who need quick access to precise information, code examples, and technical documentation.
+
+## ✨ Features
 
 - **Perform searches using different LLaMA models (small, large, huge)**
 - **Configurable API key support via environment variable or direct input**
