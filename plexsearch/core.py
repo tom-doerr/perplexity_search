@@ -95,8 +95,17 @@ def main():
                 sys.stdout.flush()
         
         if args.no_stream:
-            # Print full response with markdown formatting
-            md = Markdown("".join(buffer))
+            # Print full response with markdown formatting and bold headings
+            content = "".join(buffer)
+            # Make headings bold by adding ** around them
+            content = content.replace("\n## ", "\n**## ").replace("\n# ", "\n**# ")
+            content = content.replace("\n### ", "\n**### ")
+            lines = content.split("\n")
+            for i, line in enumerate(lines):
+                if line.startswith("**#"):
+                    lines[i] = line + "**"
+            content = "\n".join(lines)
+            md = Markdown(content)
             console.print(md)
             
     except Exception as e:
