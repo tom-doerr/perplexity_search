@@ -8,9 +8,40 @@ from rich.markdown import Markdown
 from rich.live import Live
 from rich.spinner import Spinner
 
+def _handle_stream_response(response) -> Iterator[str]:
+    """Handle streaming response from Perplexity API.
+    
+    Args:
+        response: The streaming response from the API
+        
+    Yields:
+        str: Content chunks from the response
+    """
+    for line in response.iter_lines():
+        if line:
+            try:
+                data = json.loads(line.decode('utf-8').removeprefix('data: '))
+                if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
+                    yield content
+            except:
+                continue
+
 def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False) -> Iterator[str]:
     """
-    Perform a search using the Perplexity API with improved error handling and streaming display.
+    Perform a search using the Perplexity API.
+    
+    Args:
+        query (str): The search query
+        api_key (str, optional): Perplexity API key. Defaults to env var PERPLEXITY_API_KEY
+        model (str): Model to use. Defaults to large model.
+        stream (bool): Whether to stream the response. Defaults to False.
+    
+    Returns:
+        Iterator[str]: The search response text chunks if streaming, or full response
+        
+    Raises:
+        ValueError: If API key is missing
+        Exception: If the API request fails
     """
     """
     Perform a search using the Perplexity API.
@@ -62,14 +93,7 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         raise Exception(error_msg)
 
     if stream:
-        for line in response.iter_lines():
-            if line:
-                try:
-                    data = json.loads(line.decode('utf-8').removeprefix('data: '))
-                    if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
-                        yield content
-                except:
-                    continue
+        yield from _handle_stream_response(response)
     else:
         yield response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
 
