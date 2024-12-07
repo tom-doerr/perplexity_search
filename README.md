@@ -2,10 +2,11 @@
 
 # 🔍 Perplexity Search
 
-[![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square&logo=mit&logoColor=white)](https://opensource.org/licenses/MIT)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square&logo=black&logoColor=white)](https://github.com/psf/black)
-[![GitHub stars](https://img.shields.io/github/stars/tom-doerr/perplexity_search?style=social&logo=github)](https://github.com/tom-doerr/perplexity_search)
+[![Python 3.x](https://img.shields.io/badge/python-3.x-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tom-doerr/perplexity_search/pulls)
+[![GitHub Issues](https://img.shields.io/github/issues/tom-doerr/perplexity_search?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tom-doerr/perplexity_search/issues)
+[![GitHub Stars](https://img.shields.io/github/stars/tom-doerr/perplexity_search?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tom-doerr/perplexity_search/stargazers)
 
 A powerful Python tool for performing technical searches using the Perplexity API, optimized for retrieving precise facts, code examples, and numerical data.
 
@@ -13,22 +14,22 @@ A powerful Python tool for performing technical searches using the Perplexity AP
 
 </div>
 
+<div align="center">
+
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [As a Python Module](#as-a-python-module)
-  - [Command Line Interface](#command-line-interface)
-- [Configuration](#configuration)
-  - [API Key](#api-key)
-  - [Available Models](#available-models)
-- [Requirements](#requirements)
-- [Error Handling](#error-handling)
-- [Contributing](#contributing)
-- [FAQ](#faq)
-- [License](#license)
+[Overview](#overview) •
+[Features](#features) •
+[Installation](#installation) •
+[Usage](#usage) •
+[Configuration](#configuration) •
+[Requirements](#requirements) •
+[Error Handling](#error-handling) •
+[Contributing](#contributing) •
+[FAQ](#faq) •
+[License](#license)
+
+</div>
 
 ## 🌟 Overview
 
