@@ -98,9 +98,11 @@ Set your Perplexity API key in one of these ways:
 
 ### Available Models
 
-- **small:** llama-3.1-sonar-small-128k-online
-- **large:** llama-3.1-sonar-large-128k-online
-- **huge:** llama-3.1-sonar-huge-128k-online
+The following models can be specified using the `--model` parameter:
+
+- `llama-3.1-sonar-small-128k-online` (Faster, lighter model)
+- `llama-3.1-sonar-large-128k-online` (Default, balanced model)
+- `llama-3.1-sonar-huge-128k-online` (Most capable model)
 
 ## Requirements
 

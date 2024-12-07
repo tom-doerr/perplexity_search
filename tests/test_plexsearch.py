@@ -1,6 +1,13 @@
 import pytest
+import doctest
 from unittest.mock import patch, MagicMock
 from plexsearch.core import perform_search
+from plexsearch import core
+
+def test_docstrings():
+    """Test docstrings examples"""
+    results = doctest.testmod(core)
+    assert results.failed == 0
 
 def test_perform_search_success():
     with patch('requests.post') as mock_post:

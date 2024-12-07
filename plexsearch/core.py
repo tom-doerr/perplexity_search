@@ -43,9 +43,6 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
     )
     
     if response.status_code != 200:
-        raise Exception(f"API request failed with status code {response.status_code}")
-        
-    if response.status_code != 200:
         error_msg = f"API request failed with status code {response.status_code}"
         try:
             error_details = response.json()
