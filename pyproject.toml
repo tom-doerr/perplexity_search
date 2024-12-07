@@ -25,6 +25,9 @@ classifiers = [
 python = ">=3.6"
 requests = ">=2.25.0"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+
 [tool.poetry.scripts]
 plexsearch = "plexsearch.core:main"
 
