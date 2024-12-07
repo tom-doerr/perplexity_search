@@ -72,7 +72,9 @@ def main():
     import argparse
     import sys
     
+    from plexsearch import __version__
     parser = argparse.ArgumentParser(description="Perform searches using Perplexity API")
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     parser.add_argument("query", nargs="+", help="The search query")
     parser.add_argument("--api-key", help="Perplexity API key")
     parser.add_argument("--model", default="llama-3.1-sonar-large-128k-online",
