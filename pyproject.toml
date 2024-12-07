@@ -44,3 +44,4 @@ build-backend = "poetry.core.masonry.api"
 markers = [
     "integration: marks tests as integration tests (deselect with '-m \"not integration\"')"
 ]
+addopts = "-n auto"
