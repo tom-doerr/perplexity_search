@@ -102,13 +102,15 @@ def main():
     
     try:
         buffer = []
-        with Live(Spinner("dots", text="Searching..."), refresh_per_second=10) as live:
+        accumulated_text = ""
+        with Live("", refresh_per_second=10) as live:
+            live.update(Spinner("dots", text="Searching..."))
             for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
                 if args.no_stream:
                     buffer.append(chunk)
                 else:
-                    live.update(chunk)
-                    sys.stdout.flush()
+                    accumulated_text += chunk
+                    live.update(accumulated_text)
         
         if args.no_stream:
             content = "".join(buffer)
