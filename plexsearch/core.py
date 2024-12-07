@@ -56,9 +56,13 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         error_msg = f"API request failed with status code {response.status_code}"
         try:
             error_details = response.json()
-            error_msg += f": {error_details.get('error', {}).get('message', '')}"
+            if isinstance(error_details, dict):
+                error_msg += f": {error_details.get('error', {}).get('message', '')}"
+            else:
+                error_msg += f": {response.text}"
         except:
-            pass
+            if response.text:
+                error_msg += f": {response.text}"
         raise Exception(error_msg)
 
     if stream:
