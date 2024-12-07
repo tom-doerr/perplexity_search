@@ -67,19 +67,26 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
                 try:
                     data = json.loads(line.decode('utf-8').removeprefix('data: '))
                     if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
-                        # Center headlines in streamed output
+                        # Buffer and center headlines in streamed output
                         if content.startswith('# ') or content.startswith('## '):
-                            # Strip the heading markers and spaces
-                            text = content.lstrip('#').lstrip()
-                            # Get terminal width
+                            # Start buffering heading
+                            heading_buffer = content
+                            while True:
+                                try:
+                                    next_data = json.loads(next(response.iter_lines()).decode('utf-8').removeprefix('data: '))
+                                    next_content = next_data.get('choices', [{}])[0].get('delta', {}).get('content', '')
+                                    if next_content.startswith('\n') or not next_content:
+                                        break
+                                    heading_buffer += next_content
+                                except:
+                                    break
+                            
+                            # Now center the complete heading
+                            marker = '# ' if heading_buffer.startswith('# ') else '## '
+                            text = heading_buffer.lstrip('#').lstrip()
                             terminal_width = os.get_terminal_size().columns
-                            # Calculate padding
                             padding = (terminal_width - len(text)) // 2
-                            # Rebuild centered heading with original markers
-                            if content.startswith('# '):
-                                content = ' ' * padding + '# ' + text
-                            else:
-                                content = ' ' * padding + '## ' + text
+                            content = ' ' * padding + marker + text
                         yield content
                 except:
                     continue
