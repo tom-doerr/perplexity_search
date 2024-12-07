@@ -8,7 +8,7 @@ from rich.markdown import Markdown
 from rich.live import Live
 from rich.spinner import Spinner
 
-def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False) -> Iterator[str]:
+def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False, get_related: bool = False) -> Iterator[str]:
     """
     Perform a search using the Perplexity API with improved error handling and streaming display.
     """
@@ -35,6 +35,9 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
+    
+    if get_related:
+        query = f"Generate 5 related questions to: {query}\nFormat as a numbered list 1-5."
     
     data = {
         "query": query,
@@ -171,7 +174,7 @@ def main():
             console.print(md)
             
     except Exception as e:
-        console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
+        console.print(f"[red]Error:[/red] {str(e)}")
         sys.exit(1)
 
 if __name__ == "__main__":
