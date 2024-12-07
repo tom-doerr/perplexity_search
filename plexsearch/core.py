@@ -162,7 +162,25 @@ def main():
                 for i, q in enumerate(related_questions, 1):
                     # Skip any lines that look like headers or formatting
                     if not q.lower().startswith(('here', 'related', '-')):
-                        console.print(f"{i}. {q}")
+                        # Remove any markdown formatting from the question
+                        clean_q = q.replace('*', '').replace('**', '')
+                        console.print(f"[bold cyan]{i}[/bold cyan]. {clean_q}")
+                
+                # Add prompt for selection
+                console.print("\n[bold yellow]Enter a number to select a question (or press Enter to keep original):[/bold yellow] ", end="")
+                choice = input()
+                
+                if choice.strip():
+                    try:
+                        idx = int(choice) - 1
+                        if 0 <= idx < len(related_questions):
+                            # Clean the selected question of any markdown
+                            selected = related_questions[idx].replace('*', '').replace('**', '')
+                            console.print(f"\n[bold cyan]Selected:[/bold cyan] {selected}")
+                            return selected
+                    except ValueError:
+                        pass
+                return query
         
         if args.no_stream:
             content = "".join(buffer)
