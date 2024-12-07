@@ -30,6 +30,9 @@ pytest = "^7.4.0"
 [tool.poetry.scripts]
 plexsearch = "plexsearch.core:main"
 
+[tool.poetry.entry-points."console_scripts"]
+plexsearch = "plexsearch.core:main"
+
 [tool.poetry.urls]
 "Homepage" = "https://github.com/tom-doerr/perplexity_search"
 "Bug Tracker" = "https://github.com/tom-doerr/perplexity_search/issues"
