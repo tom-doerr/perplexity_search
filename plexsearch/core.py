@@ -132,6 +132,7 @@ def main():
                     if not q.lower().startswith(('here', 'related', '-')):
                         console.print(f"{i}. {q}")
             
+            # Get user selection for related question
             while True:
                 choice = console.input("\n[bold yellow]Select a question number (or press Enter to keep original):[/bold yellow] ")
                 if not choice:
@@ -147,17 +148,30 @@ def main():
                     console.print("[red]Please enter a valid number.[/red]")
             
             console.print(f"\n[bold cyan]Searching:[/bold cyan] {query}\n")
+            
+            # Perform the actual search with selected or original query
+            buffer = []
+            accumulated_text = ""
+            with Live("", refresh_per_second=10) as live:
+                live.update(Spinner("dots", text="Searching..."))
+                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
+                    if args.no_stream:
+                        buffer.append(chunk)
+                    else:
+                        accumulated_text += chunk
+                        live.update(accumulated_text)
         
-        buffer = []
-        accumulated_text = ""
-        with Live("", refresh_per_second=10) as live:
-            live.update(Spinner("dots", text="Searching..."))
-            for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
-                if args.no_stream:
-                    buffer.append(chunk)
-                else:
-                    accumulated_text += chunk
-                    live.update(accumulated_text)
+        if not args.related:
+            buffer = []
+            accumulated_text = ""
+            with Live("", refresh_per_second=10) as live:
+                live.update(Spinner("dots", text="Searching..."))
+                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
+                    if args.no_stream:
+                        buffer.append(chunk)
+                    else:
+                        accumulated_text += chunk
+                        live.update(accumulated_text)
         
         if args.no_stream:
             content = "".join(buffer)
