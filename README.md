@@ -48,9 +48,7 @@ Perplexity Search is a command-line tool and Python library that leverages the p
 ## Installation
 
 ```bash
-git clone https://github.com/tom-doerr/perplexity_search.git
-cd perplexity_search
-pip install requests
+pip install plexsearch
 ```
 
 ## Usage
@@ -74,13 +72,16 @@ result = perform_search("Show me example code for Python async/await", model="ll
 
 ```bash
 # Basic search
-python perplexity_search.py "What is Python's time complexity for list operations?"
+plexsearch "What is Python's time complexity for list operations?"
 
 # Specify model
-python perplexity_search.py --model huge "What are the differences between Python 3.11 and 3.12?"
+plexsearch --model llama-3.1-sonar-huge-128k-online "What are the differences between Python 3.11 and 3.12?"
 
 # Use specific API key
-python perplexity_search.py --api-key your-api-key "Show me example code for Python async/await"
+plexsearch --api-key your-api-key "Show me example code for Python async/await"
+
+# Multi-word queries work naturally
+plexsearch tell me about frogs
 ```
 
 ## Configuration
