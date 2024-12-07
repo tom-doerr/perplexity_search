@@ -10,7 +10,7 @@
 
 A powerful Python tool for performing technical searches using the Perplexity API, optimized for retrieving precise facts, code examples, and numerical data.
 
-<img src="assets/images/demo.png" alt="Perplexity Search Demo" width="800"/>
+<img src="assets/images/screenshot_2.png" alt="Perplexity Search Demo" width="800"/>
 
 </div>
 
