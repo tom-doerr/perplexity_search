@@ -5,7 +5,7 @@ description = "A powerful Python tool for performing technical searches using th
 authors = ["Tom Doerr"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "plexsearch", from = "src"}]
+packages = [{include = "plexsearch"}]
 keywords = ["search", "perplexity", "ai", "llm"]
 classifiers = [
     "Development Status :: 3 - Alpha",
