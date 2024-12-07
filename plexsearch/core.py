@@ -32,15 +32,27 @@ def perform_search(query, api_key=None, model="llama-3.1-sonar-large-128k-online
     }
     
     response = requests.post(
-        "https://api.perplexity.ai/search",
+        "https://api.perplexity.ai/chat/completions",
         headers=headers,
-        json=data
+        json={
+            "model": model,
+            "messages": [{"role": "user", "content": query}]
+        }
     )
     
     if response.status_code != 200:
         raise Exception(f"API request failed with status code {response.status_code}")
         
-    return response.json().get("text")
+    if response.status_code != 200:
+        error_msg = f"API request failed with status code {response.status_code}"
+        try:
+            error_details = response.json()
+            error_msg += f": {error_details.get('error', {}).get('message', '')}"
+        except:
+            pass
+        raise Exception(error_msg)
+        
+    return response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
 
 def main():
     """CLI entry point"""
