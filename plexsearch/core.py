@@ -2,7 +2,7 @@ import os
 import json
 import signal
 import requests
-from typing import Optional, Dict, Any, Iterator
+from typing import Optional, Dict, Any, Iterator, List
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.live import Live
@@ -25,6 +25,26 @@ def _handle_stream_response(response) -> Iterator[str]:
                     yield content
             except:
                 continue
+
+# API Constants
+PERPLEXITY_API_ENDPOINT = "https://api.perplexity.ai/chat/completions"
+
+def _build_api_payload(query: str, model: str, stream: bool) -> Dict[str, Any]:
+    """Build the API request payload.
+    
+    Args:
+        query: The search query
+        model: Model to use
+        stream: Whether to stream the response
+        
+    Returns:
+        Dict containing the API request payload
+    """
+    return {
+        "model": model,
+        "messages": [{"role": "user", "content": query}],
+        "stream": stream
+    }
 
 def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False) -> Iterator[str]:
     """
@@ -72,14 +92,11 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         "model": model
     }
     
+    payload = _build_api_payload(query, model, stream)
     response = requests.post(
-        "https://api.perplexity.ai/chat/completions",
+        PERPLEXITY_API_ENDPOINT,
         headers=headers,
-        json={
-            "model": model,
-            "messages": [{"role": "user", "content": query}],
-            "stream": stream
-        },
+        json=payload,
         stream=stream
     )
     
