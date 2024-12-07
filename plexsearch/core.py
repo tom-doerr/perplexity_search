@@ -67,6 +67,13 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
                 try:
                     data = json.loads(line.decode('utf-8').removeprefix('data: '))
                     if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
+                        # Center headlines in streamed output
+                        if content.startswith('# '):
+                            terminal_width = os.get_terminal_size().columns
+                            content = content.center(terminal_width)
+                        elif content.startswith('## '):
+                            terminal_width = os.get_terminal_size().columns
+                            content = content.center(terminal_width - 4)  # Account for indentation
                         yield content
                 except:
                     continue
