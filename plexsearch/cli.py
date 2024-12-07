@@ -6,7 +6,6 @@ from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
 from rich.markdown import Markdown
-from . import __version__
 from .client import perform_search
 from .formatter import format_markdown
 from .exceptions import PlexSearchError
@@ -14,7 +13,12 @@ from .exceptions import PlexSearchError
 def main() -> None:
     """CLI entry point"""
     parser = argparse.ArgumentParser(description="Perform searches using Perplexity API")
-    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
+    try:
+        from . import __version__
+        version_str = __version__
+    except ImportError:
+        version_str = "unknown"
+    parser.add_argument('--version', action='version', version=f'%(prog)s {version_str}')
     parser.add_argument("query", nargs="+", help="The search query")
     parser.add_argument("--api-key", help="Perplexity API key")
     parser.add_argument("--model", default="llama-3.1-sonar-large-128k-online",
