@@ -37,7 +37,7 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
     }
     
     if get_related:
-        query = f"Generate 5 related questions to: {query}\nFormat as a numbered list 1-5."
+        query = f"Generate 10 related questions to: {query}\nFormat as a numbered list 1-10."
 
     response = requests.post(
         "https://api.perplexity.ai/chat/completions",
@@ -177,7 +177,8 @@ def main():
                             # Clean the selected question of any markdown
                             selected = related_questions[idx].replace('*', '').replace('**', '')
                             console.print(f"\n[bold cyan]Selected:[/bold cyan] {selected}")
-                            return selected
+                            # Recursively perform search with selected question
+                            return perform_search(selected, api_key=api_key, model=model, stream=stream, get_related=get_related)
                     except ValueError:
                         pass
                 return query
