@@ -93,17 +93,24 @@ def main():
     
     console = Console()
     
+    # Set up signal handler for clean ctrl+c
+    def handle_interrupt(signum, frame):
+        console.print("\n[yellow]Search interrupted by user[/yellow]")
+        sys.exit(0)
+    
+    signal.signal(signal.SIGINT, handle_interrupt)
+    
     try:
         buffer = []
-        for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
-            if args.no_stream:
-                buffer.append(chunk)
-            else:
-                console.print(chunk, end="")
-                sys.stdout.flush()
+        with Live(Spinner("dots", text="Searching..."), refresh_per_second=10) as live:
+            for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
+                if args.no_stream:
+                    buffer.append(chunk)
+                else:
+                    live.update(chunk)
+                    sys.stdout.flush()
         
         if args.no_stream:
-            # Print full response with markdown formatting and bold headings
             content = "".join(buffer)
             # Make headings bold by adding ** around them
             # Add formatting
