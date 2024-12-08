@@ -26,11 +26,13 @@ def test_build_api_payload():
         model="test-model",
         stream=True
     )
-    assert payload == {
-        "model": "test-model",
-        "messages": [{"role": "user", "content": "test query"}],
-        "stream": True
-    }
+    # Verify the basic structure and content
+    assert payload["model"] == "test-model"
+    assert payload["stream"] is True
+    assert len(payload["messages"]) == 2
+    assert payload["messages"][0]["role"] == "system"
+    assert "technical assistant" in payload["messages"][0]["content"]
+    assert payload["messages"][1] == {"role": "user", "content": "test query"}
 
 @patch.dict(os.environ, {'OR_APP_NAME': 'Aider'})
 def test_no_stream_in_aider():
