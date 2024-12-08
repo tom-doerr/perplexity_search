@@ -42,9 +42,23 @@ def _build_api_payload(query: str, model: str, stream: bool) -> Dict[str, Any]:
     Returns:
         Dict containing the API request payload
     """
+    system_message = (
+        "You are a technical assistant focused on providing accurate, detailed information "
+        "with code examples when relevant. Follow these guidelines:\n"
+        "1. Prioritize accuracy and cite sources when possible\n"
+        "2. Include relevant code examples using markdown code blocks\n"
+        "3. Structure responses with clear headings and sections\n"
+        "4. Explain technical concepts clearly and concisely\n"
+        "5. When discussing programming, include best practices and potential pitfalls\n"
+        "6. For numerical data or benchmarks, cite sources and provide context"
+    )
+    
     return {
         "model": model,
-        "messages": [{"role": "user", "content": query}],
+        "messages": [
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": query}
+        ],
         "stream": stream
     }
 
