@@ -142,41 +142,38 @@ def main():
     signal.signal(signal.SIGINT, handle_interrupt)
     
     try:
-        buffer = []
-        accumulated_text = ""
-        with Live("", refresh_per_second=10) as live:
-            live.update(Spinner("dots", text="Searching..."))
-            for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=not args.no_stream):
-                if args.no_stream:
+        if args.no_stream:
+            # For non-streaming mode, show spinner during search
+            with Live(Spinner("dots", text="Searching..."), refresh_per_second=10):
+                buffer = []
+                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False):
                     buffer.append(chunk)
-                else:
+            
+            # After search completes, format and display the result
+            content = "".join(buffer)
+            lines = content.split("\n")
+            for i, line in enumerate(lines):
+                if line.startswith("## "):
+                    lines[i] = "\n[bold cyan]┌──────────────────────┐[/bold cyan]\n**## " + line[3:] + "**\n[bold cyan]└──────────────────────┘[/bold cyan]"
+                elif line.startswith("### "):
+                    lines[i] = "\n   [cyan]▶[/cyan] **### " + line[4:] + "**"
+                elif line.startswith("- "):
+                    lines[i] = "   [cyan]•[/cyan] " + line[2:]
+                elif "`" in line:
+                    lines[i] = line.replace("`", "[bold magenta]").replace("`", "[/bold magenta]")
+                elif line.startswith("# "):
+                    lines[i] = "\n[bold cyan]════════════════════════════════[/bold cyan]\n**# " + line[2:] + "**\n[bold cyan]════════════════════════════════[/bold cyan]\n"
+            
+            content = "\n".join(lines)
+            md = Markdown(content)
+            console.print(md)
+        else:
+            # For streaming mode, update content live
+            accumulated_text = ""
+            with Live("", refresh_per_second=10) as live:
+                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True):
                     accumulated_text += chunk
                     live.update(accumulated_text)
-
-            if args.no_stream:
-                content = "".join(buffer)
-                # Make headings bold by adding ** around them
-                # Add formatting
-                lines = content.split("\n")
-                for i, line in enumerate(lines):
-                    # Bold headings with indentation and decorative elements
-                    if line.startswith("## "):
-                        lines[i] = "\n[bold cyan]┌──────────────────────┐[/bold cyan]\n**## " + line[3:] + "**\n[bold cyan]└──────────────────────┘[/bold cyan]"
-                    elif line.startswith("### "):
-                        lines[i] = "\n   [cyan]▶[/cyan] **### " + line[4:] + "**"
-                    # Add bullet points with colored indentation
-                    elif line.startswith("- "):
-                        lines[i] = "   [cyan]•[/cyan] " + line[2:]
-                    # Highlight key terms with different style
-                    elif "`" in line:
-                        lines[i] = line.replace("`", "[bold magenta]").replace("`", "[/bold magenta]")
-                    # Add decorative separator for main sections
-                    elif line.startswith("# "):
-                        lines[i] = "\n[bold cyan]════════════════════════════════[/bold cyan]\n**# " + line[2:] + "**\n[bold cyan]════════════════════════════════[/bold cyan]\n"
-        
-                content = "\n".join(lines)
-                md = Markdown(content)
-                console.print(md)
         
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
