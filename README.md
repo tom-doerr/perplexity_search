@@ -1,144 +1,111 @@
-<div align="center">
-
 # 🔍 Perplexity Search
 
-[![Python 3.x](https://img.shields.io/badge/python-3.x-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tom-doerr/perplexity_search/pulls)
-[![GitHub Issues](https://img.shields.io/github/issues/tom-doerr/perplexity_search?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tom-doerr/perplexity_search/issues)
-[![GitHub Stars](https://img.shields.io/github/stars/tom-doerr/perplexity_search?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tom-doerr/perplexity_search/stargazers)
+A powerful CLI tool for technical search powered by Perplexity's advanced language models.
 
-A powerful Python tool for performing technical searches using the Perplexity API, optimized for retrieving precise facts, code examples, and numerical data.
-
-<img src="assets/images/screenshot_2.png" alt="Perplexity Search Demo" width="600"/>
-
-</div>
-
-<div align="center">
-
-## 📋 Table of Contents
-
-[Overview](#overview) •
-[Features](#features) •
-[Installation](#installation) •
-[Usage](#usage) •
-[Configuration](#configuration) •
-[Requirements](#requirements) •
-[Error Handling](#error-handling) •
-[Contributing](#contributing) •
-[FAQ](#faq) •
-[License](#license)
-
-</div>
-
-## 🌟 Overview
-
-Perplexity Search is a command-line tool and Python library that leverages the power of Perplexity AI to provide accurate, technical search results. It's designed for developers, researchers, and technical users who need quick access to precise information, code examples, and technical documentation.
+> 📝 **Note:** If a model is offline or unavailable, the tool automatically falls back to DuckDuckGo search to ensure continuous operation.
 
 ## ✨ Features
 
-- **Perform searches using different LLaMA models (small, large, huge)**
-- **Configurable API key support via environment variable or direct input**
-- **Customizable search queries with temperature and other parameters**
-- **Command-line interface for easy usage**
-- **Focused on retrieving technical information with code examples**
-- **Returns responses formatted in markdown**
-- **Optimized for factual and numerical data**
+- **Perplexity Models**
+  - Fast, accurate responses
+  - Support for code and documentation
+  - Multiple model sizes
+- **Flexible Access**
+  - Direct Perplexity API
+  - OpenRouter integration
+  - DuckDuckGo fallback
+  - Local Ollama support
+- **Beautiful Interface**
+  - Rich terminal UI
+  - Markdown formatting
+  - Progress indicators
 
-## Installation
+## 🚀 Quick Start
 
-```bash
-pip install plexsearch
-```
-
-## Usage
-
-### As a Python Module
-
-```python
-from perplexity_search import perform_search
-
-# Using environment variable for API key
-result = perform_search("What is Python's time complexity for list operations?")
-
-# Or passing API key directly
-result = perform_search("What are the differences between Python 3.11 and 3.12?", api_key="your-api-key")
-
-# Specify a different model
-result = perform_search("Show me example code for Python async/await", model="llama-3.1-sonar-huge-128k-online")
-```
-
-### Command Line Interface
+1. Install:
 
 ```bash
-# Basic search
-plexsearch "What is Python's time complexity for list operations?"
-
-# Specify model
-plexsearch --model llama-3.1-sonar-huge-128k-online "What are the differences between Python 3.11 and 3.12?"
-
-# Use specific API key
-plexsearch --api-key your-api-key "Show me example code for Python async/await"
-
-# Multi-word queries work naturally
-plexsearch tell me about frogs
-
-# Disable streaming output
-plexsearch --no-stream "tell me about frogs"
-
-Note: Streaming is automatically disabled when running inside Aider to prevent
-filling up the context window.
+pip install -r requirements.txt
+pip install -e .
 ```
 
-## Configuration
+2. Set up `.env`:
 
-### API Key
+```bash
+# Required for Perplexity API (Recommended)
+PERPLEXITY_API_KEY=your-key-here
 
-Set your Perplexity API key in one of these ways:
-1. **Environment variable:**
-   ```bash
-   export PERPLEXITY_API_KEY=your-api-key
-   # Or add to your ~/.bashrc or ~/.zshrc for persistence
-   echo 'export PERPLEXITY_API_KEY=your-api-key' >> ~/.bashrc
-   ```
-2. **Pass directly in code or CLI:** `--api-key your-api-key`
+# Alternative: OpenRouter API
+OPENROUTER_API_KEY=your-key-here
+```
 
-### Available Models
+> 💡 See `example.env` for detailed model configurations and additional options
 
-The following models can be specified using the `--model` parameter:
+## 📘 Using Perplexity Models
 
-- `llama-3.1-sonar-small-128k-online` (Faster, lighter model)
-- `llama-3.1-sonar-large-128k-online` (Default, balanced model)
-- `llama-3.1-sonar-huge-128k-online` (Most capable model)
+### Direct API Access (Recommended)
 
-## Requirements
+Get your API key from [Perplexity](https://www.perplexity.ai/)
 
-- **Python 3.x**
-- **requests library**
-- **Perplexity API key** (obtain from [Perplexity API](https://docs.perplexity.ai/))
+Available models:
+- `llama-3.1-sonar-small-128k-online` (Fast)
+- `llama-3.1-sonar-large-128k-online` (Default)
+- `llama-3.1-sonar-huge-128k-online` (Most capable)
 
-## Error Handling
+```bash
+# Basic search with default model
+plexsearch "your question here"
 
-The tool includes error handling for:
-- **Missing API keys**
-- **Invalid API responses**
-- **Network issues**
-- **Invalid model selections**
+# Choose specific model
+plexsearch --model llama-3.1-sonar-huge-128k-online "your question"
 
-## Contributing
+# Filter results
+plexsearch --result-type code "python async examples"
+plexsearch --result-type docs "react server components"
+```
 
-We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more details on how to contribute to this project.
+### Via OpenRouter
 
-## FAQ
+Access Perplexity models through OpenRouter:
 
-**Q:** How do I get an API key for Perplexity?
+1. Get API key from [OpenRouter](https://openrouter.ai/)
+2. Use Perplexity models:
 
-**A:** You can obtain an API key by signing up on the [Perplexity API](https://docs.perplexity.ai/) website.
+```bash
+plexsearch --model perplexity/llama-3.1-sonar-huge-128k-online "your question"
+```
 
-**Q:** What models are available for search?
+### Local Ollama Support
 
-**A:** The available models are `small`, `large`, and `huge`.
+Run queries using your local Ollama models:
 
-## License
+```bash
+# Use any installed Ollama model
+plexsearch --model ollama:codellama "explain async/await"
+plexsearch --model ollama:mistral "python design patterns"
+```
 
-MIT License - see the [LICENSE](LICENSE) file for details
+## 🔧 Configuration
+
+### Command Line Options
+
+```bash
+--model        Choose model to use
+--result-type  "code", "docs", or "mixed" (default)
+--api-key      Override API key from .env
+--no-stream    Disable streaming output
+```
+
+### Note on Free Models
+
+For users without API access, some free models are available through OpenRouter:
+- `gryphe/mythomist-7b`
+- `mistralai/mistral-7b`
+
+```bash
+plexsearch --model gryphe/mythomist-7b "your question"
+```
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) file for details
