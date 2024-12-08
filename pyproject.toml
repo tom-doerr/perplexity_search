@@ -5,6 +5,8 @@ description = "A powerful Python tool for performing technical searches using th
 authors = ["Tom Doerr"]
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/tom-doerr/perplexity_search"
+documentation = "https://github.com/tom-doerr/perplexity_search#readme"
 packages = [{include = "plexsearch"}]
 keywords = ["search", "perplexity", "ai", "llm"]
 classifiers = [
