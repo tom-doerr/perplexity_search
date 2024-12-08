@@ -145,12 +145,12 @@ def main():
         # Check for updates
         checker = UpdateChecker("plexsearch", __version__)
         if latest_version := checker.check_and_notify():
-            console.print(f"\n[yellow]New version {latest_version} available! Run 'pip install --upgrade plexsearch' to update.[/yellow]\n")
+            console.print(f"\n[yellow]New version {latest_version} available![/yellow]\n")
             response = input("Would you like to update now? (Y/n): ").strip().lower()
             if not response or response in ['y', 'yes']:
                 try:
                     if checker.update_package():
-                        console.print("[green]Successfully updated! Please restart plexsearch.[/green]")
+                        console.print("[green]Successfully updated![/green]")
                         sys.exit(0)
                     else:
                         console.print("[red]Update failed. Please try updating manually with 'pip install --upgrade plexsearch'[/red]")
