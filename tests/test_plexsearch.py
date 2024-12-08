@@ -1,4 +1,5 @@
 """Unit tests for plexsearch core functionality"""
+import os
 import pytest
 import doctest
 from unittest.mock import patch
