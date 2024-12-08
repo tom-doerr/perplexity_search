@@ -194,6 +194,7 @@ def main():
         else:
             # For streaming mode, update content live
             accumulated_text = ""
+            console.clear()
             with Live("", refresh_per_second=10) as live:
                 for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True):
                     accumulated_text += chunk
