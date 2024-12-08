@@ -142,7 +142,9 @@ def main():
     signal.signal(signal.SIGINT, handle_interrupt)
     
     try:
-        if args.no_stream:
+        # Disable streaming if --no-stream flag is set or if running in Aider
+        no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
+        if no_stream:
             # For non-streaming mode, show spinner during search
             with Live(Spinner("dots", text="Searching..."), refresh_per_second=10):
                 buffer = []

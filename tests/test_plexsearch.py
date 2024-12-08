@@ -31,6 +31,18 @@ def test_build_api_payload():
         "stream": True
     }
 
+@patch.dict(os.environ, {'OR_APP_NAME': 'Aider'})
+def test_no_stream_in_aider():
+    """Test that streaming is disabled when running in Aider"""
+    with patch('sys.argv', ['plexsearch', 'test query']):
+        with patch('plexsearch.core.perform_search') as mock_search:
+            mock_search.return_value = iter(['test response'])
+            with patch('builtins.print'):  # Suppress actual printing
+                core.main()
+                # Verify perform_search was called with stream=False
+                mock_search.assert_called_once()
+                assert mock_search.call_args[1]['stream'] is False
+
 def test_perform_search_error(mock_error_response):
     """Test error handling in API search"""
     with patch('requests.post') as mock_post:
