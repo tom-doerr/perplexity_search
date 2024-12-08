@@ -118,11 +118,18 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
     
     if response.status_code != 200:
         error_msg = f"API request failed with status code {response.status_code}"
-        try:
-            error_details = response.json()
-            error_msg += f": {error_details.get('error', {}).get('message', '')}"
-        except:
-            pass
+        if response.status_code == 401:
+            error_msg = "Authentication failed. Please check your API key."
+        elif response.status_code == 429:
+            error_msg = "Rate limit exceeded. Please wait before making more requests."
+        elif response.status_code == 500:
+            error_msg = "Perplexity API server error. Please try again later."
+        else:
+            try:
+                error_details = response.json()
+                error_msg += f": {error_details.get('error', {}).get('message', '')}"
+            except:
+                pass
         raise Exception(error_msg)
 
     if stream:

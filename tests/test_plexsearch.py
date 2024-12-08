@@ -49,6 +49,16 @@ def test_no_stream_in_aider():
 def test_perform_search_error(mock_error_response):
     """Test error handling in API search"""
     with patch('requests.post') as mock_post:
+        # Test authentication error
+        mock_error_response.status_code = 401
         mock_post.return_value = mock_error_response
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as exc_info:
             list(perform_search("test query", api_key="test_key", stream=False))
+        assert "Authentication failed" in str(exc_info.value)
+        
+        # Test rate limit error
+        mock_error_response.status_code = 429
+        mock_post.return_value = mock_error_response
+        with pytest.raises(Exception) as exc_info:
+            list(perform_search("test query", api_key="test_key", stream=False))
+        assert "Rate limit exceeded" in str(exc_info.value)

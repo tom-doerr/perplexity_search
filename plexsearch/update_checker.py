@@ -81,12 +81,16 @@ class UpdateChecker:
     def update_package(self) -> bool:
         """Update the package using pip."""
         try:
-            process = subprocess.run(
-                ["pip", "install", "--upgrade", self.package_name],
-                check=True,
-                capture_output=True,
-                text=True
-            )
+            from rich.progress import Progress
+            with Progress() as progress:
+                task = progress.add_task("[cyan]Updating package...", total=None)
+                process = subprocess.run(
+                    ["pip", "install", "--upgrade", self.package_name],
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+                progress.update(task, completed=100)
             if "Successfully installed" in process.stdout:
                 return True
             return False
