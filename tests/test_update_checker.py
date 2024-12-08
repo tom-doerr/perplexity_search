@@ -73,7 +73,11 @@ class TestUpdateChecker:
     def test_update_package_success(self, checker):
         """Test successful package update."""
         with patch('subprocess.run') as mock_run:
-            mock_run.return_value = MagicMock(returncode=0)
+            mock_run.return_value = MagicMock(
+                returncode=0,
+                stdout="Successfully installed plexsearch-0.1.6",
+                text=True
+            )
             assert checker.update_package() is True
             
     def test_update_package_failure(self, checker):
