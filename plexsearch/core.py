@@ -182,6 +182,7 @@ def main():
         no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
         if no_stream:
             # For non-streaming mode, show spinner during search
+            console.clear()
             with Live(Spinner("dots", text="Searching..."), refresh_per_second=10):
                 buffer = []
                 for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False):
