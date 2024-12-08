@@ -183,7 +183,7 @@ def main():
         if no_stream:
             # For non-streaming mode, show spinner during search
             console.clear()
-            with Live(Spinner("dots", text="Searching..."), refresh_per_second=10, transient=True):
+            with Live(Spinner("dots", text="Searching..."), refresh_per_second=10, transient=False):
                 buffer = []
                 for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False):
                     buffer.append(chunk)
@@ -195,7 +195,7 @@ def main():
             # For streaming mode, update content live
             accumulated_text = ""
             console.clear()
-            with Live("", refresh_per_second=10, transient=True) as live:
+            with Live("", refresh_per_second=10, transient=False) as live:
                 for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True):
                     accumulated_text += chunk
                     live.update(accumulated_text)
