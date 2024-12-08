@@ -150,10 +150,10 @@ def main():
             if not response or response in ['y', 'yes']:
                 try:
                     if checker.update_package():
-                        console.print("[green]Successfully updated![/green]")
+                        console.print("[green]Successfully updated! Run your command again to use the new version.[/green]")
                         sys.exit(0)
                     else:
-                        console.print("[red]Update failed. Please try updating manually with 'pip install --upgrade plexsearch'[/red]")
+                        console.print("[red]Update failed. Please try updating manually with: pip install --upgrade plexsearch[/red]")
                 except Exception as e:
                     console.print(f"[red]Update failed: {str(e)}[/red]")
 
