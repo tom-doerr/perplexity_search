@@ -82,6 +82,12 @@ plexsearch --api-key your-api-key "Show me example code for Python async/await"
 
 # Multi-word queries work naturally
 plexsearch tell me about frogs
+
+# Disable streaming output
+plexsearch --no-stream "tell me about frogs"
+
+Note: Streaming is automatically disabled when running inside Aider to prevent
+filling up the context window.
 ```
 
 ## Configuration
