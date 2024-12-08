@@ -164,15 +164,12 @@ def main():
             if not response or response in ['y', 'yes']:
                 try:
                     if checker.update_package():
-                        console.print("[green]Successfully updated to the new version![/green]")
-                        # Re-import to use new version
-                        import importlib
-                        import plexsearch
-                        importlib.reload(plexsearch)
+                        console.print("[green]Successfully updated to the new version! The new version will be used on next execution.[/green]")
                     else:
                         console.print("[red]Update failed. Please try updating manually with: pip install --upgrade plexsearch[/red]")
                 except Exception as e:
                     console.print(f"[red]Update failed: {str(e)}[/red]")
+                console.print() # Add blank line after update messages
 
         # Disable streaming if --no-stream flag is set or if running in Aider
         no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
