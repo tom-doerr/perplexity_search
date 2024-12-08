@@ -149,24 +149,9 @@ def main():
                 for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False):
                     buffer.append(chunk)
             
-            # After search completes, format and display the result
+            # After search completes, just print the plain result
             content = "".join(buffer)
-            lines = content.split("\n")
-            for i, line in enumerate(lines):
-                if line.startswith("## "):
-                    lines[i] = "\n[bold cyan]┌──────────────────────┐[/bold cyan]\n**## " + line[3:] + "**\n[bold cyan]└──────────────────────┘[/bold cyan]"
-                elif line.startswith("### "):
-                    lines[i] = "\n   [cyan]▶[/cyan] **### " + line[4:] + "**"
-                elif line.startswith("- "):
-                    lines[i] = "   [cyan]•[/cyan] " + line[2:]
-                elif "`" in line:
-                    lines[i] = line.replace("`", "[bold magenta]").replace("`", "[/bold magenta]")
-                elif line.startswith("# "):
-                    lines[i] = "\n[bold cyan]════════════════════════════════[/bold cyan]\n**# " + line[2:] + "**\n[bold cyan]════════════════════════════════[/bold cyan]\n"
-            
-            content = "\n".join(lines)
-            md = Markdown(content)
-            console.print(md)
+            print(content)
         else:
             # For streaming mode, update content live
             accumulated_text = ""
