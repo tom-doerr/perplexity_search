@@ -47,10 +47,9 @@ def _build_api_payload(query: str, model: str, stream: bool) -> Dict[str, Any]:
         "Follow these guidelines:\n"
         "1. Include code examples when relevant to explain concepts\n"
         "2. Include measurements and numbers when relevant\n"
-        "3. Structure responses with clear headings and sections\n"
-        "4. Focus on facts and technical details\n"
-        "5. Keep explanations concise and direct\n"
-        "6. Use tables or lists for comparing options"
+        "3. Keep explanations concise and direct\n"
+        "4. Focus on facts, technical details and real-world usage\n"
+        "5. Show basic and advanced usage patterns when relevant"
     )
     
     return {
