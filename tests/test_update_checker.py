@@ -15,7 +15,7 @@ def test_get_latest_version():
     """Test getting latest version from PyPI."""
     with patch('feedparser.parse') as mock_parse:
         mock_parse.return_value = MagicMock(
-            entries=[MagicMock(title="plexsearch 1.2.0")]
+            entries=[MagicMock(title="plexsearch: 1.2.0")]
         )
         assert get_latest_version("plexsearch") == "1.2.0"
 

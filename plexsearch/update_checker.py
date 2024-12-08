@@ -13,7 +13,15 @@ def get_latest_version(package_name: str) -> str:
     feed = feedparser.parse(rss_url)
     if not feed.entries:
         return "0.0.0"
-    return feed.entries[0].title.split(": ")[1]
+    try:
+        title = feed.entries[0].title
+        if ": " in title:
+            return title.split(": ")[1]
+        elif " " in title:
+            return title.split(" ")[1]
+        return title
+    except (IndexError, AttributeError):
+        return "0.0.0"
 
 def check_for_update(current_version: str, latest_version: str) -> bool:
     """Compare versions to check if an update is available."""
