@@ -94,3 +94,21 @@ class TestUpdateChecker:
                 stdout="Successfully installed plexsearch-0.1.6"
             )
             assert checker.update_package() is True
+
+    def test_update_continues_execution(self, checker, capsys):
+        """Test that program continues after update."""
+        from plexsearch.core import main
+        
+        with patch('sys.argv', ['plexsearch', 'test query']), \
+             patch('plexsearch.core.perform_search') as mock_search, \
+             patch('builtins.input', return_value='y'), \
+             patch.object(UpdateChecker, 'check_and_notify', return_value='0.2.0'), \
+             patch.object(UpdateChecker, 'update_package', return_value=True):
+            
+            mock_search.return_value = iter(['test response'])
+            main()
+            
+            captured = capsys.readouterr()
+            assert 'Successfully updated' in captured.out
+            assert 'test response' in captured.out
+            mock_search.assert_called_once()
