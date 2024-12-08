@@ -127,7 +127,7 @@ The tool includes error handling for:
 
 ## Contributing
 
-We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more details on how to contribute to this project.
+We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more details on how to contribute to this project. Check our [CHANGELOG.md](CHANGELOG.md) for recent updates and changes.
 
 ## FAQ
 
