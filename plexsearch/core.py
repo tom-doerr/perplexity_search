@@ -7,6 +7,8 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.live import Live
 from rich.spinner import Spinner
+from plexsearch import __version__
+from plexsearch.update_checker import UpdateChecker
 
 def _handle_stream_response(response) -> Iterator[str]:
     """Handle streaming response from Perplexity API.
@@ -118,8 +120,6 @@ def main():
     """CLI entry point"""
     import argparse
     import sys
-    
-    from plexsearch import __version__
     parser = argparse.ArgumentParser(description="Perform searches using Perplexity API")
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     parser.add_argument("query", nargs="+", help="The search query")
@@ -142,6 +142,18 @@ def main():
     signal.signal(signal.SIGINT, handle_interrupt)
     
     try:
+        # Check for updates
+        checker = UpdateChecker("plexsearch", __version__)
+        if latest_version := checker.check_and_notify():
+            console.print(f"\n[yellow]New version {latest_version} available! Run 'pip install --upgrade plexsearch' to update.[/yellow]\n")
+            response = input("Would you like to update now? (y/N): ")
+            if response.lower() == 'y':
+                if checker.update_package():
+                    console.print("[green]Successfully updated! Please restart plexsearch.[/green]")
+                    sys.exit(0)
+                else:
+                    console.print("[red]Update failed. Please try updating manually.[/red]")
+
         # Disable streaming if --no-stream flag is set or if running in Aider
         no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
         if no_stream:
