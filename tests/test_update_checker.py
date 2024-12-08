@@ -2,6 +2,7 @@
 import os
 import json
 import time
+import subprocess
 from unittest.mock import patch, MagicMock
 import pytest
 from plexsearch.update_checker import (
