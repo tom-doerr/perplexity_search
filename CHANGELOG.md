@@ -5,17 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.13] - 2024-12-08
-
-### Fixed
-- Made spinner transient while keeping streamed output visible
-- Improved terminal output handling for search results
-
 ## [0.1.12] - 2024-12-08
 
 ### Fixed
 - Improved visibility of searching animation in all terminal environments
-- Set transient=True for Live contexts to better handle terminal output
+- Made spinner transient while keeping streamed output visible
+- Improved terminal output handling for search results
 
 ## [0.1.11] - 2024-12-08
 
