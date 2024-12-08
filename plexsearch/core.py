@@ -148,11 +148,14 @@ def main():
             console.print(f"\n[yellow]New version {latest_version} available! Run 'pip install --upgrade plexsearch' to update.[/yellow]\n")
             response = input("Would you like to update now? (Y/n): ").strip().lower()
             if not response or response in ['y', 'yes']:
-                if checker.update_package():
-                    console.print("[green]Successfully updated! Please restart plexsearch.[/green]")
-                    sys.exit(0)
-                else:
-                    console.print("[red]Update failed. Please try updating manually.[/red]")
+                try:
+                    if checker.update_package():
+                        console.print("[green]Successfully updated! Please restart plexsearch.[/green]")
+                        sys.exit(0)
+                    else:
+                        console.print("[red]Update failed. Please try updating manually with 'pip install --upgrade plexsearch'[/red]")
+                except Exception as e:
+                    console.print(f"[red]Update failed: {str(e)}[/red]")
 
         # Disable streaming if --no-stream flag is set or if running in Aider
         no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"

@@ -81,11 +81,15 @@ class UpdateChecker:
     def update_package(self) -> bool:
         """Update the package using pip."""
         try:
-            subprocess.run(
+            process = subprocess.run(
                 ["pip", "install", "--upgrade", self.package_name],
                 check=True,
-                capture_output=True
+                capture_output=True,
+                text=True
             )
-            return True
-        except subprocess.CalledProcessError:
+            if "Successfully installed" in process.stdout:
+                return True
+            return False
+        except subprocess.CalledProcessError as e:
+            print(f"Update error: {e.stderr}")
             return False
