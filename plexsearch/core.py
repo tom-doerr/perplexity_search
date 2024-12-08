@@ -127,7 +127,7 @@ def main():
     parser.add_argument("--model", default="llama-3.1-sonar-large-128k-online",
                        help="Model to use for search")
     parser.add_argument("--no-stream", action="store_true",
-                       help="Disable streaming output")
+                       help="Disable streaming output and display the full response when finished")
     
     args = parser.parse_args()
     query = " ".join(args.query)
@@ -152,6 +152,31 @@ def main():
                 else:
                     accumulated_text += chunk
                     live.update(accumulated_text)
+
+            if args.no_stream:
+                content = "".join(buffer)
+                # Make headings bold by adding ** around them
+                # Add formatting
+                lines = content.split("\n")
+                for i, line in enumerate(lines):
+                    # Bold headings with indentation and decorative elements
+                    if line.startswith("## "):
+                        lines[i] = "\n[bold cyan]┌──────────────────────┐[/bold cyan]\n**## " + line[3:] + "**\n[bold cyan]└──────────────────────┘[/bold cyan]"
+                    elif line.startswith("### "):
+                        lines[i] = "\n   [cyan]▶[/cyan] **### " + line[4:] + "**"
+                    # Add bullet points with colored indentation
+                    elif line.startswith("- "):
+                        lines[i] = "   [cyan]•[/cyan] " + line[2:]
+                    # Highlight key terms with different style
+                    elif "`" in line:
+                        lines[i] = line.replace("`", "[bold magenta]").replace("`", "[/bold magenta]")
+                    # Add decorative separator for main sections
+                    elif line.startswith("# "):
+                        lines[i] = "\n[bold cyan]════════════════════════════════[/bold cyan]\n**# " + line[2:] + "**\n[bold cyan]════════════════════════════════[/bold cyan]\n"
+        
+                content = "\n".join(lines)
+                md = Markdown(content)
+                console.print(md)
         
         if args.no_stream:
             content = "".join(buffer)
