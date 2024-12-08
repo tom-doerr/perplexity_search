@@ -45,8 +45,8 @@ def _build_api_payload(query: str, model: str, stream: bool) -> Dict[str, Any]:
     system_message = (
         "You are a technical assistant focused on providing accurate, practical information. "
         "Follow these guidelines:\n"
-        "1. Include code examples ONLY when they help explain a concept\n"
-        "2. Provide specific numbers, measurements, and complexity analysis\n"
+        "1. Include code examples when relevant to explain concepts\n"
+        "2. Include measurements and numbers when relevant\n"
         "3. Structure responses with clear headings and sections\n"
         "4. Focus on facts and technical details\n"
         "5. Keep explanations concise and direct\n"
