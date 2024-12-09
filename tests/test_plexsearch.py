@@ -19,8 +19,8 @@ def test_perform_search_success(mock_response):
         assert result[0] == "Test response"
         mock_post.assert_called_once()
 
-def test_perform_search_with_references(mock_response):
-    """Test search with references"""
+def test_perform_search_with_citations(mock_response):
+    """Test search with citations"""
     with patch('requests.post') as mock_post:
         # Mock a streaming response with citations
         mock_response.iter_lines.return_value = [
@@ -29,7 +29,7 @@ def test_perform_search_with_references(mock_response):
         ]
         mock_post.return_value = mock_response
         
-        result = list(perform_search("test query", api_key="test_key", stream=True, show_references=True))
+        result = list(perform_search("test query", api_key="test_key", stream=True, show_citations=True))
         assert len(result) == 2
         assert result[0] == "Test content"
         assert "References:" in result[1]
