@@ -33,8 +33,8 @@ def _handle_stream_response(response) -> Iterator[str]:
             except:
                 continue
     
-    # Only yield citations at the end if we have any
-    if citations:
+    # Only yield citations at the end if we have any and citations are enabled
+    if citations and show_citations:
         yield "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
 
 # API Constants
@@ -148,7 +148,7 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         response_data = response.json()
         content = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
         citations = response_data.get("citations", [])
-        if citations:
+        if citations and show_citations:
             content += "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
         yield content
 

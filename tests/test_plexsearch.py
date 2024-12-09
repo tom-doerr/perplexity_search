@@ -19,8 +19,8 @@ def test_perform_search_success(mock_response):
         assert result[0] == "Test response"
         mock_post.assert_called_once()
 
-def test_perform_search_with_citations(mock_response):
-    """Test search with citations"""
+def test_perform_search_with_citations_enabled(mock_response):
+    """Test search with citations enabled"""
     with patch('requests.post') as mock_post:
         # Mock a streaming response with citations
         mock_response.iter_lines.return_value = [
@@ -35,6 +35,22 @@ def test_perform_search_with_citations(mock_response):
         assert "References:" in result[1]
         assert "[1] http://test1.com" in result[1]
         assert "[2] http://test2.com" in result[1]
+
+def test_perform_search_with_citations_disabled(mock_response):
+    """Test search with citations disabled"""
+    with patch('requests.post') as mock_post:
+        # Mock a streaming response with citations that should be ignored
+        mock_response.iter_lines.return_value = [
+            b'data: {"choices":[{"delta":{"content":"Test content"}}]}',
+            b'data: {"citations":["http://test1.com", "http://test2.com"]}'
+        ]
+        mock_post.return_value = mock_response
+        
+        result = list(perform_search("test query", api_key="test_key", stream=True, show_citations=False))
+        assert len(result) == 1
+        assert result[0] == "Test content"
+        assert not any("References:" in r for r in result)
+        assert not any("http://test1.com" in r for r in result)
 
 def test_build_api_payload():
     """Test API payload builder helper"""
