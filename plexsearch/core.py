@@ -19,12 +19,17 @@ def _handle_stream_response(response) -> Iterator[str]:
     Yields:
         str: Content chunks from the response
     """
+    citations = []
     for line in response.iter_lines():
         if line:
             try:
                 data = json.loads(line.decode('utf-8').removeprefix('data: '))
                 if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
                     yield content
+                if 'citations' in data:
+                    citations = data['citations']
+                    if citations:
+                        yield "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
             except:
                 continue
 
@@ -63,7 +68,7 @@ def _build_api_payload(query: str, model: str, stream: bool) -> Dict[str, Any]:
         "stream": stream
     }
 
-def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False, show_sources: bool = False) -> Iterator[str]:
+def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False) -> Iterator[str]:
     """
     Perform a search using the Perplexity API.
     
@@ -72,7 +77,6 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         api_key (str, optional): Perplexity API key. Defaults to env var PERPLEXITY_API_KEY
         model (str): Model to use. Defaults to large model.
         stream (bool): Whether to stream the response. Defaults to False.
-        show_sources (bool): Whether to show numbered references at the bottom. Defaults to False.
     
     Returns:
         Iterator[str]: The search response text chunks if streaming, or full response
@@ -151,8 +155,6 @@ def main():
                        help="Model to use for search")
     parser.add_argument("--no-stream", action="store_true",
                        help="Disable streaming output and display the full response when finished")
-    parser.add_argument("--sources", action="store_true",
-                       help="Show numbered references at the bottom of the response")
     
     args = parser.parse_args()
     query = " ".join(args.query)
@@ -189,7 +191,7 @@ def main():
             console.clear()
             with Live(Spinner("dots", text="Searching..."), refresh_per_second=10, transient=True):
                 buffer = []
-                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False, show_sources=args.sources):
+                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False):
                     buffer.append(chunk)
             
             # After search completes, just print the plain result
@@ -200,7 +202,7 @@ def main():
             accumulated_text = ""
             console.clear()
             with Live("", refresh_per_second=10, transient=False) as live:
-                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True, show_sources=args.sources):
+                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True):
                     accumulated_text += chunk
                     live.update(accumulated_text)
         
