@@ -164,7 +164,7 @@ def main():
                        help="Model to use for search")
     parser.add_argument("--no-stream", action="store_true",
                        help="Disable streaming output and display the full response when finished")
-    parser.add_argument("--citations", action="store_true",
+    parser.add_argument("-c", "--citations", action="store_true",
                        help="Show numbered citations at the bottom of the response")
     
     args = parser.parse_args()
