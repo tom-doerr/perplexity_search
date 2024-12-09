@@ -84,16 +84,20 @@ class UpdateChecker:
             from rich.progress import Progress
             with Progress() as progress:
                 task = progress.add_task("[cyan]Updating package...", total=None)
+                # Use --no-cache-dir to force fresh download
                 process = subprocess.run(
-                    ["pip", "install", "--upgrade", self.package_name],
+                    ["pip", "install", "--upgrade", "--no-cache-dir", self.package_name],
                     check=True,
                     capture_output=True,
                     text=True
                 )
                 progress.update(task, completed=100)
-            if "Successfully installed" in process.stdout:
-                return True
-            return False
+                # Check both stdout and stderr for success message
+                output = process.stdout + process.stderr
+                if "Successfully installed" in output or "Requirement already satisfied" in output:
+                    return True
+                print(f"Update output: {output}")  # Debug output
+                return False
         except subprocess.CalledProcessError as e:
             print(f"Update error: {e.stderr}")
             return False
