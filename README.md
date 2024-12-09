@@ -86,6 +86,9 @@ plexsearch tell me about frogs
 # Disable streaming output
 plexsearch --no-stream "tell me about frogs"
 
+# Show numbered citations at the bottom of the response
+plexsearch --citations "tell me about Python's GIL"
+
 Note: Streaming is automatically disabled when running inside Aider to prevent
 filling up the context window.
 ```
