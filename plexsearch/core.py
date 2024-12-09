@@ -10,11 +10,12 @@ from rich.spinner import Spinner
 from plexsearch import __version__
 from plexsearch.update_checker import UpdateChecker
 
-def _handle_stream_response(response) -> Iterator[str]:
+def _handle_stream_response(response, show_citations: bool = False) -> Iterator[str]:
     """Handle streaming response from Perplexity API.
     
     Args:
         response: The streaming response from the API
+        show_citations: Whether to include citations in the output
         
     Yields:
         str: Content chunks from the response
@@ -143,7 +144,7 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         raise Exception(error_msg)
 
     if stream:
-        yield from _handle_stream_response(response)
+        yield from _handle_stream_response(response, show_citations)
     else:
         response_data = response.json()
         content = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
