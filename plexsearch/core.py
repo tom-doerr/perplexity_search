@@ -118,7 +118,7 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         "model": model
     }
     
-    payload = _build_api_payload(query, model, stream, show_references)
+    payload = _build_api_payload(query, model, stream, show_citations)
     response = requests.post(
         PERPLEXITY_API_ENDPOINT,
         headers=headers,
