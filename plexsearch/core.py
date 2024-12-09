@@ -2,21 +2,22 @@ import os
 import json
 import signal
 import requests
-from typing import Optional, Dict, Any, Iterator, List
+from typing import Optional, Dict, Any, Iterator
 from rich.console import Console
-from rich.markdown import Markdown
 from rich.live import Live
 from rich.spinner import Spinner
 from plexsearch import __version__
 from plexsearch.update_checker import UpdateChecker
 
+
+
 def _handle_stream_response(response, show_citations: bool = False) -> Iterator[str]:
     """Handle streaming response from Perplexity API.
-    
+
     Args:
         response: The streaming response from the API
         show_citations: Whether to include citations in the output
-        
+
     Yields:
         str: Content chunks from the response
     """
@@ -26,22 +27,35 @@ def _handle_stream_response(response, show_citations: bool = False) -> Iterator[
         if line:
             try:
                 data = json.loads(line.decode('utf-8').removeprefix('data: '))
-                if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
+                if content := (data.get('choices', [{}])[0]
+                             .get('delta', {})
+                             .get('content')):
                     content_buffer.append(content)
                     yield content
                 if 'citations' in data:
                     citations = data['citations']
-            except:
+            except json.JSONDecodeError:
                 continue
-    
+
     # Only yield citations at the end if we have any and citations are enabled
     if citations and show_citations:
-        yield "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
+        citations_text = "\n\nReferences:\n" + "\n".join(
+            f"[{i+1}] {url}" for i, url in enumerate(citations)
+        )
+        yield citations_text
+
+
 
 # API Constants
 PERPLEXITY_API_ENDPOINT = "https://api.perplexity.ai/chat/completions"
 
-def _build_api_payload(query: str, model: str, stream: bool, show_citations: bool = False) -> Dict[str, Any]:
+
+def _build_api_payload(
+    query: str,
+    model: str,
+    stream: bool,
+    show_citations: bool = False
+) -> Dict[str, Any]:
     """Build the API request payload.
     
     Args:
@@ -53,15 +67,16 @@ def _build_api_payload(query: str, model: str, stream: bool, show_citations: boo
         Dict containing the API request payload
     """
     system_message = (
-        "You are a technical assistant focused on providing accurate, practical information. "
-        "Follow these guidelines:\n"
+        "You are a technical assistant focused on providing accurate, practical "
+        "information. Follow these guidelines:\n"
         "1. Include code examples when relevant to explain concepts\n"
         "2. Include measurements and numbers when relevant\n"
         "3. Keep explanations concise and direct\n"
         "4. Focus on facts, technical details and real-world usage\n"
         "5. Show basic and advanced usage patterns when relevant\n"
         "6. Use tables or lists to organize information when appropriate\n"
-        "7. If show_citations is True, add numbered citations at the bottom in [1], [2] format"
+        "7. If show_citations is True, add numbered citations at the bottom in "
+        "[1], [2] format"
     )
     
     return {
