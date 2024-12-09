@@ -19,6 +19,23 @@ def test_perform_search_success(mock_response):
         assert result[0] == "Test response"
         mock_post.assert_called_once()
 
+def test_perform_search_with_references(mock_response):
+    """Test search with references"""
+    with patch('requests.post') as mock_post:
+        # Mock a streaming response with citations
+        mock_response.iter_lines.return_value = [
+            b'data: {"choices":[{"delta":{"content":"Test content"}}]}',
+            b'data: {"citations":["http://test1.com", "http://test2.com"]}'
+        ]
+        mock_post.return_value = mock_response
+        
+        result = list(perform_search("test query", api_key="test_key", stream=True, show_references=True))
+        assert len(result) == 2
+        assert result[0] == "Test content"
+        assert "References:" in result[1]
+        assert "[1] http://test1.com" in result[1]
+        assert "[2] http://test2.com" in result[1]
+
 def test_build_api_payload():
     """Test API payload builder helper"""
     payload = core._build_api_payload(
