@@ -19,19 +19,23 @@ def _handle_stream_response(response) -> Iterator[str]:
     Yields:
         str: Content chunks from the response
     """
+    content_buffer = []
     citations = []
     for line in response.iter_lines():
         if line:
             try:
                 data = json.loads(line.decode('utf-8').removeprefix('data: '))
                 if content := data.get('choices', [{}])[0].get('delta', {}).get('content'):
+                    content_buffer.append(content)
                     yield content
                 if 'citations' in data:
                     citations = data['citations']
-                    if citations:
-                        yield "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
             except:
                 continue
+    
+    # Only yield citations at the end if we have any
+    if citations:
+        yield "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
 
 # API Constants
 PERPLEXITY_API_ENDPOINT = "https://api.perplexity.ai/chat/completions"
@@ -141,7 +145,12 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
     if stream:
         yield from _handle_stream_response(response)
     else:
-        yield response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+        response_data = response.json()
+        content = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        citations = response_data.get("citations", [])
+        if citations:
+            content += "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
+        yield content
 
 def main():
     """CLI entry point"""
