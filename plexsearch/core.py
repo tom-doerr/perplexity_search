@@ -279,9 +279,11 @@ def main():
                     console.print(f"[red]Error:[/red] {e}")
                     print(f"[red]Error:[/red] {e}", file=sys.stderr)
         else:
+            # Clear screen before showing results in both modes
+            clear_new_area()
+            
             if no_stream:
                 # For non-streaming mode, show spinner during search
-                clear_new_area()
                 spinner_text = "Searching..."
                 with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
                     buffer = []
@@ -290,14 +292,14 @@ def main():
                 
                 # After search completes, just print the plain result
                 content = "".join(buffer)
-                print(content)
+                console.print(f"Perplexity: {content}")
             else:
                 # For streaming mode, update content live
                 accumulated_text = ""
                 with Live("", refresh_per_second=10, transient=False) as live:
                     for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations):
                         accumulated_text += chunk
-                        live.update(accumulated_text)
+                        live.update(f"Perplexity: {accumulated_text}")
         
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
