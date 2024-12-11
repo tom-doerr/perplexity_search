@@ -246,6 +246,8 @@ def main():
                     console.print("[yellow]Exiting interactive mode.[/yellow]")
                     break
 
+                # Clear screen before each new query
+                clear_new_area()
                 context.append({"role": "user", "content": user_input})
                 payload = _build_api_payload(query=user_input, model=args.model, stream=not no_stream, show_citations=args.citations)
                 payload["messages"] = context
