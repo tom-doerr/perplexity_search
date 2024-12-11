@@ -26,14 +26,8 @@ def get_terminal_size():
 
 def clear_new_area():
     """Clear screen while preserving scrollback buffer."""
-    # Save cursor position
-    sys.stdout.write("\033[s")
-    # Move to top of screen
-    sys.stdout.write("\033[H")
-    # Clear entire visible screen
-    sys.stdout.write("\033[2J")
-    # Restore cursor position
-    sys.stdout.write("\033[u")
+    # Reset terminal and clear screen
+    sys.stdout.write("\033c")
     sys.stdout.flush()
 
 def _handle_stream_response(response, show_citations: bool = False) -> Iterator[str]:
