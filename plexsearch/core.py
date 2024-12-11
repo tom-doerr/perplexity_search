@@ -259,6 +259,9 @@ def main():
                     else:
                         # For streaming mode, update content live
                         accumulated_text = ""
+                        # Push old output out of view and clear the screen
+                        terminal_height = get_terminal_height()
+                        print_new_lines(terminal_height)
                         console.clear()
                         with Live("", refresh_per_second=10, transient=False) as live:
                             for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations, context=payload["messages"]):
