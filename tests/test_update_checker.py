@@ -76,6 +76,7 @@ class TestUpdateChecker:
             mock_run.return_value = MagicMock(
                 returncode=0,
                 stdout="Successfully installed plexsearch-0.1.6",
+                stderr="",
                 text=True
             )
             assert checker.update_package() is True

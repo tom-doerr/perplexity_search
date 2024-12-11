@@ -92,10 +92,18 @@ class UpdateChecker:
                     text=True
                 )
                 progress.update(task, completed=100)
-                # Check both stdout and stderr for success message
-                output = process.stdout + process.stderr
+                
+                # Ensure we have string values for stdout and stderr
+                stdout = str(process.stdout) if process.stdout else ""
+                stderr = str(process.stderr) if process.stderr else ""
+                output = stdout + stderr
+                
                 if "Successfully installed" in output or "Requirement already satisfied" in output:
                     return True
+                    
+                if process.returncode == 0:  # Consider any successful execution as success
+                    return True
+                    
                 print(f"Update output: {output}")  # Debug output
                 return False
         except subprocess.CalledProcessError as e:
