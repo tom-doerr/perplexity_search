@@ -296,8 +296,6 @@ def main():
             else:
                 # For streaming mode, update content live
                 accumulated_text = ""
-                # Print a separator between queries
-                console.print("\n" + "─" * 80 + "\n")
                 with Live("", refresh_per_second=10, transient=False) as live:
                     for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations):
                         accumulated_text += chunk
