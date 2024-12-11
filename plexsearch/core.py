@@ -172,19 +172,23 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
             content += "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
         yield content
 
-def get_terminal_height():
-    """Get the height of the terminal."""
+def get_terminal_size():
+    """Get the dimensions of the terminal."""
     try:
         import shutil
-        height, _ = shutil.get_terminal_size()
-        return height
+        height, width = shutil.get_terminal_size()
+        return height, width
     except Exception:
-        # Fallback to a default height if shutil fails
-        return 24
+        # Fallback to default dimensions if shutil fails
+        return 24, 80
 
-def print_new_lines(terminal_height):
-    """Print enough new lines to push old output out of the visible area."""
-    console.print("\n" * terminal_height)
+def clear_visible_area():
+    """Clear only the visible area of the terminal without affecting scrollback."""
+    height, _ = get_terminal_size()
+    # Move cursor to top-left of visible area
+    print("\033[H", end="")
+    # Clear from cursor to end of visible area
+    print("\033[J", end="")
 
 def main():
     """CLI entry point"""
@@ -260,9 +264,7 @@ def main():
                         # For streaming mode, update content live
                         accumulated_text = ""
                         # Push old output out of view and clear the screen
-                        terminal_height = get_terminal_height()
-                        print_new_lines(terminal_height)
-                        console.clear()
+                        clear_visible_area()
                         with Live("", refresh_per_second=10, transient=False) as live:
                             for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations, context=payload["messages"]):
                                 accumulated_text += chunk
@@ -275,7 +277,7 @@ def main():
         else:
             if no_stream:
                 # For non-streaming mode, show spinner during search
-                console.clear()
+                clear_visible_area()
                 spinner_text = "" if os.environ.get("OR_APP_NAME") == "Aider" else "Searching..."
                 with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
                     buffer = []
