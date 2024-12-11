@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import signal
 import requests
@@ -27,11 +28,13 @@ def clear_new_area():
     """Push old output to scrollback and clear only the new area."""
     height, _ = get_terminal_size()
     # Print newlines to push old content into scrollback
-    print("\n" * height, end="")
+    sys.stdout.write("\n" * height)
+    sys.stdout.flush()
     # Move cursor up to start of the newly created empty area
-    print(f"\033[{height}A", end="")
+    sys.stdout.write(f"\033[{height}A")
     # Clear from cursor to end of screen
-    print("\033[J", end="")
+    sys.stdout.write("\033[J")
+    sys.stdout.flush()
 
 def _handle_stream_response(response, show_citations: bool = False) -> Iterator[str]:
     """Handle streaming response from Perplexity API.
