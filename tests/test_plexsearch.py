@@ -143,3 +143,20 @@ def test_interactive_mode_exit_condition(capsys):
         captured = capsys.readouterr()
         assert "Exiting interactive mode." in captured.out
         mock_search.assert_not_called()
+
+def test_interactive_mode_alternating_roles_error(capsys):
+    """Test error handling for alternating roles in interactive mode"""
+    from plexsearch.core import main
+    
+    with patch('sys.argv', ['plexsearch']), \
+         patch('builtins.input', side_effect=['query1', 'query2', 'exit']), \
+         patch('plexsearch.core.perform_search') as mock_search:
+        
+        # Simulate the API returning a 400 error due to incorrect alternating roles
+        mock_search.side_effect = Exception("API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating.")
+        
+        main()
+        
+        captured = capsys.readouterr()
+        assert "[red]Error:[/red] API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating." in captured.err
+        assert "Exiting interactive mode." in captured.out
