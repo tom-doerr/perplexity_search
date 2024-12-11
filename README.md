@@ -37,6 +37,8 @@ Perplexity Search is a command-line tool and Python library that leverages the p
 
 ## ✨ Features
 
+- **Interactive Mode:** Engage in a conversational interface where you can ask multiple queries in sequence.
+
 - **Perform searches using different LLaMA models (small, large, huge)**
 - **Configurable API key support via environment variable or direct input**
 - **Customizable search queries with temperature and other parameters**
@@ -69,6 +71,16 @@ result = perform_search("Show me example code for Python async/await", model="ll
 ```
 
 ### Command Line Interface
+
+#### Interactive Mode
+
+To enter interactive mode, simply run the command without any query arguments:
+
+```bash
+plexsearch
+```
+
+In interactive mode, you can type your queries one by one. Type `exit` to quit the interactive session.
 
 ```bash
 # Basic search
