@@ -88,7 +88,7 @@ def _build_api_payload(
         "stream": stream
     }
 
-def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False, show_citations: bool = False) -> Iterator[str]:
+def perform_search(query: str, api_key: Optional[str] = None, model: str = "llama-3.1-sonar-large-128k-online", stream: bool = False, show_citations: bool = False, context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
     """
     Perform a search using the Perplexity API.
     
@@ -135,6 +135,8 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
     }
     
     payload = _build_api_payload(query, model, stream, show_citations)
+    if context:
+        payload["messages"] = context
     response = requests.post(
         PERPLEXITY_API_ENDPOINT,
         headers=headers,
@@ -174,7 +176,7 @@ def main():
     import sys
     parser = argparse.ArgumentParser(description="Perform searches using Perplexity API")
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
-    parser.add_argument("query", nargs="+", help="The search query")
+    parser.add_argument("query", nargs="*", help="The search query")
     parser.add_argument("--api-key", help="Perplexity API key")
     parser.add_argument("--model", default="llama-3.1-sonar-large-128k-online",
                        help="Model to use for search")
@@ -184,7 +186,7 @@ def main():
                        help="Show numbered citations at the bottom of the response")
     
     args = parser.parse_args()
-    query = " ".join(args.query)
+    query = " ".join(args.query) if args.query else None
     
     console = Console()
     
@@ -213,26 +215,68 @@ def main():
 
         # Disable streaming if --no-stream flag is set or if running in Aider
         no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
-        if no_stream:
-            # For non-streaming mode, show spinner during search
-            console.clear()
-            spinner_text = "" if os.environ.get("OR_APP_NAME") == "Aider" else "Searching..."
-            with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
-                buffer = []
-                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False, show_citations=args.citations):
-                    buffer.append(chunk)
-            
-            # After search completes, just print the plain result
-            content = "".join(buffer)
-            print(content)
+        
+        if query is None:
+            console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
+            context = []
+            while True:
+                user_input = input("\nYou: ")
+                if user_input.lower() == "exit":
+                    console.print("[yellow]Exiting interactive mode.[/yellow]")
+                    break
+                
+                context.append({"role": "user", "content": user_input})
+                payload = _build_api_payload(query=user_input, model=args.model, stream=not no_stream, show_citations=args.citations)
+                payload["messages"] = [
+                    {"role": "system", "content": "You are a technical assistant focused on providing accurate, practical information."},
+                ] + context
+                
+                try:
+                    if no_stream:
+                        # For non-streaming mode, show spinner during search
+                        console.clear()
+                        spinner_text = "" if os.environ.get("OR_APP_NAME") == "Aider" else "Searching..."
+                        with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
+                            buffer = []
+                            for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=False, show_citations=args.citations, context=context):
+                                buffer.append(chunk)
+                        
+                        # After search completes, just print the plain result
+                        content = "".join(buffer)
+                        console.print(f"Perplexity: {content}")
+                    else:
+                        # For streaming mode, update content live
+                        accumulated_text = ""
+                        console.clear()
+                        with Live("", refresh_per_second=10, transient=False) as live:
+                            for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations, context=context):
+                                accumulated_text += chunk
+                                live.update(accumulated_text)
+                        
+                        context.append({"role": "assistant", "content": accumulated_text})
+                except Exception as e:
+                    console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
         else:
-            # For streaming mode, update content live
-            accumulated_text = ""
-            console.clear()
-            with Live("", refresh_per_second=10, transient=False) as live:
-                for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations):
-                    accumulated_text += chunk
-                    live.update(accumulated_text)
+            if no_stream:
+                # For non-streaming mode, show spinner during search
+                console.clear()
+                spinner_text = "" if os.environ.get("OR_APP_NAME") == "Aider" else "Searching..."
+                with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
+                    buffer = []
+                    for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False, show_citations=args.citations):
+                        buffer.append(chunk)
+                
+                # After search completes, just print the plain result
+                content = "".join(buffer)
+                print(content)
+            else:
+                # For streaming mode, update content live
+                accumulated_text = ""
+                console.clear()
+                with Live("", refresh_per_second=10, transient=False) as live:
+                    for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations):
+                        accumulated_text += chunk
+                        live.update(accumulated_text)
         
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
