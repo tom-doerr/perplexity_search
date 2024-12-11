@@ -220,7 +220,7 @@ def main():
             console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
             context = []
             while True:
-                user_input = input("\nUser: ")
+                user_input = input("\n> ")
                 if user_input.lower() == "exit":
                     console.print("[yellow]Exiting interactive mode.[/yellow]")
                     break
