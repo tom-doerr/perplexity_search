@@ -1,6 +1,14 @@
 """Test configuration and fixtures"""
 import pytest
-from unittest.mock import MagicMock
+import io
+from unittest.mock import MagicMock, patch
+
+@pytest.fixture
+def mock_terminal():
+    """Mock terminal with captured output"""
+    string_io = io.StringIO()
+    with patch('sys.stdout', string_io):
+        yield string_io
 
 @pytest.fixture
 def mock_response():
