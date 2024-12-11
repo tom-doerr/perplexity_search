@@ -216,7 +216,8 @@ def main():
         if no_stream:
             # For non-streaming mode, show spinner during search
             console.clear()
-            with Live(Spinner("dots", text="Searching..."), refresh_per_second=10, transient=True):
+            spinner_text = "" if os.environ.get("OR_APP_NAME") == "Aider" else "Searching..."
+            with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
                 buffer = []
                 for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False, show_citations=args.citations):
                     buffer.append(chunk)
