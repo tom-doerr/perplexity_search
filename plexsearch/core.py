@@ -225,18 +225,9 @@ def main():
                     console.print("[yellow]Exiting interactive mode.[/yellow]")
                     break
 
-                last_role = context[-1]["role"] if context else None
-                
-                if last_role == "user":
-                    # Insert a dummy assistant message to ensure alternating roles
-                    context.append({"role": "assistant", "content": ""})
-                
                 context.append({"role": "user", "content": user_input})
                 payload = _build_api_payload(query=user_input, model=args.model, stream=not no_stream, show_citations=args.citations)
-                payload["messages"] = [
-                    {"role": "system", "content": "You are a technical assistant focused on providing accurate, practical information."},
-                ] + context  # Include all context messages
-                
+                payload["messages"] = context
                 try:
                     if no_stream:
                         # For non-streaming mode, show spinner during search
