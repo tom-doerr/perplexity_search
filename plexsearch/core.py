@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import signal
+import argparse
 import requests
 from typing import Optional, Dict, Any, Iterator, List
 from rich.console import Console
