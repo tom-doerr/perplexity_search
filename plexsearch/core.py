@@ -2,7 +2,7 @@ import os
 import json
 import signal
 import requests
-from typing import Optional, Dict, Any, Iterator
+from typing import Optional, Dict, Any, Iterator, List
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
