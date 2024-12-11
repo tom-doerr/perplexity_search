@@ -107,4 +107,4 @@ def test_interactive_mode_error_handling(capsys):
         main()
         
         captured = capsys.readouterr()
-        assert "[red]Error:[/red] Test error" in captured.out
+        assert "[red]Error:[/red] Test error" in captured.err

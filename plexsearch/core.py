@@ -279,7 +279,7 @@ def main():
                         live.update(accumulated_text)
         
     except Exception as e:
-        console.print(f"[red]Error:[/red] {e}")
+        console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
