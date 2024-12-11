@@ -170,6 +170,20 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
             content += "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
         yield content
 
+def get_terminal_height():
+    """Get the height of the terminal."""
+    try:
+        import shutil
+        height, _ = shutil.get_terminal_size()
+        return height
+    except Exception:
+        # Fallback to a default height if shutil fails
+        return 24
+
+def print_new_lines(terminal_height):
+    """Print enough new lines to push old output out of the visible area."""
+    console.print("\n" * terminal_height)
+
 def main():
     """CLI entry point"""
     import argparse
