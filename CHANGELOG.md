@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated interactive mode prompt prefix to ">"
 
+## [0.1.17] - 2024-12-11
+
+### Changed
+- Updated interactive mode prompt prefix to ">"
+
+### Changed
+- Updated interactive mode prompt prefix to ">"
+
 ## [0.1.15] - 2024-12-11
 
 ### Added
