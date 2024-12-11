@@ -26,9 +26,12 @@ def get_terminal_size():
 
 def clear_new_area():
     """Clear screen while preserving scrollback buffer."""
-    # Reset terminal and clear screen
-    sys.stdout.write("\033c")
-    sys.stdout.flush()
+    console.print("[cyan]Clearing screen...[/cyan]")
+    # Print newlines to push content up
+    height, _ = get_terminal_size()
+    console.print("\n" * height)
+    # Use Rich's clear which preserves scrollback
+    console.clear()
 
 def _handle_stream_response(response, show_citations: bool = False) -> Iterator[str]:
     """Handle streaming response from Perplexity API.
@@ -249,6 +252,7 @@ def main():
                 try:
                     if no_stream:
                         # For non-streaming mode, show spinner during search
+                        console.print("[cyan]About to clear screen in no_stream mode...[/cyan]")
                         clear_new_area()
                         spinner_text = "Searching..."
                         with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
