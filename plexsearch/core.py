@@ -255,7 +255,8 @@ def main():
                         
                         context.append({"role": "assistant", "content": accumulated_text})
                 except Exception as e:
-                    console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
+                    console.print(f"[red]Error:[/red] {e}")
+                    print(f"[red]Error:[/red] {e}", file=sys.stderr)
         else:
             if no_stream:
                 # For non-streaming mode, show spinner during search
@@ -279,7 +280,8 @@ def main():
                         live.update(accumulated_text)
         
     except Exception as e:
-        console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
+        console.print(f"[red]Error:[/red] {e}")
+        print(f"[red]Error:[/red] {e}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
