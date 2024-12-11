@@ -224,12 +224,18 @@ def main():
                 if user_input.lower() == "exit":
                     console.print("[yellow]Exiting interactive mode.[/yellow]")
                     break
+
+                last_role = context[-1]["role"] if context else None
+                
+                if last_role == "user":
+                    # Insert a dummy assistant message to ensure alternating roles
+                    context.append({"role": "assistant", "content": ""})
                 
                 context.append({"role": "user", "content": user_input})
                 payload = _build_api_payload(query=user_input, model=args.model, stream=not no_stream, show_citations=args.citations)
                 payload["messages"] = [
                     {"role": "system", "content": "You are a technical assistant focused on providing accurate, practical information."},
-                ] + context[-2:]  # Only include the last user and assistant messages
+                ] + context  # Include all context messages
                 
                 try:
                     if no_stream:
@@ -238,18 +244,19 @@ def main():
                         spinner_text = "" if os.environ.get("OR_APP_NAME") == "Aider" else "Searching..."
                         with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
                             buffer = []
-                            for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=False, show_citations=args.citations, context=context):
+                            for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=False, show_citations=args.citations, context=payload["messages"]):
                                 buffer.append(chunk)
                         
                         # After search completes, just print the plain result
                         content = "".join(buffer)
                         console.print(f"Perplexity: {content}")
+                        context.append({"role": "assistant", "content": content})
                     else:
                         # For streaming mode, update content live
                         accumulated_text = ""
                         console.clear()
                         with Live("", refresh_per_second=10, transient=False) as live:
-                            for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations, context=context):
+                            for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations, context=payload["messages"]):
                                 accumulated_text += chunk
                                 live.update(accumulated_text)
                         
