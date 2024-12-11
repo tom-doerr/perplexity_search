@@ -10,6 +10,8 @@ from plexsearch import __version__
 from plexsearch.update_checker import UpdateChecker
 
 
+console = Console()
+
 
 def _handle_stream_response(response, show_citations: bool = False) -> Iterator[str]:
     """Handle streaming response from Perplexity API.
@@ -201,8 +203,6 @@ def main():
     
     args = parser.parse_args()
     query = " ".join(args.query) if args.query else None
-    
-    console = Console()
     
     # Set up signal handler for clean ctrl+c
     def handle_interrupt(signum, frame):
