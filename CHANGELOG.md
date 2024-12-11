@@ -7,9 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.16] - 2024-12-11
 
-### Changed
-- Fixed bug where interactive mode did not trigger alternating roles error.
-
 ## [0.1.15] - 2024-12-11
 
 ### Added
