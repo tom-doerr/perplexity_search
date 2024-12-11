@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added test to verify version in CHANGELOG matches __init__.py
 
+## [0.1.18] - 2024-12-11
+
+### Added
+- Added test to verify version in CHANGELOG matches __init__.py
+
 ### Changed
 - Updated interactive mode prompt prefix to ">"
 
