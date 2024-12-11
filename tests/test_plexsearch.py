@@ -109,3 +109,37 @@ def test_interactive_mode_error_handling(capsys):
         captured = capsys.readouterr()
         assert "[red]Error:[/red] Test error" in captured.err
         assert "Exiting interactive mode." in captured.out
+
+def test_interactive_mode_context_management(capsys):
+    """Test context management in interactive mode"""
+    from plexsearch.core import main
+    
+    with patch('sys.argv', ['plexsearch']), \
+         patch('builtins.input', side_effect=['query1', 'query2', 'exit']), \
+         patch('plexsearch.core.perform_search') as mock_search:
+        
+        mock_search.side_effect = [
+            iter(['response1']),
+            iter(['response2'])
+        ]
+        
+        main()
+        
+        captured = capsys.readouterr()
+        assert "Perplexity: response1" in captured.out
+        assert "Perplexity: response2" in captured.out
+        assert "Exiting interactive mode." in captured.out
+
+def test_interactive_mode_exit_condition(capsys):
+    """Test exit condition in interactive mode"""
+    from plexsearch.core import main
+    
+    with patch('sys.argv', ['plexsearch']), \
+         patch('builtins.input', side_effect=['exit']), \
+         patch('plexsearch.core.perform_search') as mock_search:
+        
+        main()
+        
+        captured = capsys.readouterr()
+        assert "Exiting interactive mode." in captured.out
+        mock_search.assert_not_called()
