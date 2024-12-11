@@ -95,3 +95,16 @@ def test_perform_search_error(mock_error_response):
         with pytest.raises(Exception) as exc_info:
             list(perform_search("test query", api_key="test_key", stream=False))
         assert "Rate limit exceeded" in str(exc_info.value)
+
+def test_interactive_mode_error_handling(capsys):
+    """Test error handling in interactive mode"""
+    from plexsearch.core import main
+    
+    with patch('sys.argv', ['plexsearch']), \
+         patch('builtins.input', side_effect=['invalid query', 'exit']), \
+         patch('plexsearch.core.perform_search', side_effect=Exception("Test error")):
+        
+        main()
+        
+        captured = capsys.readouterr()
+        assert "[red]Error:[/red] Test error" in captured.out
