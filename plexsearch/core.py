@@ -13,6 +13,26 @@ from plexsearch.update_checker import UpdateChecker
 console = Console()
 
 
+def get_terminal_size():
+    """Get the dimensions of the terminal."""
+    try:
+        import shutil
+        height, width = shutil.get_terminal_size()
+        return height, width
+    except Exception:
+        # Fallback to default dimensions if shutil fails
+        return 24, 80
+
+def clear_new_area():
+    """Push old output to scrollback and clear only the new area."""
+    height, _ = get_terminal_size()
+    # Print newlines to push old content into scrollback
+    print("\n" * height, end="")
+    # Move cursor up to start of the newly created empty area
+    print(f"\033[{height}A", end="")
+    # Clear from cursor to end of screen
+    print("\033[J", end="")
+
 def _handle_stream_response(response, show_citations: bool = False) -> Iterator[str]:
     """Handle streaming response from Perplexity API.
 
@@ -232,8 +252,7 @@ def main():
                 try:
                     if no_stream:
                         # For non-streaming mode, show spinner during search
-                        # Print a separator between queries
-                        console.print("\n" + "─" * 80 + "\n")
+                        clear_new_area()
                         spinner_text = "Searching..."
                         with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
                             buffer = []
@@ -261,8 +280,7 @@ def main():
         else:
             if no_stream:
                 # For non-streaming mode, show spinner during search
-                # Print a separator between queries
-                console.print("\n" + "─" * 80 + "\n")
+                clear_new_area()
                 spinner_text = "Searching..."
                 with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
                     buffer = []
