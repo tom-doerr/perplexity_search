@@ -193,10 +193,8 @@ def perform_search(query: str, api_key: Optional[str] = None, model: str = "llam
         yield content
 
 
-def main():
-    """CLI entry point"""
-    import argparse
-    import sys
+def parse_arguments():
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="Perform searches using Perplexity API")
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     parser.add_argument("query", nargs="*", help="The search query")
@@ -204,21 +202,89 @@ def main():
     parser.add_argument("--model", default="llama-3.1-sonar-large-128k-online",
                        help="Model to use for search")
     parser.add_argument("--no-stream", action="store_true",
-                       help="Disable streaming output and display the full response when finished")
+                       help="Disable streaming output")
     parser.add_argument("-c", "--citations", action="store_true",
-                       help="Show numbered citations at the bottom of the response")
+                       help="Show numbered citations")
+    return parser.parse_args()
+
+def handle_no_stream_search(query: str, args, payload: dict) -> str:
+    """Handle non-streaming search mode."""
+    console.print("[cyan]About to clear screen in no_stream mode...[/cyan]")
+    clear_new_area()
+    spinner_text = "Searching..."
+    buffer = []
     
-    args = parser.parse_args()
-    query = " ".join(args.query) if args.query else None
+    with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
+        for chunk in perform_search(query=query, api_key=args.api_key,
+                                  model=args.model, stream=False,
+                                  show_citations=args.citations,
+                                  context=payload.get("messages")):
+            buffer.append(chunk)
     
-    # Set up signal handler for clean ctrl+c
+    content = "".join(buffer)
+    console.print(f"Perplexity: {content}")
+    return content
+
+def handle_streaming_search(query: str, args, payload: dict) -> str:
+    """Handle streaming search mode."""
+    accumulated_text = ""
+    with Live("", refresh_per_second=10, transient=False) as live:
+        for chunk in perform_search(query=query, api_key=args.api_key,
+                                  model=args.model, stream=True,
+                                  show_citations=args.citations,
+                                  context=payload.get("messages")):
+            accumulated_text += chunk
+            live.update(f"Perplexity: {accumulated_text}")
+    return accumulated_text
+
+def handle_search(query: str, args, context=None) -> str:
+    """Handle a single search query execution."""
+    no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
+    payload = _build_api_payload(query=query, model=args.model,
+                               stream=not no_stream, show_citations=args.citations)
+    if context:
+        payload["messages"] = context
+
+    if no_stream:
+        return handle_no_stream_search(query, args, payload)
+    else:
+        return handle_streaming_search(query, args, payload)
+
+def handle_interactive_mode(args, context=None):
+    """Handle interactive mode search session."""
+    if context is None:
+        context = []
+    console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
+    
+    while True:
+        user_input = input("\n> ")
+        if user_input.lower() == "exit":
+            console.print("[yellow]Exiting interactive mode.[/yellow]")
+            break
+
+        clear_new_area()
+        context.append({"role": "user", "content": user_input})
+        try:
+            content = handle_search(user_input, args, context)
+            context.append({"role": "assistant", "content": content})
+        except Exception as e:
+            console.print(f"[red]Error:[/red] {e}")
+            print(f"[red]Error:[/red] {e}", file=sys.stderr)
+
+def setup_signal_handler():
+    """Set up interrupt signal handler."""
     def handle_interrupt(signum, frame):
         console.print("\n[yellow]Search interrupted by user[/yellow]")
         sys.exit(0)
     
     signal.signal(signal.SIGINT, handle_interrupt)
-    
+
+def main():
+    """CLI entry point"""
     try:
+        args = parse_arguments()
+        setup_signal_handler()
+    
         # Check for updates
         checker = UpdateChecker("plexsearch", __version__)
         if latest_version := checker.check_and_notify():
@@ -232,75 +298,16 @@ def main():
                         console.print("[red]Update failed. Please try updating manually with: pip install --upgrade plexsearch[/red]")
                 except Exception as e:
                     console.print(f"[red]Update failed: {str(e)}[/red]")
-                console.print() # Add blank line after update messages
+                console.print()
 
-        # Disable streaming if --no-stream flag is set or if running in Aider
-        no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
+        query = " ".join(args.query) if args.query else None
         
         if query is None:
-            console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
-            context = []
-            while True:
-                user_input = input("\n> ")
-                if user_input.lower() == "exit":
-                    console.print("[yellow]Exiting interactive mode.[/yellow]")
-                    break
-
-                # Clear screen before each new query
-                clear_new_area()
-                context.append({"role": "user", "content": user_input})
-                payload = _build_api_payload(query=user_input, model=args.model, stream=not no_stream, show_citations=args.citations)
-                payload["messages"] = context
-                try:
-                    if no_stream:
-                        # For non-streaming mode, show spinner during search
-                        console.print("[cyan]About to clear screen in no_stream mode...[/cyan]")
-                        clear_new_area()
-                        spinner_text = "Searching..."
-                        with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
-                            buffer = []
-                            for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=False, show_citations=args.citations, context=payload["messages"]):
-                                buffer.append(chunk)
-                        
-                        # After search completes, just print the plain result
-                        content = "".join(buffer)
-                        console.print(f"Perplexity: {content}")
-                        context.append({"role": "assistant", "content": content})
-                    else:
-                        # For streaming mode, update content live
-                        accumulated_text = ""
-                        with Live("", refresh_per_second=10, transient=False) as live:
-                            for chunk in perform_search(query=user_input, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations, context=payload["messages"]):
-                                accumulated_text += chunk
-                                live.update(accumulated_text)
-                        
-                        context.append({"role": "assistant", "content": accumulated_text})
-                except Exception as e:
-                    console.print(f"[red]Error:[/red] {e}")
-                    print(f"[red]Error:[/red] {e}", file=sys.stderr)
+            handle_interactive_mode(args)
         else:
-            # Clear screen before showing results in both modes
             clear_new_area()
+            handle_search(query, args)
             
-            if no_stream:
-                # For non-streaming mode, show spinner during search
-                spinner_text = "Searching..."
-                with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
-                    buffer = []
-                    for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=False, show_citations=args.citations):
-                        buffer.append(chunk)
-                
-                # After search completes, just print the plain result
-                content = "".join(buffer)
-                console.print(f"Perplexity: {content}")
-            else:
-                # For streaming mode, update content live
-                accumulated_text = ""
-                with Live("", refresh_per_second=10, transient=False) as live:
-                    for chunk in perform_search(query, api_key=args.api_key, model=args.model, stream=True, show_citations=args.citations):
-                        accumulated_text += chunk
-                        live.update(f"Perplexity: {accumulated_text}")
-        
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
         print(f"[red]Error:[/red] {e}", file=sys.stderr)
