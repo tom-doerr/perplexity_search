@@ -25,15 +25,15 @@ def get_terminal_size():
         return 24, 80
 
 def clear_new_area():
-    """Push old output to scrollback and clear only the new area."""
-    height, _ = get_terminal_size()
-    # Print newlines to push old content into scrollback
-    sys.stdout.write("\n" * height)
-    sys.stdout.flush()
-    # Move cursor up to start of the newly created empty area
-    sys.stdout.write(f"\033[{height}A")
-    # Clear from cursor to end of screen
-    sys.stdout.write("\033[J")
+    """Clear screen while preserving scrollback buffer."""
+    # Save cursor position
+    sys.stdout.write("\033[s")
+    # Move to top of screen
+    sys.stdout.write("\033[H")
+    # Clear entire visible screen
+    sys.stdout.write("\033[2J")
+    # Restore cursor position
+    sys.stdout.write("\033[u")
     sys.stdout.flush()
 
 def _handle_stream_response(response, show_citations: bool = False) -> Iterator[str]:
