@@ -229,7 +229,7 @@ def main():
                 payload = _build_api_payload(query=user_input, model=args.model, stream=not no_stream, show_citations=args.citations)
                 payload["messages"] = [
                     {"role": "system", "content": "You are a technical assistant focused on providing accurate, practical information."},
-                ] + context
+                ] + context[-2:]  # Only include the last user and assistant messages
                 
                 try:
                     if no_stream:
@@ -279,7 +279,7 @@ def main():
                         live.update(accumulated_text)
         
     except Exception as e:
-        console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
+        console.print(f"[red]Error:[/red] {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
