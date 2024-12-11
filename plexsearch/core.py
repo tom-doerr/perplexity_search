@@ -280,6 +280,7 @@ def main():
         
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}", file=sys.stderr)
+        sys.stderr.flush()  # Ensure the error message is flushed to stderr
         sys.exit(1)
 
 if __name__ == "__main__":
