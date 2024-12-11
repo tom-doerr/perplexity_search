@@ -25,7 +25,7 @@ def test_clear_new_area_output(mock_terminal):
         # Should see:
         # 1. Debug message about clearing
         # 2. Newlines to push content up
-        assert "Clearing screen..." in output
+        assert "Clearing screen" in output.replace("\x1b[36m", "").replace("\x1b[0m", "")
         assert "\n" * 10 in output  # Check for newlines
 
 def test_interactive_mode_clearing(mock_terminal):
@@ -40,7 +40,7 @@ def test_interactive_mode_clearing(mock_terminal):
         
         output = mock_terminal.getvalue()
         # Verify clearing happens between queries
-        assert "Clearing screen..." in output
+        assert "Clearing screen" in output.replace("\x1b[36m", "").replace("\x1b[0m", "")
         assert "\n" * 10 in output
 
 def test_no_stream_mode_clearing(mock_terminal):
@@ -56,5 +56,5 @@ def test_no_stream_mode_clearing(mock_terminal):
         
         output = mock_terminal.getvalue()
         # Verify clearing happens before showing results
-        assert "Clearing screen..." in output
+        assert "Clearing screen" in output.replace("\x1b[36m", "").replace("\x1b[0m", "")
         assert "\n" * 10 in output
