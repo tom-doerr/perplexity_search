@@ -2,12 +2,14 @@
 import pytest
 import io
 from unittest.mock import MagicMock, patch
+from rich.console import Console
 
 @pytest.fixture
 def mock_terminal():
     """Mock terminal with captured output"""
     string_io = io.StringIO()
-    with patch('sys.stdout', string_io):
+    console = Console(file=string_io, force_terminal=True)
+    with patch('plexsearch.core.console', console):
         yield string_io
 
 @pytest.fixture

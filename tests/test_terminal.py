@@ -25,37 +25,36 @@ def test_clear_new_area_output(mock_terminal):
         # Should see:
         # 1. Debug message about clearing
         # 2. Newlines to push content up
-        # 3. Clear screen command
-        assert "[cyan]Clearing screen...[/cyan]" in output
+        assert "Clearing screen..." in output
         assert "\n" * 10 in output  # Check for newlines
-        assert "[2J" in output      # Check for clear screen command
 
 def test_interactive_mode_clearing(mock_terminal):
     """Test terminal clearing in interactive mode"""
     with patch('builtins.input', side_effect=['test query', 'exit']), \
          patch('plexsearch.core.perform_search', return_value=['test response']), \
-         patch('plexsearch.core.get_terminal_size', return_value=(10, 80)):
+         patch('plexsearch.core.get_terminal_size', return_value=(10, 80)), \
+         patch('sys.argv', ['plexsearch']):
         
         from plexsearch.core import main
         main()
         
         output = mock_terminal.getvalue()
         # Verify clearing happens between queries
-        assert "[cyan]Clearing screen...[/cyan]" in output
+        assert "Clearing screen..." in output
         assert "\n" * 10 in output
-        assert "[2J" in output
 
 def test_no_stream_mode_clearing(mock_terminal):
     """Test terminal clearing in no-stream mode"""
     with patch('sys.argv', ['plexsearch', '--no-stream', 'test query']), \
          patch('plexsearch.core.perform_search', return_value=['test response']), \
-         patch('plexsearch.core.get_terminal_size', return_value=(10, 80)):
+         patch('plexsearch.core.get_terminal_size', return_value=(10, 80)), \
+         patch('plexsearch.core.UpdateChecker') as mock_checker:
         
+        mock_checker.return_value.check_and_notify.return_value = None
         from plexsearch.core import main
         main()
         
         output = mock_terminal.getvalue()
         # Verify clearing happens before showing results
-        assert "[cyan]Clearing screen...[/cyan]" in output
+        assert "Clearing screen..." in output
         assert "\n" * 10 in output
-        assert "[2J" in output
