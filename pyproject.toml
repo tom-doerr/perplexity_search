@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "plexsearch"
-version = "0.1.16"
+version = "0.1.17"
 description = "A powerful Python tool for performing technical searches using the Perplexity API"
 authors = ["Tom Doerr"]
 license = "MIT"
