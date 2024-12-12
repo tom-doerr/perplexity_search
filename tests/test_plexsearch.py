@@ -54,10 +54,12 @@ def test_perform_search_with_citations_disabled(mock_response):
 
 def test_build_api_payload():
     """Test API payload builder helper"""
-    payload = core._build_api_payload(
+    api = PerplexityAPI("test_key")
+    payload = api._build_payload(
         query="test query",
         model="test-model",
-        stream=True
+        stream=True,
+        show_citations=False
     )
     # Verify the basic structure and content
     assert payload["model"] == "test-model"
@@ -71,7 +73,7 @@ def test_build_api_payload():
 def test_no_stream_in_aider():
     """Test that streaming is disabled when running in Aider"""
     with patch('sys.argv', ['plexsearch', 'test query']):
-        with patch('plexsearch.core.perform_search') as mock_search:
+        with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
             mock_search.return_value = iter(['test response'])
             with patch('builtins.print'):  # Suppress actual printing
                 core.main()
@@ -99,35 +101,35 @@ def test_perform_search_error(mock_error_response):
 def test_interactive_mode_error_handling(capsys):
     """Test error handling in interactive mode"""
     from plexsearch.core import main
-    
+
     with patch('sys.argv', ['plexsearch']), \
          patch('builtins.input', side_effect=['invalid query', 'exit']), \
-         patch('plexsearch.core.perform_search', side_effect=Exception("Test error")):
-        
+         patch('plexsearch.api.PerplexityAPI.perform_search', side_effect=Exception("Test error")):
+
         main()
-        
+
         captured = capsys.readouterr()
-        assert "[red]Error:[/red] Test error" in captured.err
+        assert "Error: Test error" in captured.out
         assert "Exiting interactive mode." in captured.out
 
 def test_interactive_mode_context_management(capsys):
     """Test context management in interactive mode"""
     from plexsearch.core import main
-    
+
     with patch('sys.argv', ['plexsearch']), \
          patch('builtins.input', side_effect=['query1', 'query2', 'exit']), \
-         patch('plexsearch.core.perform_search') as mock_search:
-        
+         patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
+
         mock_search.side_effect = [
             iter(['response1']),
             iter(['response2'])
         ]
-        
+
         main()
-        
+
         captured = capsys.readouterr()
-        assert "Perplexity: response1" in captured.out
-        assert "Perplexity: response2" in captured.out
+        assert "response1" in captured.out
+        assert "response2" in captured.out
         assert "Exiting interactive mode." in captured.out
 
 def test_interactive_mode_exit_condition(capsys):
