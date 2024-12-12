@@ -1,5 +1,6 @@
 """Perplexity API interaction module."""
 import os
+import json
 from typing import Dict, Iterator, List, Optional
 import requests
 
