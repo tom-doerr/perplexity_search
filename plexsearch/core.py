@@ -1,7 +1,7 @@
 import os
 import sys
 import signal
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Iterator
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
@@ -113,6 +113,34 @@ def setup_signal_handler():
         sys.exit(0)
     
     signal.signal(signal.SIGINT, handle_interrupt)
+
+def perform_search(query: str, api_key: Optional[str] = None,
+                  model: str = "llama-3.1-sonar-large-128k-online",
+                  stream: bool = True,
+                  show_citations: bool = False,
+                  context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
+    """
+    Perform a search using the Perplexity API.
+    
+    Args:
+        query: The search query string
+        api_key: Optional API key (will use env var if not provided)
+        model: Model to use for search
+        stream: Whether to stream the response
+        show_citations: Whether to show citations
+        context: Optional conversation context
+        
+    Returns:
+        Iterator yielding response chunks
+    """
+    api = PerplexityAPI(api_key)
+    return api.perform_search(
+        query=query,
+        model=model,
+        stream=stream,
+        show_citations=show_citations,
+        context=context
+    )
 
 def main():
     """CLI entry point"""
