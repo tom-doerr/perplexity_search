@@ -135,13 +135,13 @@ def main():
                     console.print(f"[red]Update failed: {str(e)}[/red]")
                 console.print()
 
-        query = " ".join(args.query) if args.query else None
+        query = config.query
         
         if query is None:
-            handle_interactive_mode(args)
+            handle_interactive_mode(config.args)
         else:
             clear_new_area()
-            handle_search(query, args)
+            handle_search(query, config.args)
             
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
