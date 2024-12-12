@@ -5,6 +5,7 @@ import doctest
 from unittest.mock import patch
 from plexsearch.core import perform_search
 from plexsearch import core
+from plexsearch.api import PerplexityAPI
 
 def test_docstrings():
     """Test docstrings examples"""
