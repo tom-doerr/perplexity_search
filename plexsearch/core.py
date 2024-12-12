@@ -1,3 +1,4 @@
+import os
 import sys
 import signal
 from typing import Optional, List, Dict
@@ -40,11 +41,13 @@ def handle_no_stream_search(query: str, args, payload: dict) -> str:
     spinner_text = "Searching..."
     buffer = []
     
+    api = PerplexityAPI(args.api_key)
     with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
-        for chunk in perform_search(query=query, api_key=args.api_key,
-                                  model=args.model, stream=False,
-                                  show_citations=args.citations,
-                                  context=payload.get("messages")):
+        for chunk in api.perform_search(query=query,
+                                      model=args.model,
+                                      stream=False,
+                                      show_citations=args.citations,
+                                      context=payload.get("messages")):
             buffer.append(chunk)
     
     content = "".join(buffer)
@@ -54,11 +57,13 @@ def handle_no_stream_search(query: str, args, payload: dict) -> str:
 def handle_streaming_search(query: str, args, payload: dict) -> str:
     """Handle streaming search mode."""
     accumulated_text = ""
+    api = PerplexityAPI(args.api_key)
     with Live("", refresh_per_second=10, transient=False) as live:
-        for chunk in perform_search(query=query, api_key=args.api_key,
-                                  model=args.model, stream=True,
-                                  show_citations=args.citations,
-                                  context=payload.get("messages")):
+        for chunk in api.perform_search(query=query,
+                                      model=args.model,
+                                      stream=True,
+                                      show_citations=args.citations,
+                                      context=payload.get("messages")):
             accumulated_text += chunk
             live.update(f"Perplexity: {accumulated_text}")
     return accumulated_text
@@ -66,7 +71,8 @@ def handle_streaming_search(query: str, args, payload: dict) -> str:
 def handle_search(query: str, args, context=None) -> str:
     """Handle a single search query execution."""
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
-    payload = _build_api_payload(query=query, model=args.model,
+    api = PerplexityAPI(args.api_key)
+    payload = api._build_payload(query=query, model=args.model,
                                stream=not no_stream, show_citations=args.citations)
     if context:
         payload["messages"] = context
@@ -111,7 +117,7 @@ def setup_signal_handler():
 def main():
     """CLI entry point"""
     try:
-        args = parse_arguments()
+        config = Config()
         setup_signal_handler()
     
         # Check for updates
