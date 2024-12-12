@@ -103,8 +103,9 @@ def handle_interactive_mode(args, context=None):
             content = handle_search(user_input, args, context)
             context.append({"role": "assistant", "content": content})
         except Exception as e:
-            console.print(f"[red]Error:[/red] {e}")
-            print(f"[red]Error:[/red] {e}", file=sys.stderr)
+            error_msg = f"[red]Error:[/red] {e}"
+            print(error_msg, file=sys.stderr)
+            console.print(error_msg)
 
 def setup_signal_handler():
     """Set up interrupt signal handler."""
@@ -150,6 +151,9 @@ def main():
     
         # Check for updates
         checker = UpdateChecker("plexsearch", __version__)
+        query = config.query
+        
+        # Check for updates after getting query but before processing
         if latest_version := checker.check_and_notify():
             console.print(f"\n[yellow]New version {latest_version} available![/yellow]\n")
             response = input("Would you like to update now? (Y/n): ").strip().lower()
@@ -162,8 +166,6 @@ def main():
                 except Exception as e:
                     console.print(f"[red]Update failed: {str(e)}[/red]")
                 console.print()
-
-        query = config.query
         
         if query is None:
             handle_interactive_mode(config.args)
