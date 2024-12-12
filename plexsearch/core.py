@@ -259,6 +259,9 @@ def handle_interactive_mode(args, context=None):
     
     while True:
         user_input = console.input("\n[cyan]> [/cyan]")
+        if user_input.strip() == "":
+            console.print("[yellow]Please enter a query or type 'exit' to quit.[/yellow]")
+            continue
         if user_input.lower() == "exit":
             console.print("[yellow]Exiting interactive mode.[/yellow]")
             break
