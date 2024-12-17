@@ -2,25 +2,35 @@
 import os
 import json
 import time
-import feedparser
 from packaging import version
+import warnings
+
+try:
+    import feedparser
+    HAVE_FEEDPARSER = True
+except ImportError:
+    HAVE_FEEDPARSER = False
+    warnings.warn("feedparser not installed. Version checking disabled. Install with 'pip install feedparser'")
 from typing import Optional, Dict, Any
 import subprocess
 
 def get_latest_version(package_name: str) -> str:
     """Get the latest version of a package from PyPI."""
-    rss_url = f"https://pypi.org/rss/project/{package_name}/releases.xml"
-    feed = feedparser.parse(rss_url)
-    if not feed.entries:
+    if not HAVE_FEEDPARSER:
         return "0.0.0"
+        
     try:
+        rss_url = f"https://pypi.org/rss/project/{package_name}/releases.xml"
+        feed = feedparser.parse(rss_url)
+        if not feed.entries:
+            return "0.0.0"
         title = feed.entries[0].title
         if ": " in title:
             return title.split(": ")[1]
         elif " " in title:
             return title.split(" ")[1]
         return title
-    except (IndexError, AttributeError):
+    except Exception:
         return "0.0.0"
 
 def check_for_update(current_version: str, latest_version: str) -> bool:
