@@ -107,8 +107,9 @@ class TestUpdateChecker:
              patch.object(UpdateChecker, 'update_package', return_value=True):
             
             mock_search.return_value = iter(['test response'])
-            main()
             
+            main() # Call main after patching
+
             captured = capsys.readouterr()
             assert 'Successfully updated' in captured.out
             assert 'test response' in captured.out
