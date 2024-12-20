@@ -147,7 +147,8 @@ def test_interactive_mode_exit_condition(capsys):
         assert "Exiting interactive mode." in captured.out
         mock_search.assert_not_called()
 
-def test_interactive_mode_alternating_roles_error(capsys):
+@patch("plexsearch.config.Config")
+def test_interactive_mode_alternating_roles_error(mock_config, capsys):
     """Test error handling for alternating roles in interactive mode"""
     from plexsearch.core import main
     
