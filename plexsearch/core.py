@@ -61,8 +61,8 @@ def handle_streaming_search(query: str, args, payload: dict) -> str:
     api = PerplexityAPI(args.api_key)
     with Live("", refresh_per_second=10, transient=False) as live:
         for chunk in api.perform_search(query=query,
-                                      model=args.model,
-                                      stream=True,
+                                      model=config.model,
+                                      stream=not no_stream,
                                       show_citations=args.citations,
                                       context=payload.get("messages")):
             accumulated_text += chunk
