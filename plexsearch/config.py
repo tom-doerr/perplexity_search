@@ -5,6 +5,11 @@ from plexsearch import __version__
 
 class Config:
     """Handle application configuration."""
+    LLAMA_MODELS = {
+        "small": "llama-3.1-sonar-small-128k-online",
+        "large": "llama-3.1-sonar-large-128k-online",
+        "huge": "llama-3.1-sonar-huge-128k-online"
+    }
     
     DEFAULT_MODEL = "llama-3.1-sonar-large-128k-online"
     DEFAULT_LOG_FILE = "plexsearch_log.json"
@@ -50,12 +55,15 @@ class Config:
         parser.add_argument("query", nargs="*", help="The search query")
         parser.add_argument("--api-key", help="Perplexity API key")
         parser.add_argument("--model",
-                           default=Config.DEFAULT_MODEL,
+                           choices=list(Config.LLAMA_MODELS.keys()), default="large",
                            help="Model to use for search")
         parser.add_argument("--no-stream", action="store_true",
                            help="Disable streaming output")
         parser.add_argument("-c", "--citations", action="store_true",
                            help="Show numbered citations")
+        parser.add_argument("--log-file",
+                            nargs='?',
+                            help="Path to log file")
         parser.add_argument("--log-file",
                             nargs='?',
                             help="Path to log file")
