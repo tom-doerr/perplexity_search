@@ -38,7 +38,9 @@ class Config:
     
     @property
     def log_file(self) -> Optional[str]:
-        return self.args.log_file
+        if self.args.log_file is None:
+            return None
+        return self.args.log_file if self.args.log_file else Config.DEFAULT_LOG_FILE
     
     @staticmethod
     def _parse_arguments() -> argparse.Namespace:

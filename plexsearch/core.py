@@ -112,7 +112,8 @@ def handle_interactive_mode(args, log_file, context=None):
         try:
             content = handle_search(user_input, args, context)
             context.append({"role": "assistant", "content": content})
-            log_conversation(log_file, context)
+            if log_file:
+                log_conversation(log_file, context)
         except Exception as e:
             error_msg = f"[red]Error:[/red] {e}"
             print(error_msg, file=sys.stderr)
