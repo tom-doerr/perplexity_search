@@ -55,14 +55,14 @@ def handle_no_stream_search(query: str, args, payload: dict) -> str:
     console.print(f"Perplexity: {content}")
     return content
 
-def handle_streaming_search(query: str, args, payload: dict) -> str:
+def handle_streaming_search(query: str, args, config, payload: dict) -> str:
     """Handle streaming search mode."""
     accumulated_text = ""
     api = PerplexityAPI(args.api_key)
     with Live("", refresh_per_second=10, transient=False) as live:
         for chunk in api.perform_search(query=query,
                                       model=config.model,
-                                      stream=not no_stream,
+                                      stream=not args.no_stream,
                                       show_citations=args.citations,
                                       context=payload.get("messages")):
             accumulated_text += chunk
@@ -78,7 +78,7 @@ def log_conversation(log_file: str, conversation: List[Dict[str, str]]) -> None:
     except Exception as e:
         console.print(f"[red]Error writing to log file: {e}[/red]")
 
-def handle_search(query: str, args, context=None) -> str:
+def handle_search(query: str, args, config, context=None) -> str:
     """Handle a single search query execution."""
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
     api = PerplexityAPI(args.api_key)
@@ -90,9 +90,9 @@ def handle_search(query: str, args, context=None) -> str:
     if no_stream:
         return handle_no_stream_search(query, args, payload)
     else:
-        return handle_streaming_search(query, args, payload)
+        return handle_streaming_search(query, args, config, payload)
 
-def handle_interactive_mode(args, log_file, context=None):
+def handle_interactive_mode(args, log_file, config, context=None):
     """Handle interactive mode search session."""
     if context is None:
         context = []
@@ -110,7 +110,7 @@ def handle_interactive_mode(args, log_file, context=None):
         clear_new_area()
         context.append({"role": "user", "content": user_input})
         try:
-            content = handle_search(user_input, args, context)
+            content = handle_search(user_input, args, config, context)
             context.append({"role": "assistant", "content": content})
             if log_file:
                 log_conversation(log_file, context)
@@ -131,7 +131,8 @@ def perform_search(query: str, api_key: Optional[str] = None,
                   model: str = "llama-3.1-sonar-large-128k-online",
                   stream: bool = True,
                   show_citations: bool = False,
-                  context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
+                  context: Optional[List[Dict[str, str]]] = None,
+                  config=None) -> Iterator[str]:
     """
     Perform a search using the Perplexity API.
     
@@ -149,7 +150,7 @@ def perform_search(query: str, api_key: Optional[str] = None,
     api = PerplexityAPI(api_key)
     return api.perform_search(
         query=query,
-        model=config.model,
+        model=config.model if config else model,
         stream=stream,
         show_citations=show_citations,
         context=context
@@ -180,10 +181,10 @@ def main():
                 console.print()
         
         if query is None:
-            handle_interactive_mode(config.args, config.log_file)
+            handle_interactive_mode(config.args, config.log_file, config)
         else:
             clear_new_area()
-            handle_search(query, config.args)
+            handle_search(query, config.args, config)
             
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
