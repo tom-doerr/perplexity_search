@@ -71,4 +71,5 @@ class Config:
         parser.add_argument("-c", "--citations", action="store_true",
                            help="Show numbered citations")
         parser.add_argument("--log-file", nargs='?', help="Path to log file")
+        parser.add_argument("--model", help="Model to use for search")  # Add this line
         return parser.parse_args()
