@@ -4,7 +4,7 @@ import json
 import time
 import subprocess
 from unittest.mock import patch, MagicMock
-import pytest
+import pytest 
 from plexsearch.update_checker import (
     get_latest_version,
     check_for_update,

@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
+from plexsearch import core
 from plexsearch.core import clear_new_area, get_terminal_size
 
 def test_get_terminal_size():
