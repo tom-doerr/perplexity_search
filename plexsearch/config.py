@@ -57,6 +57,6 @@ class Config:
         parser.add_argument("-c", "--citations", action="store_true",
                            help="Show numbered citations")
         parser.add_argument("--log-file",
-                            default=Config.DEFAULT_LOG_FILE,
+                            nargs='?',
                             help="Path to log file")
         return parser.parse_args()
