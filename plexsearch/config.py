@@ -45,6 +45,8 @@ class Config:
     
     @property
     def model(self) -> str:
+        if self.args.model:
+            return self.args.model
         if self.args.small:
             return self.LLAMA_MODELS["small"]
         if self.args.huge:
