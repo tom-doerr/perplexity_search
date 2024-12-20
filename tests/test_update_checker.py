@@ -104,7 +104,12 @@ class TestUpdateChecker:
              patch('plexsearch.core.perform_search') as mock_search, \
              patch('builtins.input', return_value='y'), \
              patch.object(UpdateChecker, 'check_and_notify', return_value='0.2.0'), \
-             patch.object(UpdateChecker, 'update_package', return_value=True):
+             patch.object(UpdateChecker, 'update_package', return_value=True), \
+             patch("plexsearch.config.Config") as mock_config:
+            
+            mock_args = MagicMock()
+            mock_args.model = "llama-3.1-sonar-large-128k-online"
+            mock_config.return_value.args = mock_args
             
             mock_search.return_value = iter(['test response'])
             
