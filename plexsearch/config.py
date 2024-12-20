@@ -71,7 +71,4 @@ class Config:
         parser.add_argument("--log-file",
                             nargs='?',
                             help="Path to log file")
-        parser.add_argument("--log-file",
-                            nargs='?',
-                            help="Path to log file")
         return parser.parse_args()
