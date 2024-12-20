@@ -67,5 +67,6 @@ class Config:
         parser.add_argument("--no-stream", action="store_true",
                            help="Disable streaming output")
         parser.add_argument("-c", "--citations", action="store_true",
+        parser.add_argument("--log-file", nargs='?', help="Path to log file")
                            help="Show numbered citations")
         return parser.parse_args()
