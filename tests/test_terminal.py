@@ -48,11 +48,14 @@ def test_no_stream_mode_clearing(mock_terminal):
     with patch('sys.argv', ['plexsearch', '--no-stream', 'test query']), \
          patch('plexsearch.core.perform_search', return_value=['test response']), \
          patch('plexsearch.core.get_terminal_size', return_value=(10, 80)), \
-         patch('plexsearch.core.UpdateChecker') as mock_checker:
+         patch('plexsearch.core.UpdateChecker') as mock_checker, \
+         patch("plexsearch.config.Config") as mock_config:
         
         mock_checker.return_value.check_and_notify.return_value = None
-        from plexsearch.core import main
-        main()
+        mock_args = MagicMock()        
+        mock_args.model = "llama-3.1-sonar-large-128k-online"
+        mock_config.return_value.args = mock_args
+        core.main()
         
         output = mock_terminal.getvalue()
         # Verify clearing happens before showing results

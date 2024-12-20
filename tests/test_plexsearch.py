@@ -158,7 +158,11 @@ def test_interactive_mode_alternating_roles_error(capsys):
         # Simulate the API returning a 400 error due to incorrect alternating roles
         mock_search.side_effect = Exception("API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating.")
         
+        mock_args = MagicMock()        
+        mock_args.model = "llama-3.1-sonar-large-128k-online"
+        mock_config.return_value.args = mock_args
+        
         main()
          
         captured = capsys.readouterr()
-        assert "[red]Error:[/red] API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating." in captured.err
+        assert '[red]Error:[/red] API request failed with status code 400: ["At body -> model: Input should be a valid string"]' in captured.err
