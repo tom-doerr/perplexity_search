@@ -3,10 +3,10 @@ import pytest
 import subprocess
 from pathlib import Path
 
-def run_cli_command(args):
+def run_cli_command(args, env=None):
     """Helper to run the CLI command"""
     cmd = ["poetry", "run", "plexsearch"] + args
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
     return result
 
 @pytest.mark.integration
