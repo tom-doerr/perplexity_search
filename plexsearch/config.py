@@ -7,6 +7,7 @@ class Config:
     """Handle application configuration."""
     
     DEFAULT_MODEL = "llama-3.1-sonar-large-128k-online"
+    DEFAULT_LOG_FILE = "plexsearch_log.json"
     
     def __init__(self):
         self.args = self._parse_arguments()
@@ -35,6 +36,10 @@ class Config:
     def show_citations(self) -> bool:
         return self.args.citations
     
+    @property
+    def log_file(self) -> Optional[str]:
+        return self.args.log_file
+    
     @staticmethod
     def _parse_arguments() -> argparse.Namespace:
         parser = argparse.ArgumentParser(description="Perform searches using Perplexity API")
@@ -49,4 +54,7 @@ class Config:
                            help="Disable streaming output")
         parser.add_argument("-c", "--citations", action="store_true",
                            help="Show numbered citations")
+        parser.add_argument("--log-file",
+                            default=Config.DEFAULT_LOG_FILE,
+                            help="Path to log file")
         return parser.parse_args()

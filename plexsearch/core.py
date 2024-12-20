@@ -1,6 +1,7 @@
 import os
 import sys
 import signal
+import json
 from typing import Optional, List, Dict, Iterator
 from rich.console import Console
 from rich.live import Live
@@ -68,6 +69,15 @@ def handle_streaming_search(query: str, args, payload: dict) -> str:
             live.update(f"Perplexity: {accumulated_text}")
     return accumulated_text
 
+def log_conversation(log_file: str, conversation: List[Dict[str, str]]) -> None:
+    """Log the conversation to a file."""
+    try:
+        with open(log_file, "a") as f:
+            json.dump(conversation, f)
+            f.write("\n")
+    except Exception as e:
+        console.print(f"[red]Error writing to log file: {e}[/red]")
+
 def handle_search(query: str, args, context=None) -> str:
     """Handle a single search query execution."""
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
@@ -82,7 +92,7 @@ def handle_search(query: str, args, context=None) -> str:
     else:
         return handle_streaming_search(query, args, payload)
 
-def handle_interactive_mode(args, context=None):
+def handle_interactive_mode(args, log_file, context=None):
     """Handle interactive mode search session."""
     if context is None:
         context = []
@@ -102,6 +112,7 @@ def handle_interactive_mode(args, context=None):
         try:
             content = handle_search(user_input, args, context)
             context.append({"role": "assistant", "content": content})
+            log_conversation(log_file, context)
         except Exception as e:
             error_msg = f"[red]Error:[/red] {e}"
             print(error_msg, file=sys.stderr)
@@ -168,7 +179,7 @@ def main():
                 console.print()
         
         if query is None:
-            handle_interactive_mode(config.args)
+            handle_interactive_mode(config.args, config.log_file)
         else:
             clear_new_area()
             handle_search(query, config.args)
