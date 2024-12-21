@@ -1,6 +1,7 @@
 """Perplexity API interaction module."""
 import os
 import json
+import logging
 from typing import Dict, Iterator, List, Optional
 import requests
 
@@ -20,9 +21,9 @@ class PerplexityAPI:
     """Handle all Perplexity API interactions."""
     
     ENDPOINT = "https://api.perplexity.ai/chat/completions"
-    
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.environ.get("PERPLEXITY_API_KEY")
+        logging.basicConfig(level=logging.DEBUG)
         if not self.api_key:
             raise ValueError("API key required via argument or PERPLEXITY_API_KEY environment variable")
     
@@ -77,14 +78,18 @@ class PerplexityAPI:
                       show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations)
-        if context:
-            messages = [payload["messages"][0]]  # Start with the system message
-            for i in range(0, len(context), 2):
-                messages.append(context[i])  # Add user message
-                if i + 1 < len(context):
-                    messages.append(context[i+1]) # Add assistant message
-            messages.append({"role": "user", "content": query}) # Add the current user query
-            payload["messages"] = messages
+       if context:
+           messages = [payload["messages"][0]]  # Start with the system message
+           logging.debug(f"Initial messages: {messages}")
+           for i in range(0, len(context), 2):
+               messages.append(context[i])  # Add user message
+               logging.debug(f"Added user message: {context[i]}")
+               if i + 1 < len(context):
+                   messages.append(context[i+1]) # Add assistant message
+                   logging.debug(f"Added assistant message: {context[i+1]}")
+           messages.append({"role": "user", "content": query}) # Add the current user query
+           logging.debug(f"Added user query: {query}")
+           payload["messages"] = messages
         
         response = requests.post(
             self.ENDPOINT,
