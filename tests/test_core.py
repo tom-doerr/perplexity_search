@@ -28,6 +28,10 @@ def test_payload_is_correct(mock_terminal):
     context = [{"role": "user", "content": "context message"}]
 
     with patch("requests.post") as mock_post:
+        mock_response = mock_post.return_value
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"choices": [{"message": {"content": "test response"}}]}
+
         list(api.perform_search(query, model, stream, show_citations, context))
 
     log_output = log_io.getvalue()
