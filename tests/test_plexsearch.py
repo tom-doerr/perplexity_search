@@ -295,5 +295,4 @@ def test_interactive_mode_alternating_roles_error(capsys):
         main()
 
         captured = capsys.readouterr()
-        assert "Error: API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating." in captured.out or \
-               "Error: API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating." in captured.err
+        assert "Error: API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating." in captured.err
