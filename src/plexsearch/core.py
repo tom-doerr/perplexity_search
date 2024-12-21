@@ -85,7 +85,7 @@ def main():
         model = LLAMA_MODELS[args.model]
         result = perform_search(query, args.api_key, model)
         content = result['choices'][0]['message']['content']
-        print(content)
+        console.print(content)
     except Exception as e:
         print(f"Error: {e}")
 

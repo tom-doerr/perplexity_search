@@ -178,6 +178,10 @@ def main():
                 except Exception as e:
                     console.print(f"[red]Update failed: {str(e)}[/red]")
                 console.print()
+
+            # Continue with the search after the update
+            if query is not None:
+                handle_search(query, config.args)
         
         if query is None:
             handle_interactive_mode(config.args, config.log_file)
