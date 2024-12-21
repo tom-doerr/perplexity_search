@@ -48,14 +48,13 @@ class PerplexityAPI:
             "[1], [2] format"
         )
 
-        messages = [
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": query}
-        ]
-        print("context:", context)
+        messages = []
         if context:
-            for msg in context:
-                messages.append(msg)
+            messages.extend(context)
+        else:
+            messages.append({"role": "system", "content": system_message})
+        
+        messages.append({"role": "user", "content": query})
         
         # move the user message to be after the context
         # print("messages:", messages)
@@ -108,9 +107,7 @@ class PerplexityAPI:
                       show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations, context)
-        logging.debug(f"payload: {json.dumps(payload, indent=2)}")
-        with open("payload.json", "w") as f:
-            json.dump(payload, f, indent=2)
+        logging.debug(f"payload: {json.dumps(payload)}")
 
         response = requests.post(
             self.ENDPOINT,
