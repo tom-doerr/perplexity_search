@@ -81,15 +81,17 @@ def main():
     parser.add_argument('--api-key', help='Perplexity API key (optional, can use PERPLEXITY_API_KEY env var)')
     args = parser.parse_args()
     console = Console()
+    print("main function called")
 
     try:
         query = ' '.join(args.query)
         model = LLAMA_MODELS[args.model]
         result = perform_search(query, args.api_key, model)
         content = result['choices'][0]['message']['content']
+        print(f"About to print: {content}")
         console.print(content)
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error in main: {e}")
 
 if __name__ == "__main__":
     main()
