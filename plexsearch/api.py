@@ -97,10 +97,6 @@ class PerplexityAPI:
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations, context)
         logging.debug(f"payload: {payload}")
-        with open("payload.json", "w") as f:
-            json.dump(payload, f)
-
-#
         response = requests.post(
             self.ENDPOINT,
             headers=self._get_headers(),
