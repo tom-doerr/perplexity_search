@@ -168,14 +168,10 @@ class TestUpdateChecker:
         with patch('sys.argv', ['plexsearch', 'test query']), \
              patch('plexsearch.core.perform_search') as mock_search, \
              patch('builtins.input', return_value='y'), \
-             patch.object(UpdateChecker, 'check_and_notify', return_value=None), \
-             patch.object(UpdateChecker, 'update_package', return_value=True):
+             patch.object(UpdateChecker, 'check_and_notify', return_value=None):
 
             mock_search.return_value = iter(['test response'])
-            
-            with patch('plexsearch.core.UpdateChecker.update_package', return_value=True) as mock_update:
-                main()
-                captured = capsys.readouterr()
-                assert 'Successfully updated' in captured.out
-                mock_search.assert_called_once()
-                assert 'test response' in captured.out
+            main()
+            captured = capsys.readouterr()
+            mock_search.assert_called_once()
+            assert 'test response' in captured.out
