@@ -93,6 +93,10 @@ class PerplexityAPI:
         messages.append({"role": "user", "content": query})
         logging.debug(f"Added user query: {query}")
         payload["messages"] = messages
+        logging.debug(f"payload: {payload}")
+        # print("payload:", payload)
+        with open("payload.json", "w") as f:
+            json.dump(payload, f)
 
         response = requests.post(
             self.ENDPOINT,
