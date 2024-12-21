@@ -86,7 +86,8 @@ class PerplexityAPI:
                     messages.append(context[i+1]) # Add assistant message
             messages.append({"role": "user", "content": query}) # Add the current user query
             payload["messages"] = messages
-            
+        
+        console.print(f"[blue]Payload messages in perform_search: {payload['messages']}[/blue]")
         response = requests.post(
             self.ENDPOINT,
             headers=self._get_headers(),
