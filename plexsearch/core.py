@@ -77,7 +77,7 @@ def log_conversation(log_file: str, new_messages: List[Dict[str, str]]) -> None:
     except Exception as e:
         console.print(f"[red]Error writing to log file: {e}[/red]")
 
-def handle_search(query: str, args, context=None) -> str:
+def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = None) -> str:
     """Handle a single search query execution."""
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
     api = PerplexityAPI(args.api_key)
@@ -90,10 +90,11 @@ def handle_search(query: str, args, context=None) -> str:
         messages = []
         messages.append(payload["messages"][0])  # Add the system message
 
-        for i in range(0, len(context), 2):
-            messages.append(context[i])  # Add user message
-            if i + 1 < len(context):
-                messages.append(context[i+1])  # Add assistant message
+        if context:
+            for i in range(0, len(context), 2):
+                messages.append(context[i])  # Add user message
+                if i + 1 < len(context):
+                    messages.append(context[i+1])  # Add assistant message
 
         # Ensure the last message is a user message
         messages.append({"role": "user", "content": query})
@@ -105,7 +106,7 @@ def handle_search(query: str, args, context=None) -> str:
     else:
         return handle_streaming_search(query, args, payload)
 
-def handle_interactive_mode(args, log_file, context=None):
+def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str]]] = None):
     """Handle interactive mode search session."""
     if context is None:
         context = []
