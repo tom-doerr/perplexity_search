@@ -1,6 +1,10 @@
 import pytest
+import pytest
 from plexsearch import __version__
 from toml import load
+import json
+from unittest.mock import patch
+from plexsearch.api import PerplexityAPI
 
 def test_version_matches_pyproject():
     with open("pyproject.toml", "r") as f:
