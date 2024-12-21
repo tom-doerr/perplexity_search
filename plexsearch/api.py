@@ -80,9 +80,11 @@ class PerplexityAPI:
         payload = self._build_payload(query, model, stream, show_citations)
         if context:
             messages = [payload["messages"][0]]  # Start with the system message
-            for i, msg in enumerate(context):
-                messages.append(msg)
-            messages.append({"role": "user", "content": query})
+            for i in range(0, len(context), 2):
+                messages.append(context[i])  # Add user message
+                if i + 1 < len(context):
+                    messages.append(context[i+1]) # Add assistant message
+            messages.append({"role": "user", "content": query}) # Add the current user query
             payload["messages"] = messages
             
         response = requests.post(
