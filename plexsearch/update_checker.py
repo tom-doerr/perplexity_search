@@ -109,7 +109,7 @@ class UpdateChecker:
                 )
                 progress.update(task, completed=100)
                 
-                if process.returncode == 0:
+                if process.returncode == 0 and "Successfully installed" in process.stdout:
                     return True
                 
                 output = process.stdout + process.stderr
