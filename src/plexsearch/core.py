@@ -42,21 +42,6 @@ def create_payload(query: str,
     }
 
 def perform_search(query: str, api_key: Optional[str] = None, model: Optional[str] = None) -> Dict:
-    """
-    Perform a search using the Perplexity API.
-    
-    Args:
-        query: The search query
-        api_key: Optional API key (will use PERPLEXITY_API_KEY environment variable if not provided)
-        model: Optional model name to override the default
-    
-    Returns:
-        Dict containing the API response
-        
-    Raises:
-        ValueError: If no API key is provided via argument or PERPLEXITY_API_KEY environment variable
-    """
-    print("perform_search function called")
     if not api_key:
         api_key = os.getenv('PERPLEXITY_API_KEY')
         if not api_key:
@@ -69,9 +54,7 @@ def perform_search(query: str, api_key: Optional[str] = None, model: Optional[st
     }
     
     payload = create_payload(query, model=model)
-    print(f"URL: {url}, Payload: {payload}")
     response = requests.post(url, json=payload, headers=headers)
-    print(f"Response status code: {response.status_code}, content: {response.content}")
     response.raise_for_status()
     
     return response.json()
@@ -84,17 +67,12 @@ def main():
     parser.add_argument('--api-key', help='Perplexity API key (optional, can use PERPLEXITY_API_KEY env var)')
     args = parser.parse_args()
     console = Console()
-    print("main function called")
-    print(f"Args: {args}")
 
     try:
-        query = ' '.join(args.query)
-        model = LLAMA_MODELS[args.model]
-        print(f"Query: {query}, Model: {model}")
-        result = perform_search(query, args.api_key, model)
-        print(f"Result: {result}")
-        content = result['choices'][0]['message']['content']
-        print(f"About to print: {content}")
+        query: str = ' '.join(args.query)
+        model: str = LLAMA_MODELS[args.model]
+        result: Dict = perform_search(query, args.api_key, model)
+        content: str = result['choices'][0]['message']['content']
         console.print(content)
     except Exception as e:
         print(f"Error in main: {e}")
