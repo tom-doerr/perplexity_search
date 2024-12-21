@@ -16,8 +16,8 @@ def test_cli_basic_search():
     if "PERPLEXITY_API_KEY" not in os.environ:
         pytest.skip("PERPLEXITY_API_KEY environment variable not set")
     
-    with patch('plexsearch.core.handle_search') as mock_search:
-        mock_search.return_value = "test response"
+    with patch('plexsearch.core.perform_search') as mock_search:
+        mock_search.return_value = {"text": "test response"}
         result = run_cli_command(["What is Python?"], env=os.environ)
         assert result.returncode == 0
         assert len(result.stdout) > 0
@@ -28,8 +28,8 @@ def test_cli_with_model():
     if "PERPLEXITY_API_KEY" not in os.environ:
         pytest.skip("PERPLEXITY_API_KEY environment variable not set")
         
-    with patch('plexsearch.core.handle_search') as mock_search:
-        mock_search.return_value = "test response"
+    with patch('plexsearch.core.perform_search') as mock_search:
+        mock_search.return_value = {"text": "test response"}
         result = run_cli_command([
             "--model", "llama-3.1-sonar-small-128k-online",
             "What is Python?"
