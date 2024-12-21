@@ -94,7 +94,7 @@ class PerplexityAPI:
                       show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations, context)
-        logging.debug(f"payload: {payload}")
+        logging.debug(f"payload: {json.dumps(payload, indent=2)}")
         response = requests.post(
             self.ENDPOINT,
             headers=self._get_headers(),
