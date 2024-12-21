@@ -4,6 +4,8 @@ import json
 import time
 from packaging import version
 import warnings
+from typing import Optional, Dict, Any
+import subprocess
 
 try:
     import feedparser
@@ -11,26 +13,32 @@ try:
 except ImportError:
     HAVE_FEEDPARSER = False
     warnings.warn("feedparser not installed. Version checking disabled. Install with 'pip install feedparser'")
-from typing import Optional, Dict, Any
-import subprocess
+
+
+def _parse_version_from_title(title: str) -> str:
+    """Helper function to parse version from feed title."""
+    if ": " in title:
+        return title.split(": ")[1]
+    elif " " in title:
+        return title.split(" ")[1]
+    return title
 
 def get_latest_version(package_name: str) -> str:
     """Get the latest version of a package from PyPI."""
     if not HAVE_FEEDPARSER:
         return "0.0.0"
-        
+    
     try:
         rss_url = f"https://pypi.org/rss/project/{package_name}/releases.xml"
         feed = feedparser.parse(rss_url)
         if not feed.entries:
             return "0.0.0"
         title = feed.entries[0].title
-        if ": " in title:
-            return title.split(": ")[1]
-        elif " " in title:
-            return title.split(" ")[1]
-        return title
-    except Exception:
+        return _parse_version_from_title(title)
+    except feedparser.FeedParserError:
+        return "0.0.0"
+    except Exception as e:
+        print(f"Error fetching latest version: {e}")
         return "0.0.0"
 
 def check_for_update(current_version: str, latest_version: str) -> bool:
@@ -44,6 +52,7 @@ class UpdateChecker:
     """Handles checking for package updates."""
     
     def __init__(self, package_name: str, current_version: str):
+        """Initialize the update checker."""
         self.package_name = package_name
         self.current_version = current_version
         self.state_dir = os.path.expanduser("~/.config/plexsearch")
@@ -69,7 +78,6 @@ class UpdateChecker:
         state = self.load_state()
         current_time = time.time()
         
-        # Only check periodically
         if current_time - state["last_check"] < interval_hours * 3600:
             return None
             
@@ -77,7 +85,6 @@ class UpdateChecker:
         latest_version = get_latest_version(self.package_name)
         
         if check_for_update(self.current_version, latest_version):
-            # Only remind periodically
             if current_time - state["last_reminder"] < interval_hours * 3600:
                 return None
                 
@@ -93,29 +100,24 @@ class UpdateChecker:
         try:
             from rich.progress import Progress
             with Progress() as progress:
-                task = progress.add_task("[cyan]Updating package...", total=None)
-                # Use --no-cache-dir to force fresh download
+                task = progress.add_task("[cyan]Updating package...", total=100)
                 process = subprocess.run(
                     ["pip", "install", "--upgrade", "--no-cache-dir", self.package_name],
-                    check=True,
+                    check=False,
                     capture_output=True,
                     text=True
                 )
                 progress.update(task, completed=100)
                 
-                # Ensure we have string values for stdout and stderr
-                stdout = str(process.stdout) if process.stdout else ""
-                stderr = str(process.stderr) if process.stderr else ""
-                output = stdout + stderr
+                output = process.stdout + process.stderr
+                if process.returncode == 0 and ("Successfully installed" in output or "Requirement already satisfied" in output):
+                    return True
                 
-                if "Successfully installed" in output or "Requirement already satisfied" in output:
-                    return True
-                    
-                if process.returncode == 0:  # Consider any successful execution as success
-                    return True
-                    
-                print(f"Update output: {output}")  # Debug output
+                print(f"Update failed with output: {output}")
                 return False
-        except subprocess.CalledProcessError as e:
-            print(f"Update error: {e.stderr}")
+        except FileNotFoundError:
+            print("Error: pip command not found. Ensure pip is installed and in your system's PATH.")
+            return False
+        except Exception as e:
+            print(f"An unexpected error occurred during update: {e}")
             return False
