@@ -81,28 +81,25 @@ def handle_search(query: str, args, context=None) -> str:
     """Handle a single search query execution."""
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
     api = PerplexityAPI(args.api_key)
-    
-    # Build payload without assistant messages in context
+
+    # Build payload with context
+    payload = api._build_payload(query=query, model=args.model,
+                               stream=not no_stream, show_citations=args.citations)
+
     if context:
-        payload = api._build_payload(query=query, model=args.model,
-                                   stream=not no_stream, show_citations=args.citations)
-        
         messages = []
         messages.append(payload["messages"][0])  # Add the system message
-        
+
         for i in range(0, len(context), 2):
             messages.append(context[i])  # Add user message
             if i + 1 < len(context):
                 messages.append(context[i+1])  # Add assistant message
-        
+
         # Ensure the last message is a user message
         messages.append({"role": "user", "content": query})
         payload["messages"] = messages
         console.print(f"[blue]Payload messages in handle_search: {messages}[/blue]")
-    else:
-        payload = api._build_payload(query=query, model=args.model,
-                                   stream=not no_stream, show_citations=args.citations)
-
+    
     if no_stream:
         return handle_no_stream_search(query, args, payload)
     else:
@@ -126,11 +123,11 @@ def handle_interactive_mode(args, log_file, context=None):
         console.print(f"[blue]Context before user input: {context}[/blue]")
 
         clear_new_area()
-        new_user_message = {"role": "user", "content": user_input}
         
         try:
             console.print(f"[blue]Context before handle_search: {context}[/blue]")
             content = handle_search(user_input, args, context)
+            new_user_message = {"role": "user", "content": user_input}
             new_assistant_message = {"role": "assistant", "content": content}
             log_conversation(log_file, [new_user_message, new_assistant_message])
 
@@ -154,7 +151,7 @@ def perform_search(query: str, api_key: Optional[str] = None,
                   model: str = "llama-3.1-sonar-large-128k-online",
                   stream: bool = True,
                   show_citations: bool = False,
-                  context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
+                  context: Optional[List[Dict[str, str]]] = None) -> str:
     """
     Perform a search using the Perplexity API.
     
@@ -166,17 +163,18 @@ def perform_search(query: str, api_key: Optional[str] = None,
         show_citations: Whether to show citations
         context: Optional conversation context
         
-    Returns:
-        Iterator yielding response chunks
+    Returns: The response content
     """
     api = PerplexityAPI(api_key)
-    return api.perform_search(
+    response = api.perform_search(
         query=query,
         model=model,
         stream=stream,
         show_citations=show_citations,
         context=context
     )
+    content = "".join(response)
+    return content
 
 def main():
     """CLI entry point"""
