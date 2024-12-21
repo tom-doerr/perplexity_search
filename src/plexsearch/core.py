@@ -85,11 +85,14 @@ def main():
     args = parser.parse_args()
     console = Console()
     print("main function called")
+    print(f"Args: {args}")
 
     try:
         query = ' '.join(args.query)
         model = LLAMA_MODELS[args.model]
+        print(f"Query: {query}, Model: {model}")
         result = perform_search(query, args.api_key, model)
+        print(f"Result: {result}")
         content = result['choices'][0]['message']['content']
         print(f"About to print: {content}")
         console.print(content)
