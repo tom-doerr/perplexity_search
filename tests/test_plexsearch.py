@@ -189,18 +189,62 @@ def test_log_conversation_only_new_messages():
     expected_messages = initial_messages + new_messages
     assert logged_messages == expected_messages
 
+def test_log_conversation_no_file():
+    """Test that log_conversation creates a new file if it doesn't exist."""
+    from plexsearch.core import log_conversation
+    import tempfile
+    import json
+
+    # Create a temporary log file
+    with tempfile.NamedTemporaryFile(delete=True) as temp_log:
+        log_file = temp_log.name
+
+    # Initial messages to log
+    initial_messages = [
+        {"role": "user", "content": "Hello"},
+        {"role": "assistant", "content": "Hi there!"}
+    ]
+
+    # Log the initial messages
+    log_conversation(log_file, initial_messages)
+
+    # Read the log file and verify the content
+    with open(log_file, "r") as f:
+        logged_messages = [json.loads(line) for line in f]
+
+    assert logged_messages == initial_messages
+
+def test_log_conversation_empty_messages():
+    """Test that log_conversation handles empty messages list."""
+    from plexsearch.core import log_conversation
+    import tempfile
+    import json
+
+    # Create a temporary log file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_log:
+        log_file = temp_log.name
+
+    # Log empty messages
+    log_conversation(log_file, [])
+
+    # Read the log file and verify the content
+    with open(log_file, "r") as f:
+        logged_messages = [json.loads(line) for line in f]
+
+    assert logged_messages == []
+
 def test_interactive_mode_alternating_roles_error(capsys):
     """Test error handling for alternating roles in interactive mode"""
     from plexsearch.core import main
-    
+
     with patch('sys.argv', ['plexsearch']), \
          patch('builtins.input', side_effect=['query1', 'query2', 'exit']), \
          patch('plexsearch.core.perform_search') as mock_search:
-        
+
         # Simulate the API returning a 400 error due to incorrect alternating roles
         mock_search.side_effect = Exception("API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating.")
-        
+
         main()
-        
+
         captured = capsys.readouterr()
         assert "Error: API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating." in captured.err
