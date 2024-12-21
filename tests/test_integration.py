@@ -40,6 +40,7 @@ def test_cli_error_handling():
     """Test CLI error handling with invalid API key"""
     with patch('plexsearch.core.perform_search') as mock_search:
       mock_search.return_value = {"choices": [{"message": {"content": "test response"}}]}
-      run_cli_command(["test query"], env=os.environ)
+      result = run_cli_command(["test query"], env=os.environ)
+      assert result.returncode == 0
       mock_search.assert_called_once()
       mock_search.assert_called_with("test query", None, "llama-3.1-sonar-large-128k-online")
