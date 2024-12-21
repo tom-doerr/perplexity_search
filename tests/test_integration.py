@@ -1,6 +1,7 @@
 import os
 import pytest
 import subprocess
+import logging
 from pathlib import Path
 from unittest.mock import patch
 
@@ -34,7 +35,7 @@ def test_cli_with_model():
             "What is Python?"
         ], env=os.environ)
         assert result.returncode == 0
-        mock_main.assert_called_once()
+        mock_search.assert_called_once()
 
 @pytest.mark.integration
 def test_cli_error_handling():
