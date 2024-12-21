@@ -14,8 +14,8 @@ def run_cli_command(args, env=None):
 def test_cli_basic_search():
     """Test basic search using CLI"""
     
-    with patch('plexsearch.core.perform_search') as mock_search:
-        mock_search.return_value = "test response"
+    with patch('plexsearch.core.main') as mock_main:
+        mock_main.return_value = "test response"
         result = run_cli_command(["What is Python?"], env=os.environ)
         assert result.returncode == 0
         assert "test response" in result.stdout
@@ -24,8 +24,8 @@ def test_cli_basic_search():
 def test_cli_with_model():
     """Test CLI search with specific model"""
         
-    with patch('plexsearch.core.perform_search') as mock_search:
-        mock_search.return_value = "test response"
+    with patch('plexsearch.core.main') as mock_main:
+        mock_main.return_value = "test response"
         result = run_cli_command([
             "--model", "llama-3.1-sonar-small-128k-online",
             "What is Python?"
