@@ -239,14 +239,12 @@ def main():
                 console.print()
 
             # Continue with the search after the update
-            if query is not None:
-                handle_search(query, config.args)
         
-        if query is None:
-            handle_interactive_mode(config.args, config.log_file)
-        else:
+        if query is not None:
             clear_new_area()
             handle_search(query, config.args)
+        else:
+            handle_interactive_mode(config.args, config.log_file)
             
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
