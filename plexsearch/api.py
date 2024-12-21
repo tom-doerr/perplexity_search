@@ -126,7 +126,4 @@ class PerplexityAPI:
                     continue
 
         if citations and show_citations:
-            citations_text = "\n\nReferences:\n" + "\n".join(
-                f"[{i+1}] {url}" for i, url in enumerate(citations)
-            )
-            yield citations_text
+            yield self._format_citations(citations)
