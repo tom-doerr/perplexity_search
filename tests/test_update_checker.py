@@ -132,6 +132,36 @@ class TestUpdateChecker:
             )
             assert checker.update_package() is True
 
+    def test_update_package_no_message_no_change(self, checker):
+        """Test successful update with no message and no change."""
+        with patch('subprocess.run') as mock_run:
+            mock_run.return_value = MagicMock(
+                returncode=0,
+                stdout="",
+                stderr=""
+            )
+            assert checker.update_package() is True
+
+    def test_update_package_with_stderr(self, checker):
+        """Test successful update with stderr."""
+        with patch('subprocess.run') as mock_run:
+            mock_run.return_value = MagicMock(
+                returncode=0,
+                stdout="Successfully installed plexsearch-0.1.6",
+                stderr="Some stderr output"
+            )
+            assert checker.update_package() is True
+
+    def test_update_package_with_non_zero_returncode(self, checker):
+        """Test failed package update with non-zero return code."""
+        with patch('subprocess.run') as mock_run:
+            mock_run.return_value = MagicMock(
+                returncode=2,
+                stdout="Some output",
+                stderr="Some error"
+            )
+            assert checker.update_package() is False
+
     def test_update_continues_execution(self, checker, capsys):
         """Test that program continues after update."""
         from plexsearch.core import main

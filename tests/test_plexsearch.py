@@ -233,6 +233,55 @@ def test_log_conversation_empty_messages():
 
     assert logged_messages == []
 
+def test_log_conversation_invalid_json(capsys):
+    """Test that log_conversation handles invalid json."""
+    from plexsearch.core import log_conversation
+    import tempfile
+
+    # Create a temporary log file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_log:
+        log_file = temp_log.name
+
+    # Log invalid json
+    with open(log_file, "w") as f:
+        f.write("invalid json")
+
+    # Log new messages
+    log_conversation(log_file, [{"role": "user", "content": "test"}])
+
+    # Read the log file and verify the content
+    with open(log_file, "r") as f:
+        logged_messages = [line.strip() for line in f]
+
+    assert len(logged_messages) == 2
+    assert logged_messages[0] == "invalid json"
+    assert logged_messages[1] == '{"role": "user", "content": "test"}'
+
+def test_log_conversation_file_permission_error(capsys):
+    """Test that log_conversation handles file permission errors."""
+    from plexsearch.core import log_conversation
+    import tempfile
+    import os
+
+    # Create a temporary log file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_log:
+        log_file = temp_log.name
+
+    # Make the file read-only
+    os.chmod(log_file, 0o444)
+
+    # Log new messages
+    log_conversation(log_file, [{"role": "user", "content": "test"}])
+
+    # Read the log file and verify the content
+    with open(log_file, "r") as f:
+        logged_messages = [line.strip() for line in f]
+
+    assert len(logged_messages) == 0
+
+    # Reset file permissions
+    os.chmod(log_file, 0o644)
+
 def test_interactive_mode_alternating_roles_error(capsys):
     """Test error handling for alternating roles in interactive mode"""
     from plexsearch.core import main
