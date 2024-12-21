@@ -60,16 +60,43 @@ class TestUpdateChecker:
         state = {"last_check": time.time(), "last_reminder": 0}
         checker.save_state(state)
         assert checker.check_and_notify(interval_hours=24) is None
-        
+
     def test_check_and_notify_update_available(self, checker):
         """Test checking when update is available."""
         state = {"last_check": 0, "last_reminder": 0}
         checker.save_state(state)
-        
+
         with patch('plexsearch.update_checker.get_latest_version') as mock_get:
             mock_get.return_value = "1.1.0"
             assert checker.check_and_notify() == "1.1.0"
-            
+
+    def test_check_and_notify_no_update(self, checker):
+        """Test checking when no update is available."""
+        state = {"last_check": 0, "last_reminder": 0}
+        checker.save_state(state)
+
+        with patch('plexsearch.update_checker.get_latest_version') as mock_get:
+            mock_get.return_value = "1.0.0"
+            assert checker.check_and_notify() is None
+
+    def test_check_and_notify_reminder_too_soon(self, checker):
+        """Test reminder too soon after last reminder."""
+        state = {"last_check": 0, "last_reminder": time.time()}
+        checker.save_state(state)
+
+        with patch('plexsearch.update_checker.get_latest_version') as mock_get:
+            mock_get.return_value = "1.1.0"
+            assert checker.check_and_notify(interval_hours=24, reminder_interval_hours=1) is None
+
+    def test_check_and_notify_reminder_available(self, checker):
+        """Test reminder when reminder interval has passed."""
+        state = {"last_check": 0, "last_reminder": 0}
+        checker.save_state(state)
+
+        with patch('plexsearch.update_checker.get_latest_version') as mock_get:
+            mock_get.return_value = "1.1.0"
+            assert checker.check_and_notify(interval_hours=24, reminder_interval_hours=1) == "1.1.0"
+
     def test_update_package_success(self, checker):
         """Test successful package update."""
         with patch('subprocess.run') as mock_run:
@@ -80,7 +107,7 @@ class TestUpdateChecker:
                 text=True
             )
             assert checker.update_package() is True
-            
+
     def test_update_package_failure(self, checker):
         """Test failed package update."""
         with patch('subprocess.run') as mock_run:
@@ -96,22 +123,31 @@ class TestUpdateChecker:
             )
             assert checker.update_package() is True
 
+    def test_update_package_no_message(self, checker):
+        """Test successful update with no message."""
+        with patch('subprocess.run') as mock_run:
+            mock_run.return_value = MagicMock(
+                returncode=0,
+                stdout=""
+            )
+            assert checker.update_package() is True
+
     def test_update_continues_execution(self, checker, capsys):
         """Test that program continues after update."""
         from plexsearch.core import main
-        
+
         with patch('sys.argv', ['plexsearch', 'test query']), \
              patch('plexsearch.core.perform_search') as mock_search, \
              patch('builtins.input', return_value='y'), \
              patch.object(UpdateChecker, 'check_and_notify', return_value='0.2.0'), \
              patch.object(UpdateChecker, 'update_package', return_value=True):
-            
+
             mock_search.return_value = iter(['test response'])
             main()
-            
+
             captured = capsys.readouterr()
             assert 'Successfully updated' in captured.out
             mock_search.assert_called_once()
-            
+
             captured = capsys.readouterr()
             assert 'test response' in captured.out
