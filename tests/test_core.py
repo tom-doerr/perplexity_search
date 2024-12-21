@@ -25,7 +25,7 @@ def test_payload_is_correct(mock_terminal):
     model = "test_model"
     stream = True
     show_citations = False
-    context = [{"role": "user", "content": "context message"}]
+    context = [{"role": "assistant", "content": "context message"}]
 
     with patch("requests.post") as mock_post:
         mock_response = mock_post.return_value
@@ -44,5 +44,6 @@ def test_payload_is_correct(mock_terminal):
     assert payload["stream"] == stream
     assert payload["show_citations"] == show_citations
     assert len(payload["messages"]) == 3
-    assert payload["messages"][1]["content"] == query
+    assert payload["messages"][1]["role"] == "system"
     assert payload["messages"][2]["content"] == "context message"
+    assert payload["messages"][2]["role"] == "assistant"
