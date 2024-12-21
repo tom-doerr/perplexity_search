@@ -18,9 +18,9 @@ def test_cli_basic_search():
     """Test basic search using CLI"""
     
     with patch('plexsearch.core.main') as mock_main:
-        mock_main.return_value = "test response" # Set the return value
+        mock_main.return_value = "test response"
         result = run_cli_command(["What is Python?"], env=os.environ)
-        assert result.returncode == 0
+        assert result.returncode == 0 # Assert that the command ran successfully
         mock_main.assert_called_once()
 
 @pytest.mark.integration
