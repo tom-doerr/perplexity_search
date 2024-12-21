@@ -84,7 +84,6 @@ class PerplexityAPI:
                 if i + 1 < len(context):
                     messages.append(context[i+1]) # Add assistant message
             messages.append({"role": "user", "content": query}) # Add the current user query
-            messages.append({"role": "assistant", "content": ""})  # Add an empty assistant message to ensure alternation
             payload["messages"] = messages
         
         response = requests.post(
