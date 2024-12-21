@@ -35,25 +35,23 @@ def clear_new_area() -> None:
     # Use Rich's clear which preserves scrollback
     console.clear()
 
-def handle_no_stream_search(query: str, args, payload: dict) -> str:
+def handle_no_stream_search(query: str, args, payload: dict) -> str:    
     """Handle non-streaming search mode."""
     console.print("[cyan]About to clear screen in no_stream mode...[/cyan]")
     clear_new_area()
     spinner_text = "Searching..."
-    buffer = []
     
     api = PerplexityAPI(args.api_key)
     with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
-        for chunk in api.perform_search(query=query,
+        response = api.perform_search(query=query,
                                       model=args.model,
                                       stream=False,
                                       show_citations=args.citations,
-                                      context=payload.get("messages")):
-            buffer.append(chunk)
-    
-    content = "".join(buffer)
-    console.print(f"Perplexity: {content}")
-    return content
+                                      context=payload.get("messages"))
++        content = "".join(response)
++    
++    console.print(f"Perplexity: {content}")
++    return content
 
 def handle_streaming_search(query: str, args, payload: dict) -> str:
     """Handle streaming search mode."""
