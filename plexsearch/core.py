@@ -48,7 +48,7 @@ def handle_no_stream_search(query: str, args, payload: dict) -> str:
                                       stream=False,
                                       show_citations=args.citations,
                                       context=payload.get("messages"))
-       content = "".join(response)
+      content = "".join(response)
     
    console.print(f"Perplexity: {content}")
    return content
