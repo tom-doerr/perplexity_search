@@ -109,10 +109,10 @@ class UpdateChecker:
                 )
                 progress.update(task, completed=100)
                 
-                output = process.stdout + process.stderr
-                if process.returncode == 0 and ("Successfully installed" in output or "Requirement already satisfied" in output):
+                if process.returncode == 0:
                     return True
                 
+                output = process.stdout + process.stderr
                 print(f"Update failed with output: {output}")
                 return False
         except FileNotFoundError:
