@@ -48,7 +48,9 @@ class PerplexityAPI:
         
         return {
             "model": model,
-            "messages": [],
+            "messages": [
+                {"role": "system", "content": system_message}
+            ],
             "stream": stream
         }
 
