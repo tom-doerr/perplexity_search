@@ -2,7 +2,7 @@
 import os
 import pytest
 import doctest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from plexsearch.core import perform_search
 from plexsearch import core
 from plexsearch.api import PerplexityAPI
