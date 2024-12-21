@@ -33,7 +33,8 @@ class PerplexityAPI:
             "Content-Type": "application/json"
         }
     
-    def _build_payload(self, query: str, model: str, stream: bool, show_citations: bool) -> Dict[str, any]:
+    # def _build_payload(self, query: str, model: str, stream: bool, show_citations: bool) -> Dict[str, any]:
+    def _build_payload(self, query: str, model: str, stream: bool, show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Dict[str, any]:
         system_message = (
             "You are a technical assistant focused on providing accurate, practical "
             "information. Follow these guidelines:\n"
@@ -46,13 +47,30 @@ class PerplexityAPI:
             "7. If show_citations is True, add numbered citations at the bottom in "
             "[1], [2] format"
         )
+
+        messages = [
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": query}
+        ]
+        if context:
+            for i in range(0, len(context), 2):
+                messages.append(context[i])
+                if i + 1 < len(context):
+                    messages.append(context[i+1])
+
         
+        # return {
+            # "model": model,
+            # "messages": [
+                # {"role": "system", "content": system_message}
+            # ],
+            # "stream": stream
+        # }
         return {
             "model": model,
-            "messages": [
-                {"role": "system", "content": system_message}
-            ],
-            "stream": stream
+            "messages": messages,
+            "stream": stream,
+            "show_citations": show_citations
         }
 
     def _handle_error(self, response: requests.Response) -> None:
@@ -77,27 +95,29 @@ class PerplexityAPI:
     def perform_search(self, query: str, model: str, stream: bool,
                       show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
         """Perform a search using the Perplexity API."""
-        payload = self._build_payload(query, model, stream, show_citations)
-        if context:
-            messages = [payload["messages"][0]]  # Start with the system message
+        payload = self._build_payload(query, model, stream, show_citations, context)
+        print("payload:", payload)
+        # if context:
+            # messages = [payload["messages"][0]]  # Start with the system message
             
-            for i in range(0, len(context), 2):
-                messages.append(context[i])  # Add user message
+            # for i in range(0, len(context), 2):
+                # messages.append(context[i])  # Add user message
                 
-                if i + 1 < len(context):
-                    messages.append(context[i+1]) # Add assistant message
+                # if i + 1 < len(context):
+                    # messages.append(context[i+1]) # Add assistant message
             
             
-            payload["messages"] = messages
+            # payload["messages"] = messages
         
-        messages.append({"role": "user", "content": query})
-        logging.debug(f"Added user query: {query}")
-        payload["messages"] = messages
+        # messages.append({"role": "user", "content": query})
+        # logging.debug(f"Added user query: {query}")
+        # payload["messages"] = messages
         logging.debug(f"payload: {payload}")
         # print("payload:", payload)
         with open("payload.json", "w") as f:
             json.dump(payload, f)
 
+#
         response = requests.post(
             self.ENDPOINT,
             headers=self._get_headers(),
@@ -117,6 +137,7 @@ class PerplexityAPI:
             if citations and show_citations:
                 content += "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
             yield content
+
 
     def _handle_stream_response(self, response: requests.Response, show_citations: bool) -> Iterator[str]:
         """Handle streaming response from Perplexity API."""
