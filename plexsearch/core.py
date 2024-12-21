@@ -98,6 +98,7 @@ def handle_search(query: str, args, context=None) -> str:
         
         messages.append({"role": "user", "content": query})
         payload["messages"] = messages
+        console.print(f"[blue]Payload messages in handle_search: {payload['messages']}[/blue]")
     else:
         payload = api._build_payload(query=query, model=args.model,
                                    stream=not no_stream, show_citations=args.citations)
@@ -112,6 +113,7 @@ def handle_interactive_mode(args, log_file, context=None):
     if context is None:
         context = []
     console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
+    console.print(f"[blue]Initial context: {context}[/blue]")
     
     while True:
         user_input = console.input("\n[cyan]> [/cyan]")
@@ -126,12 +128,14 @@ def handle_interactive_mode(args, log_file, context=None):
         new_user_message = {"role": "user", "content": user_input}
         
         try:
+            console.print(f"[blue]Context before handle_search: {context}[/blue]")
             content = handle_search(user_input, args, context)
             new_assistant_message = {"role": "assistant", "content": content}
             log_conversation(log_file, [new_user_message, new_assistant_message])
 
             context.append(new_user_message)
             context.append(new_assistant_message)
+            console.print(f"[blue]Context after handle_search: {context}[/blue]")
 
         except Exception as e:
             error_msg = f"[red]Error:[/red] {e}"
