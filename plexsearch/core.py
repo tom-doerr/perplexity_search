@@ -86,10 +86,13 @@ def handle_search(query: str, args, context=None) -> str:
     
     # Build payload without assistant messages in context
     if context:
-        user_messages = [msg for msg in context if msg["role"] == "user"]
         payload = api._build_payload(query=query, model=args.model,
-                                   stream=not no_stream, show_citations=args.citations,
-                                   messages=user_messages)
+                                   stream=not no_stream, show_citations=args.citations)
+        
+        messages = [payload["messages"][0]]  # Start with the system message
+        messages.extend(context)
+        messages.append({"role": "user", "content": query})
+        payload["messages"] = messages
     else:
         payload = api._build_payload(query=query, model=args.model,
                                    stream=not no_stream, show_citations=args.citations)
@@ -115,13 +118,16 @@ def handle_interactive_mode(args, log_file, context=None):
             break
 
         clear_new_area()
-        new_messages = []
-        new_messages.append({"role": "user", "content": user_input})
+        new_user_message = {"role": "user", "content": user_input}
+        
         try:
             content = handle_search(user_input, args, context)
-            new_messages.append({"role": "assistant", "content": content})
-            log_conversation(log_file, new_messages)
-            context.extend(new_messages) # Add new messages to context
+            new_assistant_message = {"role": "assistant", "content": content}
+            log_conversation(log_file, [new_user_message, new_assistant_message])
+
+            context.append(new_user_message)
+            context.append(new_assistant_message)
+
         except Exception as e:
             error_msg = f"[red]Error:[/red] {e}"
             print(error_msg, file=sys.stderr)
