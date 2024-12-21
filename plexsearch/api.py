@@ -127,3 +127,7 @@ class PerplexityAPI:
 
         if citations and show_citations:
             yield self._format_citations(citations)
+
+    def _format_citations(self, citations: List[str]) -> str:
+        """Format citations into a string."""
+        return "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
