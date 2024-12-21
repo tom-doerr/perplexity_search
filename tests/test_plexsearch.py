@@ -146,6 +146,37 @@ def test_interactive_mode_exit_condition(capsys):
         assert "Exiting interactive mode." in captured.out
         mock_search.assert_not_called()
 
+def test_handle_search_alternating_roles_error(capsys):
+    """Test error handling for alternating roles in handle_search"""
+    from plexsearch.core import handle_search
+    from plexsearch.config import Config
+
+    # Create a mock config object
+    config = Config()
+    config.args.api_key = "test_key"
+    config.args.model = "test-model"
+    config.args.citations = False
+    config.args.no_stream = False
+
+    # Create a context with non-alternating roles
+    context = [
+        {"role": "user", "content": "test"},
+        {"role": "assistant", "content": "response"},
+        {"role": "user", "content": "test2"},
+        {"role": "user", "content": "test3"}
+    ]
+
+    with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search, \
+         patch('plexsearch.core.console.print') as mock_console_print:
+        mock_search.side_effect = Exception("API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating.")
+        
+        with pytest.raises(Exception) as exc_info:
+            handle_search("test query", config.args, context)
+
+        expected_error = "API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating."
+        console_output = " ".join([str(call.args[0]) for call in mock_console_print.mock_calls])
+        assert expected_error in str(exc_info.value) or expected_error in console_output
+
 def test_log_conversation_only_new_messages():
     """Test that log_conversation appends only new messages to the log file."""
     from plexsearch.core import log_conversation
