@@ -79,7 +79,11 @@ class PerplexityAPI:
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations)
         if context:
-            payload["messages"] = context
+            payload["messages"] =  [
+                {"role": "system", "content": payload["messages"][0]["content"]},
+                *context,
+                {"role": "user", "content": query}
+            ]
             
         response = requests.post(
             self.ENDPOINT,
