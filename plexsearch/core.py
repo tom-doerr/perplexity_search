@@ -36,7 +36,7 @@ def clear_new_area() -> None:
     # Use Rich's clear which preserves scrollback
     console.clear()
 
-def handle_no_stream_search(query: str, args, payload: dict) -> str:    
+def handle_no_stream_search(query: str, args, context: Optional[List[Dict[str, str]]] = None) -> str:    
     """Handle non-streaming search mode."""
     console.print("[cyan]About to clear screen in no_stream mode...[/cyan]")
     clear_new_area()
@@ -45,16 +45,16 @@ def handle_no_stream_search(query: str, args, payload: dict) -> str:
     api = PerplexityAPI(args.api_key)
     with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
         response = api.perform_search(query=query,
-                                      model=args.model,
-                                      stream=False,
-                                      show_citations=args.citations,
-                                      context=payload.get("messages"))
+                                    model=args.model,
+                                    stream=False,
+                                    show_citations=args.citations,
+                                    context=context)
         content = "".join(response)
     
         console.print(f"Perplexity: {content}")
         return content
 
-def handle_streaming_search(query: str, args, payload: dict) -> str:
+def handle_streaming_search(query: str, args, context: Optional[List[Dict[str, str]]] = None) -> str:
     """Handle streaming search mode."""
     accumulated_text = ""
     api = PerplexityAPI(args.api_key)
@@ -63,7 +63,7 @@ def handle_streaming_search(query: str, args, payload: dict) -> str:
                                       model=args.model,
                                       stream=True,
                                       show_citations=args.citations,
-                                      context=payload.get("messages")):
+                                      context=context):
             accumulated_text += chunk
             live.update(f"Perplexity: {accumulated_text}")
     return accumulated_text
@@ -81,31 +81,11 @@ def log_conversation(log_file: str, new_messages: List[Dict[str, str]]) -> None:
 def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = None) -> str:
     """Handle a single search query execution."""
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
-    api = PerplexityAPI(args.api_key)
-
-    # Build payload with context
-    payload = api._build_payload(query=query, model=args.model,
-                               stream=not no_stream, show_citations=args.citations)
-
-    if context:
-        messages = []
-        messages.append(payload["messages"][0])  # Add the system message
-
-        if context:
-            for i in range(0, len(context), 2):
-                messages.append(context[i])  # Add user message
-                if i + 1 < len(context):
-                    messages.append(context[i+1])  # Add assistant message
-
-        # Ensure the last message is a user message
-        messages.append({"role": "user", "content": query})
-        payload["messages"] = messages
-        console.print(f"[blue]Payload messages in handle_search: {messages}[/blue]")
     
     if no_stream:
-        return handle_no_stream_search(query, args, payload)
+        return handle_no_stream_search(query, args, context)
     else:
-        return handle_streaming_search(query, args, payload)
+        return handle_streaming_search(query, args, context)
 
 def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str]]] = None):
     """Handle interactive mode search session."""
