@@ -250,11 +250,11 @@ def test_log_conversation_invalid_json(capsys):
 
     # Read the log file and verify the content
     with open(log_file, "r") as f:
-        logged_messages = [line.strip() for line in f]
+        logged_messages = f.readlines()
 
     assert len(logged_messages) == 2
-    assert logged_messages[0] == "invalid json"
-    assert logged_messages[1] == '{"role": "user", "content": "test"}'
+    assert logged_messages[0].strip() == "invalid json"
+    assert logged_messages[1].strip() == '{"role": "user", "content": "test"}'
 
 def test_log_conversation_file_permission_error(capsys):
     """Test that log_conversation handles file permission errors."""
