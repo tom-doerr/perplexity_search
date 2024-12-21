@@ -16,25 +16,25 @@ def run_cli_command(args, env=None):
 @pytest.mark.integration
 def test_cli_basic_search():
     """Test basic search using CLI"""
-    
-    with patch('plexsearch.core.main') as mock_main:
-        mock_main.return_value = "test response"
+    with patch('plexsearch.core.perform_search') as mock_search:
+        mock_search.return_value = {"choices": [{"message": {"content": "test response"}}]}
         result = run_cli_command(["What is Python?"], env=os.environ)
-        assert result.returncode == 0
-        mock_main.assert_called_once()
+        assert result.returncode == 0 # Assert that the command ran successfully
+        mock_search.assert_called_once()
+        mock_search.assert_called_with("What is Python?", None, "llama-3.1-sonar-large-128k-online")
 
 @pytest.mark.integration
 def test_cli_with_model():
     """Test CLI search with specific model"""
-        
-    with patch('plexsearch.core.main') as mock_main:
-        mock_main.return_value = "test response"
+    with patch('plexsearch.core.perform_search') as mock_search:
+        mock_search.return_value = {"choices": [{"message": {"content": "test response"}}]}
         result = run_cli_command([
             "--model", "llama-3.1-sonar-small-128k-online",
             "What is Python?"
         ], env=os.environ)
         assert result.returncode == 0
-        mock_main.assert_called_once()
+        mock_search.assert_called_once()
+        mock_search.assert_called_with("What is Python?", None, "llama-3.1-sonar-small-128k-online")
 
 @pytest.mark.integration
 def test_cli_error_handling():
@@ -44,3 +44,4 @@ def test_cli_error_handling():
         result = run_cli_command(["test query"], env=os.environ)
         assert result.returncode == 0
         mock_search.assert_called_once()
++        mock_search.assert_called_with("test query", None, "llama-3.1-sonar-large-128k-online")
