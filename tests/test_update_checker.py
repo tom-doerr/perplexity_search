@@ -172,11 +172,10 @@ class TestUpdateChecker:
              patch.object(UpdateChecker, 'update_package', return_value=True):
 
             mock_search.return_value = iter(['test response'])
-            main()
-
-            captured = capsys.readouterr()
-            assert 'Successfully updated' in captured.out
-            mock_search.assert_called_once()
-
-            captured = capsys.readouterr()
-            assert 'test response' in captured.out
+            
+            with patch('plexsearch.core.UpdateChecker.update_package', return_value=True) as mock_update:
+                main()
+                captured = capsys.readouterr()
+                assert 'Successfully updated' in captured.out
+                mock_search.assert_called_once()
+                assert 'test response' in captured.out
