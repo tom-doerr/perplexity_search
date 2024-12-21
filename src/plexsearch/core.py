@@ -5,6 +5,7 @@ import json
 import argparse
 import requests
 from typing import Dict, List, Optional
+from rich.console import Console
 
 LLAMA_MODELS = {
     "small": "llama-3.1-sonar-small-128k-online",
@@ -79,6 +80,7 @@ def main():
                       help='Model to use (default: large)')
     parser.add_argument('--api-key', help='Perplexity API key (optional, can use PERPLEXITY_API_KEY env var)')
     args = parser.parse_args()
+    console = Console()
 
     try:
         query = ' '.join(args.query)
