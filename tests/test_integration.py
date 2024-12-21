@@ -19,10 +19,10 @@ def run_cli_command(args, env=None):
 @pytest.mark.integration
 def test_cli_basic_search():
     """Test basic search using CLI"""
-+    with patch('plexsearch.core._run_cli') as mock_run_cli:
-+        mock_run_cli.return_value = "test response"
-+        result = run_cli_command(["What is Python?"], env=os.environ)
-+        mock_run_cli.assert_called_once()
+    with patch('plexsearch.core._run_cli') as mock_run_cli:
+        mock_run_cli.return_value = "test response"
+        result = run_cli_command(["What is Python?"], env=os.environ)
+        mock_run_cli.assert_called_once()
 
 @pytest.mark.integration
 def test_cli_with_model():
