@@ -83,10 +83,16 @@ def handle_search(query: str, args, context=None) -> str:
     """Handle a single search query execution."""
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
     api = PerplexityAPI(args.api_key)
-    payload = api._build_payload(query=query, model=args.model,
-                               stream=not no_stream, show_citations=args.citations)
+    
+    # Build payload without assistant messages in context
     if context:
-        payload["messages"] = context
+        user_messages = [msg for msg in context if msg["role"] == "user"]
+        payload = api._build_payload(query=query, model=args.model,
+                                   stream=not no_stream, show_citations=args.citations,
+                                   messages=user_messages)
+    else:
+        payload = api._build_payload(query=query, model=args.model,
+                                   stream=not no_stream, show_citations=args.citations)
 
     if no_stream:
         return handle_no_stream_search(query, args, payload)
