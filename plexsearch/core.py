@@ -90,7 +90,12 @@ def handle_search(query: str, args, context=None) -> str:
                                    stream=not no_stream, show_citations=args.citations)
         
         messages = [payload["messages"][0]]  # Start with the system message
-        messages.extend(context)
+        
+        for i in range(0, len(context), 2):
+            messages.append(context[i])  # Add user message
+            if i + 1 < len(context):
+                messages.append(context[i+1]) # Add assistant message
+        
         messages.append({"role": "user", "content": query})
         payload["messages"] = messages
     else:
