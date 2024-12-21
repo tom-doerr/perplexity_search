@@ -146,17 +146,20 @@ def test_interactive_mode_exit_condition(capsys):
         assert "Exiting interactive mode." in captured.out
         mock_search.assert_not_called()
 
-def test_handle_search_alternating_roles_error(capsys):
+@patch('plexsearch.config.Config._parse_arguments')
+def test_handle_search_alternating_roles_error(mock_parse_args, capsys):
     """Test error handling for alternating roles in handle_search"""
     from plexsearch.core import handle_search
     from plexsearch.config import Config
 
     # Create a mock config object
+    mock_args = MagicMock()
+    mock_args.api_key = "test_key"
+    mock_args.model = "test-model"
+    mock_args.citations = False
+    mock_args.no_stream = False
+    mock_parse_args.return_value = mock_args
     config = Config()
-    config.args.api_key = "test_key"
-    config.args.model = "test-model"
-    config.args.citations = False
-    config.args.no_stream = False
 
     # Create a context with non-alternating roles
     context = [
