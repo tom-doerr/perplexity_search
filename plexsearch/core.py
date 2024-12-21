@@ -50,8 +50,8 @@ def handle_no_stream_search(query: str, args, payload: dict) -> str:
                                       context=payload.get("messages"))
         content = "".join(response)
     
-   console.print(f"Perplexity: {content}")
-   return content
+        console.print(f"Perplexity: {content}")
+        return content
 
 def handle_streaming_search(query: str, args, payload: dict) -> str:
     """Handle streaming search mode."""
