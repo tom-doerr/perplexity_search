@@ -52,13 +52,15 @@ class PerplexityAPI:
             {"role": "system", "content": system_message},
             {"role": "user", "content": query}
         ]
+        print("context:", context)
         if context:
             for msg in context:
                 messages.append(msg)
         
         # move the user message to be after the context
-        user_message = messages.pop(1)
-        messages.append(user_message)
+        # print("messages:", messages)
+        # user_message = messages.pop(1)
+        # messages.append(user_message)
 
         
         # return {
