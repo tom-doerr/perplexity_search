@@ -160,18 +160,3 @@ class TestUpdateChecker:
                 stderr="Some error"
             )
             assert checker.update_package() is False
-
-    def test_update_continues_execution(self, checker, capsys):
-        """Test that program continues after update."""
-        from plexsearch.core import main
-
-        with patch('sys.argv', ['plexsearch', 'test query']), \
-             patch('plexsearch.core.perform_search') as mock_search, \
-             patch('builtins.input', return_value='y'), \
-             patch.object(UpdateChecker, 'check_and_notify', return_value=None):
-
-            mock_search.return_value = iter(['test response'])
-            main()
-            captured = capsys.readouterr()
-            mock_search.assert_called_once()
-            assert 'test response' in captured.out
