@@ -147,6 +147,48 @@ def test_interactive_mode_exit_condition(capsys):
         assert "Exiting interactive mode." in captured.out
         mock_search.assert_not_called()
 
+def test_log_conversation_only_new_messages():
+    """Test that log_conversation appends only new messages to the log file."""
+    from plexsearch.core import log_conversation
+    import tempfile
+    import json
+
+    # Create a temporary log file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_log:
+        log_file = temp_log.name
+
+    # Initial messages to log
+    initial_messages = [
+        {"role": "user", "content": "Hello"},
+        {"role": "assistant", "content": "Hi there!"}
+    ]
+
+    # Log the initial messages
+    log_conversation(log_file, initial_messages)
+
+    # Read the log file and verify the content
+    with open(log_file, "r") as f:
+        logged_messages = [json.loads(line) for line in f]
+
+    assert logged_messages == initial_messages
+
+    # New messages to log
+    new_messages = [
+        {"role": "user", "content": "How are you?"},
+        {"role": "assistant", "content": "I'm doing well, thank you!"}
+    ]
+
+    # Log the new messages
+    log_conversation(log_file, new_messages)
+
+    # Read the log file again and verify the content
+    with open(log_file, "r") as f:
+        logged_messages = [json.loads(line) for line in f]
+
+    # Ensure the log file contains both sets of messages without duplicates
+    expected_messages = initial_messages + new_messages
+    assert logged_messages == expected_messages
+
 def test_interactive_mode_alternating_roles_error(capsys):
     """Test error handling for alternating roles in interactive mode"""
     from plexsearch.core import main
