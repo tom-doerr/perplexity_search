@@ -64,12 +64,20 @@ class PerplexityAPI:
             # ],
             # "stream": stream
         # }
-        return {
+        # return {
+            # "model": model,
+            # "messages": messages,
+            # "stream": stream,
+            # "show_citations": show_citations
+        # }
+        payload = {
             "model": model,
             "messages": messages,
             "stream": stream,
             "show_citations": show_citations
         }
+        logging.debug(f"payload: {json.dumps(payload, indent=2)}")
+        return payload
 
     def _handle_error(self, response: requests.Response) -> None:
         """Handle API error responses with specific exceptions."""
@@ -95,6 +103,9 @@ class PerplexityAPI:
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations, context)
         logging.debug(f"payload: {json.dumps(payload, indent=2)}")
+        with open("payload.json", "w") as f:
+            json.dump(payload, f, indent=2)
+
         response = requests.post(
             self.ENDPOINT,
             headers=self._get_headers(),
