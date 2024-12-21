@@ -82,15 +82,15 @@ class PerplexityAPI:
             messages = [payload["messages"][0]]  # Start with the system message
             logging.debug(f"Initial messages: {messages}")
             for i in range(0, len(context), 2):
-               messages.append(context[i])  # Add user message
-               logging.debug(f"Added user message: {context[i]}")
-               if i + 1 < len(context):
-                   messages.append(context[i+1]) # Add assistant message
-                   logging.debug(f"Added assistant message: {context[i+1]}")
+                messages.append(context[i])  # Add user message
+                logging.debug(f"Added user message: {context[i]}")
+                if i + 1 < len(context):
+                    messages.append(context[i+1]) # Add assistant message
+                    logging.debug(f"Added assistant message: {context[i+1]}")
             messages.append({"role": "user", "content": query}) # Add the current user query
             logging.debug(f"Added user query: {query}")
             payload["messages"] = messages
-        
+
         response = requests.post(
             self.ENDPOINT,
             headers=self._get_headers(),
