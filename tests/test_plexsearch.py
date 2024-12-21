@@ -180,6 +180,56 @@ def test_handle_search_alternating_roles_error(mock_parse_args, capsys):
         console_output = " ".join([str(call.args[0]) for call in mock_console_print.mock_calls])
         assert expected_error in str(exc_info.value) or expected_error in console_output
 
+def test_handle_search_no_context(capsys):
+    """Test successful handle_search call with no context."""
+    from plexsearch.core import handle_search
+    from plexsearch.config import Config
+
+    # Create a mock config object
+    config = Config()
+    config.args.api_key = "test_key"
+    config.args.model = "test-model"
+    config.args.citations = False
+    config.args.no_stream = False
+
+    with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
+        mock_search.return_value = iter(["test response"])
+        result = handle_search("test query", config.args)
+        assert result == "test response"
+        mock_search.assert_called_once()
+        assert mock_search.call_args[1]['context'] is None
+        
+def test_handle_search_with_context(capsys):
+    """Test successful handle_search call with context."""
+    from plexsearch.core import handle_search
+    from plexsearch.config import Config
+
+    # Create a mock config object
+    config = Config()
+    config.args.api_key = "test_key"
+    config.args.model = "test-model"
+    config.args.citations = False
+    config.args.no_stream = False
+
+    # Create a context
+    context = [
+        {"role": "user", "content": "test"},
+        {"role": "assistant", "content": "response"}
+    ]
+
+    with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
+        mock_search.return_value = iter(["test response"])
+        result = handle_search("test query", config.args, context)
+        assert result == "test response"
+        mock_search.assert_called_once()
+        assert mock_search.call_args[1]['context'] is not None
+        assert len(mock_search.call_args[1]['context']) == 3
+        assert mock_search.call_args[1]['context'][0]['role'] == 'system'
+        assert mock_search.call_args[1]['context'][1]['role'] == 'user'
+        assert mock_search.call_args[1]['context'][1]['content'] == 'test'
+        assert mock_search.call_args[1]['context'][2]['role'] == 'assistant'
+        assert mock_search.call_args[1]['context'][2]['content'] == 'response'
+
 def test_log_conversation_only_new_messages():
     """Test that log_conversation appends only new messages to the log file."""
     from plexsearch.core import log_conversation
