@@ -11,6 +11,7 @@ from plexsearch.update_checker import UpdateChecker
 from plexsearch.api import PerplexityAPI
 from plexsearch.config import Config
 from plexsearch.context import ConversationContext
+    
 
 
 console = Console()
@@ -147,6 +148,42 @@ def setup_signal_handler():
         sys.exit(0)
     
     signal.signal(signal.SIGINT, handle_interrupt)
+
+    def _build_api_payload(self, query: str, model: str, show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Dict[str, any]:
+        system_message = (
+            "You are a technical assistant focused on providing accurate, practical "
+            "information. Follow these guidelines:\n"
+            "1. Include code examples when relevant to explain concepts\n"
+            "2. Include measurements and numbers when relevant\n"
+            "3. Keep explanations concise and direct\n"
+            "4. Focus on facts, technical details and real-world usage\n"
+            "5. Show basic and advanced usage patterns when relevant\n"
+            "6. Use tables or lists to organize information when appropriate\n"
+            "7. If show_citations is True, add numbered citations at the bottom in "
+            "[1], [2] format"
+        )
+        
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system_message}
+            ],
+            "stream": True
+        }
+        if context:
+            messages = [payload["messages"][0]]  # Start with the system message
+            
+            for i in range(0, len(context), 2):
+                messages.append(context[i])  # Add user message
+                
+                if i + 1 < len(context):
+                    messages.append(context[i+1]) # Add assistant message
+            
+            
+            payload["messages"] = messages
+        
+        messages.append({"role": "user", "content": query})
+        return payload
 
 def perform_search(query: str, api_key: Optional[str] = None,
                   model: str = "llama-3.1-sonar-large-128k-online",
