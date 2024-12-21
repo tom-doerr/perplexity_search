@@ -13,20 +13,16 @@ def run_cli_command(args, env=None):
 @pytest.mark.integration
 def test_cli_basic_search():
     """Test basic search using CLI"""
-    if "PERPLEXITY_API_KEY" not in os.environ:
-        pytest.skip("PERPLEXITY_API_KEY environment variable not set")
     
     with patch('plexsearch.core.perform_search') as mock_search:
         mock_search.return_value = "test response"
         result = run_cli_command(["What is Python?"], env=os.environ)
         assert result.returncode == 0
-        assert len(result.stdout) > 0
+        assert "test response" in result.stdout
 
 @pytest.mark.integration
 def test_cli_with_model():
     """Test CLI search with specific model"""
-    if "PERPLEXITY_API_KEY" not in os.environ:
-        pytest.skip("PERPLEXITY_API_KEY environment variable not set")
         
     with patch('plexsearch.core.perform_search') as mock_search:
         mock_search.return_value = "test response"
@@ -35,7 +31,7 @@ def test_cli_with_model():
             "What is Python?"
         ], env=os.environ)
         assert result.returncode == 0
-        assert len(result.stdout) > 0
+        assert "test response" in result.stdout
 
 @pytest.mark.integration
 def test_cli_error_handling():
