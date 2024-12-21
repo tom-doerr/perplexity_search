@@ -89,7 +89,8 @@ def handle_search(query: str, args, context=None) -> str:
         payload = api._build_payload(query=query, model=args.model,
                                    stream=not no_stream, show_citations=args.citations)
         
-        messages = [payload["messages"][0]]  # Start with the system message
+        messages = []
+        messages.append(payload["messages"][0]) # Add the system message
         
         for i in range(0, len(context), 2):
             messages.append(context[i])  # Add user message
