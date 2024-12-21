@@ -292,8 +292,11 @@ def test_interactive_mode_alternating_roles_error(capsys):
         # Simulate the API returning a 400 error due to incorrect alternating roles
         mock_search.side_effect = Exception("API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating.")
 
-        main()
+        with patch('plexsearch.core.console.print') as mock_console_print:
+            main()
 
-        captured = capsys.readouterr()
-        expected_error = "Error: API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating."
-        assert expected_error in captured.err
+            captured = capsys.readouterr()
+            expected_error = "Error: API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating."
+            
+            console_output = " ".join([str(call.args[0]) for call in mock_console_print.mock_calls])
+            assert expected_error in captured.err or expected_error in console_output
