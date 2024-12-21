@@ -56,6 +56,7 @@ def perform_search(query: str, api_key: Optional[str] = None, model: Optional[st
     Raises:
         ValueError: If no API key is provided via argument or PERPLEXITY_API_KEY environment variable
     """
+    print("perform_search function called")
     if not api_key:
         api_key = os.getenv('PERPLEXITY_API_KEY')
         if not api_key:
@@ -68,7 +69,9 @@ def perform_search(query: str, api_key: Optional[str] = None, model: Optional[st
     }
     
     payload = create_payload(query, model=model)
+    print(f"URL: {url}, Payload: {payload}")
     response = requests.post(url, json=payload, headers=headers)
+    print(f"Response status code: {response.status_code}, content: {response.content}")
     response.raise_for_status()
     
     return response.json()
