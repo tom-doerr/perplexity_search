@@ -243,7 +243,7 @@ def test_log_conversation_invalid_json(capsys):
 
     # Log invalid json
     with open(log_file, "w") as f:
-        f.write("invalid json")
+        f.write("invalid json\n")
 
     # Log new messages
     log_conversation(log_file, [{"role": "user", "content": "test"}])
