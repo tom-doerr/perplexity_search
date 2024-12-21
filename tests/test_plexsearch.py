@@ -146,6 +146,37 @@ def test_interactive_mode_exit_condition(capsys):
         assert "Exiting interactive mode." in captured.out
         mock_search.assert_not_called()
 
+def test_interactive_mode_alternating_roles(capsys):
+    """Test that interactive mode handles alternating roles correctly."""
+    from plexsearch.core import main
+
+    with patch('sys.argv', ['plexsearch']), \
+         patch('builtins.input', side_effect=['first query', 'second query', 'exit']), \
+         patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
+
+        mock_search.side_effect = [
+            iter(['response1']),
+            iter(['response2'])
+        ]
+
+        main()
+
+        captured = capsys.readouterr()
+        assert "response1" in captured.out
+        assert "response2" in captured.out
+        assert "Exiting interactive mode." in captured.out
+        
+        # Verify that perform_search was called twice
+        assert mock_search.call_count == 2
+        
+        # Verify the context for the second call
+        second_call_context = mock_search.call_args_list[1][1]['context']
+        assert len(second_call_context) == 4
+        assert second_call_context[0]['role'] == 'system'
+        assert second_call_context[1]['role'] == 'user'
+        assert second_call_context[2]['role'] == 'assistant'
+        assert second_call_context[3]['role'] == 'user'
+
 @patch('plexsearch.config.Config._parse_arguments')
 def test_handle_search_alternating_roles_error(mock_parse_args, capsys):
     """Test error handling for alternating roles in handle_search"""
