@@ -168,7 +168,7 @@ class TestUpdateChecker:
         with patch('sys.argv', ['plexsearch', 'test query']), \
              patch('plexsearch.core.perform_search') as mock_search, \
              patch('builtins.input', return_value='y'), \
-             patch.object(UpdateChecker, 'check_and_notify', return_value='0.2.0'), \
+             patch.object(UpdateChecker, 'check_and_notify', return_value=None), \
              patch.object(UpdateChecker, 'update_package', return_value=True):
 
             mock_search.return_value = iter(['test response'])
