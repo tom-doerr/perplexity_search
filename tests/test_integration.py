@@ -7,7 +7,10 @@ from unittest.mock import patch
 def run_cli_command(args, env=None):
     """Helper to run the CLI command"""
     cmd = ["poetry", "run", "plexsearch"] + args
+    print(f"Running command: {cmd}")
     result = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    print(f"stdout: {result.stdout}")
+    print(f"stderr: {result.stderr}")
     return result
 
 @pytest.mark.integration
