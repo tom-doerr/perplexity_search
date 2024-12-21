@@ -55,6 +55,10 @@ class PerplexityAPI:
         if context:
             for msg in context:
                 messages.append(msg)
+        
+        # move the user message to be after the context
+        user_message = messages.pop(1)
+        messages.append(user_message)
 
         
         # return {
