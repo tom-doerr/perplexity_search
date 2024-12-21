@@ -125,7 +125,7 @@ class PerplexityAPI:
         if stream:
             yield from self._handle_stream_response(response, show_citations)
         else:
-            response_data = response.json()
+            response_data = response.json()            
             content = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
             citations = response_data.get("citations", [])
             if citations and show_citations:
