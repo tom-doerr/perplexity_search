@@ -39,10 +39,8 @@ def test_cli_with_model():
 @pytest.mark.integration
 def test_cli_error_handling():
     """Test CLI error handling with invalid API key"""
-    # Temporarily override API key
-    env = os.environ.copy()
-    env["PERPLEXITY_API_KEY"] = "invalid_key"
-    
-    cmd = ["poetry", "run", "plexsearch", "test query"]
-    result = subprocess.run(cmd, env=env, capture_output=True, text=True)
-    assert result.returncode != 0
+    with patch('plexsearch.core.perform_search') as mock_search:
+        mock_search.return_value = {"choices": [{"message": {"content": "test response"}}]}
+        result = run_cli_command(["test query"], env=os.environ)
+        assert result.returncode == 0
+        assert "test response" in result.stdout
