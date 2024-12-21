@@ -110,6 +110,6 @@ class TestUpdateChecker:
             main()
             
             captured = capsys.readouterr()
-            assert 'Successfully updated' in captured.out
+            assert 'Successfully updated' in captured.out and 'test response' in captured.out
             assert 'test response' in captured.out
             mock_search.assert_called_once()
