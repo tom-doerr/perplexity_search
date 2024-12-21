@@ -20,7 +20,7 @@ def test_cli_basic_search():
     with patch('plexsearch.core.main') as mock_main:
         mock_main.return_value = "test response"
         result = run_cli_command(["What is Python?"], env=os.environ)
-        assert result.returncode == 0 # Assert that the command ran successfully
+        assert result.returncode == 0
         mock_main.assert_called_once()
 
 @pytest.mark.integration
