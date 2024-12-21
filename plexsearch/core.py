@@ -109,11 +109,13 @@ def handle_interactive_mode(args, log_file, context=None):
             break
 
         clear_new_area()
-        context.append({"role": "user", "content": user_input})
+        new_messages = []
+        new_messages.append({"role": "user", "content": user_input})
         try:
             content = handle_search(user_input, args, context)
-            context.append({"role": "assistant", "content": content})
-            log_conversation(log_file, context)
+            new_messages.append({"role": "assistant", "content": content})
+            log_conversation(log_file, new_messages)
+            context.extend(new_messages) # Add new messages to context
         except Exception as e:
             error_msg = f"[red]Error:[/red] {e}"
             print(error_msg, file=sys.stderr)
