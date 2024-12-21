@@ -53,10 +53,8 @@ class PerplexityAPI:
             {"role": "user", "content": query}
         ]
         if context:
-            for i in range(0, len(context), 2):
-                messages.append(context[i])
-                if i + 1 < len(context):
-                    messages.append(context[i+1])
+            for msg in context:
+                messages.append(msg)
 
         
         # return {
