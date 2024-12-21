@@ -78,10 +78,10 @@ class PerplexityAPI:
                       show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations)
-       if context:
-           messages = [payload["messages"][0]]  # Start with the system message
-           logging.debug(f"Initial messages: {messages}")
-           for i in range(0, len(context), 2):
+        if context:
+            messages = [payload["messages"][0]]  # Start with the system message
+            logging.debug(f"Initial messages: {messages}")
+            for i in range(0, len(context), 2):
                messages.append(context[i])  # Add user message
                logging.debug(f"Added user message: {context[i]}")
                if i + 1 < len(context):
