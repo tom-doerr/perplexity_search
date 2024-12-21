@@ -69,12 +69,13 @@ def handle_streaming_search(query: str, args, payload: dict) -> str:
             live.update(f"Perplexity: {accumulated_text}")
     return accumulated_text
 
-def log_conversation(log_file: str, conversation: List[Dict[str, str]]) -> None:
-    """Log the conversation to a file."""
+def log_conversation(log_file: str, new_messages: List[Dict[str, str]]) -> None:
+    """Log only the new messages to the file."""
     try:
         with open(log_file, "a") as f:
-            json.dump(conversation, f)
-            f.write("\n")
+            for message in new_messages:
+                json.dump(message, f)
+                f.write("\n")
     except Exception as e:
         console.print(f"[red]Error writing to log file: {e}[/red]")
 
