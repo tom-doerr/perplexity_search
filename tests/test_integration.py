@@ -2,6 +2,7 @@ import os
 import pytest
 import subprocess
 from pathlib import Path
+from unittest.mock import patch
 
 def run_cli_command(args, env=None):
     """Helper to run the CLI command"""
