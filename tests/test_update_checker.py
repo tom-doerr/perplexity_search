@@ -103,7 +103,8 @@ class TestUpdateChecker:
             mock_run.return_value = MagicMock(
                 stdout="Successfully installed plexsearch-0.1.6",
                 stderr="",
-                text=True
+                text=True,
+                returncode=0
             )
             assert checker.update_package() is True
 
@@ -127,7 +128,7 @@ class TestUpdateChecker:
         with patch('subprocess.run') as mock_run:
             mock_run.return_value = MagicMock(
                 returncode=0,
-                stdout=""
+                stdout="Successfully installed plexsearch-0.1.6"
             )
             assert checker.update_package() is True
 
@@ -136,7 +137,7 @@ class TestUpdateChecker:
         with patch('subprocess.run') as mock_run:
             mock_run.return_value = MagicMock(
                 returncode=0,
-                stdout="",
+                stdout="Successfully installed plexsearch-0.1.6",
                 stderr=""
             )
             assert checker.update_package() is True
