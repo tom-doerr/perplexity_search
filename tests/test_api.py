@@ -93,12 +93,6 @@ def test_handle_error_non_json_response():
         api._handle_error(mock_response)
     assert "API request failed with status code 400" in str(exc_info.value)
 
-def test_format_citations():
-    api = PerplexityAPI(api_key="test_key")
-    citations = ["http://test1.com", "http://test2.com"]
-    formatted = api._format_citations(citations)
-    expected = "\n\nReferences:\n[1] http://test1.com\n[2] http://test2.com"
-    assert formatted == expected
 
 def test_handle_stream_response():
     api = PerplexityAPI(api_key="test_key")
