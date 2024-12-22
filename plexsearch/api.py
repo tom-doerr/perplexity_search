@@ -23,7 +23,8 @@ class PerplexityAPI:
     ENDPOINT = "https://api.perplexity.ai/chat/completions"
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.environ.get("PERPLEXITY_API_KEY")
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         if not self.api_key:
             raise ValueError("API key required via argument or PERPLEXITY_API_KEY environment variable")
     
@@ -110,24 +111,29 @@ class PerplexityAPI:
             yield content
 
 
+    def _parse_stream_line(self, line: bytes) -> Optional[Dict[str, Any]]:
+        """Parse a single line from the stream."""
+        if line:
+            try:
+                return json.loads(line.decode('utf-8').removeprefix('data: '))
+            except json.JSONDecodeError:
+                return None
+        return None
+
     def _handle_stream_response(self, response: requests.Response, show_citations: bool) -> Iterator[str]:
         """Handle streaming response from Perplexity API."""
         accumulated_content = ""
         citations = []
         
         for line in response.iter_lines():
-            if line:
-                try:
-                    data = json.loads(line.decode('utf-8').removeprefix('data: '))
-                    if content := (data.get('choices', [{}])[0]
-                                 .get('delta', {})
-                                 .get('content')):
-                        accumulated_content += content
-                    if 'citations' in data:
-                        citations = data['citations']
-                except json.JSONDecodeError:
-                    continue
-
+            data = self._parse_stream_line(line)
+            if data:
+                delta = data.get('choices', [{}])[0].get('delta', {})
+                content = delta.get('content')
+                if content:
+                    accumulated_content += content
+                citations = data.get('citations', citations)
+        
         yield accumulated_content
         if citations and show_citations:
             yield self._format_citations(citations)

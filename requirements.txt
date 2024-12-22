@@ -1,1 +1,2 @@
 feedparser
+pytest-mock>=3.0.0

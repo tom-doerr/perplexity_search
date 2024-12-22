@@ -74,7 +74,8 @@ from unittest.mock import patch, mock_open
 from get_changes import get_last_release_tag, get_changes_since_last_release, main
 
 def test_get_last_release_tag():
-    with patch('get_changes.subprocess.check_output', return_value=b'v1.2.3\n'):
+    with patch('get_changes.subprocess.run') as mock_run:
+        mock_run.return_value = MagicMock(stdout='v1.2.3\n')
         tag = get_last_release_tag()
         assert tag == 'v1.2.3'
 
@@ -89,4 +90,6 @@ def test_main(capsys):
          patch('get_changes.get_last_release_tag', return_value='v1.2.3'), \
          patch('get_changes.print') as mock_print:
         main()
-        mock_print.assert_called_with('Changes since v1.2.3:\ncommit1\ncommit2\n')
+        mock_print.assert_any_call('Last release tag: v1.2.3')
+        mock_print.assert_any_call("\nCommit messages since last release:\n")
+        mock_print.assert_any_call('commit1\ncommit2\n')
