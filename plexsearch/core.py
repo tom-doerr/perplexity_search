@@ -36,7 +36,6 @@ def clear_new_area() -> None:
 
 def handle_no_stream_search(query: str, args, context: Optional[List[Dict[str, str]]] = None) -> str:    
     """Handle non-streaming search mode."""
-    console.print("[cyan]About to clear screen in no_stream mode...[/cyan]")
     clear_new_area()
     spinner_text = "Searching..."
     
