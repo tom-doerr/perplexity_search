@@ -1,8 +1,7 @@
 import pytest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, MagicMock
+import subprocess
 from get_changes import get_last_release_tag, get_changes_since_last_release, main
-
-from unittest.mock import MagicMock, patch
 
 def test_get_last_release_tag():
     with patch('get_changes.subprocess.run') as mock_run:
@@ -17,16 +16,16 @@ def test_get_last_release_tag():
         )
 
 def test_get_last_release_tag_error():
-    with patch('subprocess.run') as mock_run, \
+    with patch('get_changes.subprocess.run') as mock_run, \
          patch('logging.error') as mock_log:
-        mock_run.side_effect = Exception("Command failed")
+        mock_run.side_effect = subprocess.CalledProcessError(1, [], stderr="Test error")
         tag = get_last_release_tag()
         assert tag is None
         mock_log.assert_called_once()
 
 def test_get_changes_since_last_release():
-    with patch('subprocess.run') as mock_run:
-        mock_run.return_value.stdout = 'commit1\ncommit2\n'
+    with patch('get_changes.subprocess.run') as mock_run:
+        mock_run.return_value = MagicMock(stdout='commit1\ncommit2\n')
         mock_run.return_value.check_returncode.return_value = None
         changes = get_changes_since_last_release('v1.2.3')
         assert changes == 'commit1\ncommit2\n'
@@ -38,9 +37,9 @@ def test_get_changes_since_last_release():
         )
 
 def test_get_changes_since_last_release_error():
-    with patch('subprocess.run') as mock_run, \
+    with patch('get_changes.subprocess.run') as mock_run, \
          patch('logging.error') as mock_log:
-        mock_run.side_effect = Exception("Command failed")
+        mock_run.side_effect = subprocess.CalledProcessError(1, [], stderr="Test error")
         changes = get_changes_since_last_release('v1.2.3')
         assert changes is None
         mock_log.assert_called_once()
@@ -70,29 +69,3 @@ def test_main_no_changes(capsys):
         main()
         captured = capsys.readouterr()
         assert 'No changes found since last release.' in captured.out
-import pytest
-from unittest.mock import patch, mock_open
-from get_changes import get_last_release_tag, get_changes_since_last_release, main
-
-def test_get_last_release_tag():
-    with patch('get_changes.subprocess.run') as mock_run:
-        mock_run.return_value = MagicMock(stdout='v1.2.3\n')
-        tag = get_last_release_tag()
-        assert tag == 'v1.2.3'
-
-def test_get_changes_since_last_release():
-    with patch('get_changes.get_last_release_tag', return_value='v1.2.3'), \
-         patch('get_changes.subprocess.run') as mock_run:
-        mock_run.return_value.stdout = 'commit1\ncommit2\n'
-        mock_run.return_value.check_returncode.return_value = None
-        changes = get_changes_since_last_release('v1.2.3')
-        assert changes == 'commit1\ncommit2\n'
-
-def test_main(capsys):
-    with patch('get_changes.get_changes_since_last_release', return_value='commit1\ncommit2\n'), \
-         patch('get_changes.get_last_release_tag', return_value='v1.2.3'), \
-         patch('get_changes.print') as mock_print:
-        main()
-        mock_print.assert_any_call('Last release tag: v1.2.3')
-        mock_print.assert_any_call("\nCommit messages since last release:\n")
-        mock_print.assert_any_call('commit1\ncommit2\n')
