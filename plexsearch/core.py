@@ -211,7 +211,10 @@ def main():
     try:
         config = Config()
         setup_signal_handler()
-    
+        
+        if config.debug:
+            os.environ["PLEXSEARCH_DEBUG"] = "1"
+            
         # Check for updates
         checker = UpdateChecker("plexsearch", __version__)
         query = config.query

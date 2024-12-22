@@ -24,8 +24,9 @@ class PerplexityAPI:
     ENDPOINT = "https://api.perplexity.ai/chat/completions"
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.environ.get("PERPLEXITY_API_KEY")
-        logging.basicConfig(level=logging.DEBUG,
-                            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        log_level = logging.DEBUG if os.environ.get("PLEXSEARCH_DEBUG") else logging.INFO
+        logging.basicConfig(level=log_level,
+                          format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         if not self.api_key:
             raise ValueError("API key required via argument or PERPLEXITY_API_KEY environment variable")
     
