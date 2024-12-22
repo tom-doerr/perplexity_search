@@ -73,7 +73,7 @@ def handle_streaming_search(query: str, args, context: Optional[List[Dict[str, s
                 live.update(f"Perplexity: {accumulated_text}")
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
-        return ""
+        raise
     return accumulated_text
 
 def log_conversation(log_file: str, new_messages: List[Dict[str, str]]) -> None:
