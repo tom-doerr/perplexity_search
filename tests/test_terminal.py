@@ -18,9 +18,10 @@ def test_get_terminal_size_fallback():
 
 def test_clear_new_area_output(mock_terminal):
     """Test that clear_new_area produces expected terminal output"""
+    string_io, log_io = mock_terminal
     with patch('plexsearch.core.get_terminal_size', return_value=(10, 80)):
         clear_new_area()
-        output = mock_terminal.getvalue()
+        output = string_io.getvalue()
         
         # Should see:
         # 1. Debug message about clearing
@@ -30,6 +31,7 @@ def test_clear_new_area_output(mock_terminal):
 
 def test_interactive_mode_clearing(mock_terminal):
     """Test terminal clearing in interactive mode"""
+    string_io, log_io = mock_terminal
     with patch('builtins.input', side_effect=['test query', 'exit']), \
          patch('plexsearch.core.perform_search', return_value=['test response']), \
          patch('plexsearch.core.get_terminal_size', return_value=(10, 80)), \
@@ -38,13 +40,14 @@ def test_interactive_mode_clearing(mock_terminal):
         from plexsearch.core import main
         main()
         
-        output = mock_terminal.getvalue()
+        output = string_io.getvalue()
         # Verify clearing happens between queries
         assert "Clearing screen" in output.replace("\x1b[36m", "").replace("\x1b[0m", "")
         assert "\n" * 10 in output
 
 def test_no_stream_mode_clearing(mock_terminal):
     """Test terminal clearing in no-stream mode"""
+    string_io, log_io = mock_terminal
     with patch('sys.argv', ['plexsearch', '--no-stream', 'test query']), \
          patch('plexsearch.core.perform_search', return_value=['test response']), \
          patch('plexsearch.core.get_terminal_size', return_value=(10, 80)), \
@@ -54,7 +57,7 @@ def test_no_stream_mode_clearing(mock_terminal):
         from plexsearch.core import main
         main()
         
-        output = mock_terminal.getvalue()
+        output = string_io.getvalue()
         # Verify clearing happens before showing results
         assert "Clearing screen" in output.replace("\x1b[36m", "").replace("\x1b[0m", "")
         assert "\n" * 10 in output
