@@ -44,6 +44,8 @@ def test_payload_is_correct(mock_terminal):
     assert payload["stream"] == stream
     assert payload["show_citations"] == show_citations
     assert len(payload["messages"]) == 3
-    assert payload["messages"][1]["role"] == "system"
-    assert payload["messages"][2]["content"] == "context message"
-    assert payload["messages"][2]["role"] == "assistant"
+    assert payload["messages"][0]["role"] == "system"  # System message first
+    assert payload["messages"][1]["role"] == "assistant"  # Context message second 
+    assert payload["messages"][1]["content"] == "context message"
+    assert payload["messages"][2]["role"] == "user"  # User query last
+    assert payload["messages"][2]["content"] == query
