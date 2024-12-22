@@ -168,10 +168,10 @@ def setup_signal_handler():
         console.print("\n[yellow]Search interrupted by user[/yellow]")
     signal.signal(signal.SIGINT, handle_interrupt)
 
-
+ 
 def perform_search(query: str, api_key: Optional[str] = None,
                   model: str = "llama-3.1-sonar-large-128k-online",
-                  stream: bool = True,
+                  stream: Optional[bool] = None,
                   show_citations: bool = False,
                   context: Optional[List[Dict[str, str]]] = None) -> str:
     """
@@ -189,10 +189,10 @@ def perform_search(query: str, api_key: Optional[str] = None,
     """
     api = PerplexityAPI(api_key)
     response = api.perform_search(
-        query=query,
-        model=model,
-        stream=stream,
-        show_citations=show_citations,
+        query=query,        
+        model=model,        
+        stream=stream if stream is not None else True,
+        show_citations=show_citations,        
         context=context
     )
     content = "".join(response)
