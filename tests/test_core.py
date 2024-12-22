@@ -4,7 +4,7 @@ from plexsearch import __version__
 from toml import load
 import json
 from unittest.mock import patch
-from plexsearch.api import PerplexityAPI
+from plexsearch.api import PerplexityAPI, logging
 
 def test_version_matches_pyproject():
     with open("pyproject.toml", "r") as f:
@@ -18,8 +18,7 @@ def test_version_matches_changelog():
     
 def test_payload_is_correct(mock_terminal):
     """Test that the payload is correctly constructed."""
-    string_io, log_io = mock_terminal
-    api = PerplexityAPI(api_key="test_key")
+    api = PerplexityAPI(api_key="test_key")    
     
     query = "test query"
     model = "test_model"
@@ -27,14 +26,15 @@ def test_payload_is_correct(mock_terminal):
     show_citations = False
     context = [{"role": "assistant", "content": "context message"}]
 
-    with patch("requests.post") as mock_post:
+    with patch("requests.post") as mock_post, \
+         patch('plexsearch.api.logging') as mock_logging:
         mock_response = mock_post.return_value
         mock_response.status_code = 200
         mock_response.json.return_value = {"choices": [{"message": {"content": "test response"}}]}
 
         list(api.perform_search(query, model, stream, show_citations, context))
 
-    log_output = log_io.getvalue()
+    log_output = mock_logging.debug.call_args[0][0]
     
     # Extract the payload from the log output
     payload_str = log_output.split("payload: ", 1)[1].strip()
