@@ -36,4 +36,5 @@ def test_invalid_model():
     )):
         with pytest.raises(ValueError) as exc_info:
             config = Config()
+            _ = config.model
         assert "Invalid model: invalid-model" in str(exc_info.value)
