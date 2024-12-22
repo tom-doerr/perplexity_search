@@ -35,6 +35,8 @@ class Config:
         model = self.args.model
         if model in LLAMA_MODELS:
             return LLAMA_MODELS[model]
+        if model not in LLAMA_MODELS.values():
+            raise ValueError(f"Invalid model: {model}. Choose from {', '.join(LLAMA_MODELS.keys())} or use the full model name.")
         return model
 
     @property
