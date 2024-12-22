@@ -103,6 +103,7 @@ class PerplexityAPI:
             json=payload,
             stream=stream  # Ensure this is set to the value of the `stream` parameter
         )
+        logging.debug(f"Received response with status code: {response.status_code}")
         
         if response.status_code != 200:
             self._handle_error(response)
