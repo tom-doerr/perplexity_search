@@ -32,9 +32,8 @@ def clear_new_area() -> None:
     console.print("[cyan]Clearing screen...[/cyan]")
     # Print newlines to push content up
     height, _ = get_terminal_size()
-    console.print("\n" * height)
-    # Use Rich's clear which preserves scrollback
-    console.clear()
+    # Add additional newlines to push previous content out of view
+    console.print("\n" * (height + 10))
 
 def handle_no_stream_search(query: str, args, context: Optional[List[Dict[str, str]]] = None) -> str:    
     """Handle non-streaming search mode."""

@@ -4,7 +4,7 @@ from typing import Optional, List
 from plexsearch import __version__
 
 LLAMA_MODELS = {
-    "small": "llama-3.1-sonar-small-32k-online",
+    "small": "llama-3.1-sonar-small-128k-online", 
     "medium": "llama-3.1-sonar-medium-70k-online",
     "large": "llama-3.1-sonar-large-128k-online",
 }

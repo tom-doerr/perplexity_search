@@ -20,7 +20,7 @@ def test_setup_signal_handler():
     with patch('plexsearch.core.console.print') as mock_print:
         setup_signal_handler()
         signal.raise_signal(signal.SIGINT)
-        mock_print.assert_called_with("\n[yellow]Search interrupted by user[/yellow]")
+        mock_print.assert_called_with("\n[yellow]Search interrupted by user. Press Ctrl-D to exit[/yellow]")
 
 def test_write_to_markdown_file():
     from plexsearch.core import _write_to_markdown_file
