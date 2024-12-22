@@ -200,7 +200,14 @@ def main():
         
         if query is not None:
             clear_new_area()
-            handle_search(query, config.args)
+            content = handle_search(query, config.args)
+            
+            if config.log_file:
+                new_messages = [{"role": "user", "content": query}, {"role": "assistant", "content": content}]
+                log_conversation(config.log_file, new_messages)
+            
+            if config.args.markdown_file:
+                _write_to_markdown_file(config.args.markdown_file, [{"role": "user", "content": query}, {"role": "assistant", "content": content}])
         else:
             handle_interactive_mode(config.args, config.log_file)
     except Exception as e:
