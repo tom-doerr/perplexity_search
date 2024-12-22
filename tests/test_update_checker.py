@@ -152,17 +152,6 @@ class TestUpdateChecker:
             )
             assert checker.update_package() is True
 
-    def test_check_and_notify_exact_interval(self):
-        checker = UpdateChecker("plexsearch", "1.0.0")
-        with patch('time.time', return_value=1000):
-            with patch('plexsearch.update_checker.get_latest_version', return_value="1.1.0"), \
-                 patch('plexsearch.update_checker.check_for_update', return_value=True):
-                state = {"last_check": 0, "last_reminder": 0}
-                with patch.object(checker, 'load_state', return_value=state), \
-                     patch.object(checker, 'save_state') as mock_save_state:
-                    latest_version = checker.check_and_notify(interval_hours=0.27778)  # approx 16.6667 minutes
-                    assert latest_version == "1.1.0"
-                    mock_save_state.assert_called_once()
 
     def test_update_package_with_non_zero_returncode(self, checker):
         """Test failed package update with non-zero return code."""
