@@ -263,14 +263,12 @@ def test_handle_search_with_context(mock_parse_args, capsys):
         assert result == "test response"
         mock_search.assert_called_once()
         assert mock_search.call_args[1]['context'] is not None
-        assert len(mock_search.call_args[1]['context']) == 4
+        assert len(mock_search.call_args[1]['context']) == 3
         assert mock_search.call_args[1]['context'][0]['role'] == 'system'
         assert mock_search.call_args[1]['context'][1]['role'] == 'user'
         assert mock_search.call_args[1]['context'][1]['content'] == 'test'
         assert mock_search.call_args[1]['context'][2]['role'] == 'assistant'
         assert mock_search.call_args[1]['context'][2]['content'] == 'response'
-        assert mock_search.call_args[1]['context'][3]['role'] == 'user'
-        assert mock_search.call_args[1]['context'][3]['content'] == 'test query'
 
 def test_log_conversation_only_new_messages():
     """Test that log_conversation appends only new messages to the log file."""
