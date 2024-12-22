@@ -53,12 +53,8 @@ def test_handle_streaming_search_error():
         args.api_key = "test_key"
         args.model = "test_model"
         args.citations = False
-        result = ""
-        try:
-            result = handle_streaming_search("test query", args)
-        except Exception as e:
-            assert str(e) == "API Error"
-        assert result == ""
+        with pytest.raises(Exception, match="API Error"):
+            handle_streaming_search("test query", args)
         mock_print.assert_called_with("[red]Error: API Error[/red]")
 
 def test_version_matches_changelog():
@@ -174,7 +170,8 @@ def test_handle_search_with_exception():
         args.model = "test_model"
         args.citations = False
         context = []
-        with pytest.raises(Exception, match="Search error"):
+        with pytest.raises(Exception, match="Search error"), \
+             patch('plexsearch.core.console.print') as mock_print:
             handle_search("test query", args, context)
         mock_print.assert_called_with("[red]Error: Search error[/red]")
 
@@ -197,7 +194,8 @@ def test_handle_streaming_search_api_exception():
         args.api_key = "test_key"
         args.model = "test_model"
         args.citations = False
-        with pytest.raises(Exception, match="API streaming error"):
+        with pytest.raises(Exception, match="API streaming error"), \
+             patch('plexsearch.core.console.print') as mock_print:
             handle_streaming_search("test query", args)
         mock_print.assert_called_with("[red]Error: API streaming error[/red]")
 
