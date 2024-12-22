@@ -251,6 +251,14 @@ def test_handle_stream_response():
     assert output == ["Hello", " World", "\n\nReferences:\n[1] http://test.com"]
     assert output[1] == "\n\nReferences:\n[1] http://test.com"
 
+def test_handle_stream_response_empty():
+    api = PerplexityAPI(api_key="test_key")
+    mock_response = MagicMock()
+    mock_response.iter_lines.return_value = []
+    generator = api._handle_stream_response(mock_response, show_citations=True)
+    output = list(generator)
+    assert output == []
+
 def test_perform_search_stream_false():
     api = PerplexityAPI(api_key="test_key")
     with patch('requests.post') as mock_post:

@@ -117,13 +117,17 @@ class PerplexityAPI:
             logging.debug("Streaming response initiated.")
             yield from self._handle_stream_response(response, show_citations)
         else:
-            response_data = response.json()
-            logging.debug(f"Response  {response_data}")
-            content = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
-            citations = response_data.get("citations", [])
-            if citations and show_citations:
-                content += "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
-            yield content
+            try:
+                response_data = response.json()
+                logging.debug(f"Response  {response_data}")
+                content = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                citations = response_data.get("citations", [])
+                if citations and show_citations:
+                    content += "\n\nReferences:\n" + "\n".join(f"[{i+1}] {url}" for i, url in enumerate(citations))
+                yield content
+            except json.JSONDecodeError:
+                logging.error("Failed to decode JSON response.")
+                yield ""
 
 
     def _parse_stream_line(self, line: bytes) -> Optional[Dict[str, Any]]:
@@ -152,6 +156,9 @@ class PerplexityAPI:
         
         if citations and show_citations:
             yield self._format_citations(citations)
+        else:
+            if not accumulated_content:
+                logging.warning("No content received in streaming response.")
 
     def _format_citations(self, citations: List[str]) -> str:
         """Format citations into a string."""
