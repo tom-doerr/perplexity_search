@@ -3,7 +3,7 @@ import pytest
 from plexsearch import __version__
 from toml import load
 import json
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from plexsearch.api import PerplexityAPI, logging
 
 import signal
