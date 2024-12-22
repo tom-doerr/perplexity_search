@@ -68,7 +68,8 @@ def handle_streaming_search(query: str, args, context: Optional[List[Dict[str, s
                                           show_citations=args.citations,
                                           context=context):
                 accumulated_text += chunk
-                live.update(f"Perplexity: {accumulated_text}")
+                # live.update(f"Perplexity: {accumulated_text}")
+                live.update(f"[cyan]Perplexity:[/cyan]        {accumulated_text}", refresh=True)
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
         raise
