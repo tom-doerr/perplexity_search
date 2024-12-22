@@ -119,8 +119,8 @@ def test_interactive_mode_context_management(capsys):
          patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
 
         mock_search.side_effect = [
-            iter(['response1']),
-            iter(['response2'])
+            "response1",
+            "response2"
         ]
 
         main()
@@ -169,11 +169,12 @@ def test_interactive_mode_alternating_roles(capsys):
         
         # Verify the context for the second call
         second_call_context = mock_search.call_args_list[1][1]['context']
-        assert len(second_call_context) == 4
+        assert len(second_call_context) == 5
         assert second_call_context[0]['role'] == 'system'
         assert second_call_context[1]['role'] == 'user'
         assert second_call_context[2]['role'] == 'assistant'
         assert second_call_context[3]['role'] == 'user'
+        assert second_call_context[4]['role'] == 'assistant'
 
 @patch('plexsearch.config.Config._parse_arguments')
 def test_handle_search_alternating_roles_error(mock_parse_args, capsys):
