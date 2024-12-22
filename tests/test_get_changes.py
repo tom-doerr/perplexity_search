@@ -69,3 +69,24 @@ def test_main_no_changes(capsys):
         main()
         captured = capsys.readouterr()
         assert 'No changes found since last release.' in captured.out
+import pytest
+from unittest.mock import patch, mock_open
+from get_changes import get_last_release_tag, get_changes_since_last_release, main
+
+def test_get_last_release_tag():
+    with patch('get_changes.subprocess.check_output', return_value=b'v1.2.3\n'):
+        tag = get_last_release_tag()
+        assert tag == 'v1.2.3'
+
+def test_get_changes_since_last_release():
+    with patch('get_changes.get_last_release_tag', return_value='v1.2.3'), \
+         patch('get_changes.subprocess.check_output', return_value=b'commit1\ncommit2\n'):
+        changes = get_changes_since_last_release('v1.2.3')
+        assert changes == 'commit1\ncommit2\n'
+
+def test_main(capsys):
+    with patch('get_changes.get_changes_since_last_release', return_value='commit1\ncommit2\n'), \
+         patch('get_changes.get_last_release_tag', return_value='v1.2.3'), \
+         patch('get_changes.print') as mock_print:
+        main()
+        mock_print.assert_called_with('Changes since v1.2.3:\ncommit1\ncommit2\n')
