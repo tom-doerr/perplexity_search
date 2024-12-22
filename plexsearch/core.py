@@ -104,10 +104,15 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
     """Handle interactive mode, with optional markdown file output."""
     if context is None:
         context = []
-    console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
+    console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit or press Ctrl-D to exit.[/green]")
     
     while True:
-        user_input = console.input("\n[cyan]> [/cyan]")
+        try:
+            user_input = console.input("\n[cyan]> [/cyan]")
+        except EOFError:
+            console.print("\n[yellow]Exiting interactive mode.[/yellow]")
+            break
+
         if user_input.strip() == "":
             console.print("[yellow]Please enter a query or type 'exit' to quit.[/yellow]")
             continue
