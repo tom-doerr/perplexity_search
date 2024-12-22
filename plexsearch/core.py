@@ -60,7 +60,7 @@ def handle_streaming_search(query: str, args, context: Optional[List[Dict[str, s
     accumulated_text = ""
     api = PerplexityAPI(args.api_key)
     try:
-        with Live("[cyan]Starting search...[/cyan]", refresh_per_second=10, transient=False) as live:
+        with Live("[cyan]Running search...[/cyan]", refresh_per_second=10, transient=False) as live:
             for chunk in api.perform_search(query=query,
                                           model=args.model,
                                           stream=True,
@@ -68,7 +68,7 @@ def handle_streaming_search(query: str, args, context: Optional[List[Dict[str, s
                                           context=context):
                 accumulated_text += chunk
                 # live.update(f"Perplexity: {accumulated_text}")
-                live.update(f"[cyan]Perplexity:[/cyan]        {accumulated_text}", refresh=True)
+                live.update(f"[cyan]Perplexity:[/cyan]\n{accumulated_text}", refresh=True)
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
         raise
@@ -113,8 +113,12 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
     console.print("[green]Entering interactive mode. Type 'exit' or press Ctrl-D to exit.[/green]")
     
     while True:
+
         try:
             user_input = console.input("\n[cyan]> [/cyan]")
+            clear_new_area()
+            sys.stdout.write("\033[H\033[J")
+
         except EOFError:
             console.print("\n[yellow]Exiting interactive mode.[/yellow]")
             logging.debug("Exiting interactive mode due to EOFError.")
@@ -128,7 +132,6 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
             logging.debug("Exiting interactive mode due to user input 'exit'.")
             break
 
-        clear_new_area()
         
         try:
             content = handle_search(user_input, args, context)
@@ -146,6 +149,7 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
             logging.error(f"Error during interactive mode: {e}", exc_info=True)
             print(error_msg, file=sys.stderr)
             console.print(error_msg)
+
 
 def _format_message_to_markdown(message: Dict[str, str]) -> str:
     """Format a message to markdown."""
