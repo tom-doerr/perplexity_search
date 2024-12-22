@@ -75,12 +75,10 @@ class Config:
                            help="Model to use for search")
         parser.add_argument("--no-stream", action="store_true",
                            help="Disable streaming output")
-        parser.add_argument("--markdown-file", "-f", type=str, default=None,
-            help="Specify a markdown file to save the conversation. If not provided, no file will be saved.")
+        parser.add_argument("--markdown-file", "-f", type=str, help="Specify a markdown file to save the conversation. If not provided, no file will be saved.")
         parser.add_argument("-c", "--citations", action="store_true",
                            help="Show numbered citations")
         parser.add_argument("--log-file", "-l",
-                            default=Config.DEFAULT_LOG_FILE,
                             help="Path to log file")
         parser.add_argument("--debug", "-d", action="store_true",
                             help="Enable debug output")

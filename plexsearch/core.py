@@ -145,7 +145,8 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
             content = handle_search(user_input, args, context)
             new_user_message = {"role": "user", "content": user_input}
             new_assistant_message = {"role": "assistant", "content": content}
-            log_conversation(log_file, [new_user_message, new_assistant_message])
+            if log_file:
+                log_conversation(log_file, [new_user_message, new_assistant_message])
 
             if args.markdown_file:
                 _write_to_markdown_file(args.markdown_file, [new_user_message, new_assistant_message])
