@@ -124,6 +124,59 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
             print(error_msg, file=sys.stderr)
             console.print(error_msg)
 
+def _format_message_to_markdown(message: Dict[str, str]) -> str:
+    """Format a message to markdown."""
+    role = message["role"].capitalize()
+    content = message["content"]
+    return f"**{role}**: {content}\n\n"
+
+
+def _write_to_markdown_file(markdown_file: str, new_messages: List[Dict[str, str]]) -> None:
+    """Write the conversation to a markdown file."""
+    try:
+        with open(markdown_file, "a", encoding="utf-8") as f:
+            for message in new_messages:
+                f.write(_format_message_to_markdown(message))
+    except Exception as e:
+        console.print(f"[red]Error writing to markdown file: {e}[/red]")
+
+def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str]]] = None):
+    """Handle interactive mode, with optional markdown file output."""
+    if context is None:
+        context = []
+    console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
+    console.print(f"[blue]Initial context: {context}[/blue]")
+    
+    while True:
+        user_input = console.input("\n[cyan]> [/cyan]")
+        if user_input.strip() == "":
+            console.print("[yellow]Please enter a query or type 'exit' to quit.[/yellow]")
+            continue
+        if user_input.lower() == "exit":
+            console.print("[yellow]Exiting interactive mode.[/yellow]")
+            break
+        console.print(f"[blue]Context before user input: {context}[/blue]")
+
+        clear_new_area()
+        
+        try:
+            console.print(f"[blue]Context before handle_search: {context}[/blue]")
+            content = handle_search(user_input, args, context)
+            new_user_message = {"role": "user", "content": user_input}
+            new_assistant_message = {"role": "assistant", "content": content}
+            log_conversation(log_file, [new_user_message, new_assistant_message])
+
+            if args.markdown_file:
+                _write_to_markdown_file(args.markdown_file, [new_user_message, new_assistant_message])
+
+            context.append(new_user_message)
+            context.append(new_assistant_message)
+            console.print(f"[blue]Context after handle_search: {context}[/blue]")
+        except Exception as e:
+            error_msg = f"[red]Error:[/red] {e}"
+            print(error_msg, file=sys.stderr)
+            console.print(error_msg)
+
 def setup_signal_handler():
     """Set up interrupt signal handler."""
     def handle_interrupt(signum, frame):
