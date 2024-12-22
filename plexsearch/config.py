@@ -12,7 +12,7 @@ LLAMA_MODELS = {
 class Config:
     """Handle application configuration."""
     
-    DEFAULT_MODEL = "llama-3.1-sonar-large-128k-online"
+    DEFAULT_MODEL = "large"  # Use short name as default
     DEFAULT_LOG_FILE = "plex.json"
     
     def __init__(self):
@@ -33,11 +33,15 @@ class Config:
     @property
     def model(self) -> str:
         model = self.args.model
+        # If it's a short name (small, medium, large), convert it
         if model in LLAMA_MODELS:
             return LLAMA_MODELS[model]
-        if model not in LLAMA_MODELS.values():
-            raise ValueError(f"Invalid model: {model}. Choose from {', '.join(LLAMA_MODELS.keys())} or use the full model name.")
-        return model
+        # If it's already a full model name, verify and return it
+        if model in LLAMA_MODELS.values():
+            return model
+        # If neither, it's invalid
+        valid_models = list(LLAMA_MODELS.keys()) + list(LLAMA_MODELS.values())
+        raise ValueError(f"Invalid model: {model}. Choose from: {', '.join(valid_models)}")
 
     @property
     def no_stream(self) -> bool:
