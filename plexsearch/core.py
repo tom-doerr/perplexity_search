@@ -185,6 +185,21 @@ def perform_search(query: str, api_key: Optional[str] = None,
     content = "".join(response)
     return content
 
+def check_for_updates(checker: UpdateChecker) -> None:
+    """Check for package updates and handle user interaction."""
+    if latest_version := checker.check_and_notify():
+        console.print(f"\n[yellow]New version {latest_version} available![/yellow]\n")
+        response = input("Would you like to update now? (Y/n): ").strip().lower()
+        if not response or response in ['y', 'yes']:
+            try:
+                if checker.update_package():
+                    console.print("[green]Successfully updated to the new version! The new version will be used on next execution.[/green]")
+                else:
+                    console.print("[red]Update failed. Please try updating manually with: pip install --upgrade plexsearch[/red]")
+            except Exception as e:
+                console.print(f"[red]Update failed: {str(e)}[/red]")
+            console.print()
+
 def main():
     """CLI entry point"""
     try:
@@ -195,21 +210,7 @@ def main():
         checker = UpdateChecker("plexsearch", __version__)
         query = config.query
         
-        # Check for updates after getting query but before processing
-        if latest_version := checker.check_and_notify():
-            console.print(f"\n[yellow]New version {latest_version} available![/yellow]\n")
-            response = input("Would you like to update now? (Y/n): ").strip().lower()
-            if not response or response in ['y', 'yes']:
-                try:
-                    if checker.update_package():
-                        console.print("[green]Successfully updated to the new version! The new version will be used on next execution.[/green]")
-                    else:
-                        console.print("[red]Update failed. Please try updating manually with: pip install --upgrade plexsearch[/red]")
-                except Exception as e:
-                    console.print(f"[red]Update failed: {str(e)}[/red]")
-                console.print()
-
-            # Continue with the search after the update
+        check_for_updates(checker)
         
         if query is not None:
             clear_new_area()
