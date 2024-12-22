@@ -262,7 +262,7 @@ def test_handle_search_with_malformed_context():
     
     with patch('sys.argv', ['plexsearch']):
         config = Config()
-    config.args = mock_args
+        config.args = mock_args
     
     malformed_context = [
         {"role": "user", "content": "Hello"},
