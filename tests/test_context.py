@@ -30,3 +30,25 @@ def test_conversation_context_get_context():
         {"role": "user", "content": "Hello"},
         {"role": "assistant", "content": "Hi!"}
     ]
+
+def test_conversation_context_multiple_messages():
+    context = ConversationContext()
+    context.add_user_message("First")
+    context.add_assistant_message("Response 1")
+    context.add_user_message("Second") 
+    context.add_assistant_message("Response 2")
+    assert context.get_context() == [
+        {"role": "user", "content": "First"},
+        {"role": "assistant", "content": "Response 1"},
+        {"role": "user", "content": "Second"},
+        {"role": "assistant", "content": "Response 2"}
+    ]
+
+def test_conversation_context_empty_messages():
+    context = ConversationContext()
+    context.add_user_message("")
+    context.add_assistant_message("")
+    assert context.get_context() == [
+        {"role": "user", "content": ""},
+        {"role": "assistant", "content": ""}
+    ]
