@@ -174,8 +174,8 @@ def test_handle_search_with_exception():
         args.model = "test_model"
         args.citations = False
         context = []
-        result = handle_search("test query", args, context)
-        assert result == ""
+        with pytest.raises(Exception, match="Search error"):
+            handle_search("test query", args, context)
         mock_print.assert_called_with("[red]Error: Search error[/red]")
 
 def test_handle_no_stream_search_api_exception(capsys):

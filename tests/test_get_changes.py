@@ -27,7 +27,7 @@ def test_get_changes_since_last_release():
     with patch('get_changes.subprocess.run') as mock_run:
         mock_run.return_value = MagicMock(stdout='commit1\ncommit2\n', returncode=0)
         changes = get_changes_since_last_release('v1.2.3')
-        assert changes == 'commit1\ncommit2\n'
+        assert changes == 'commit1\ncommit2'
         mock_run.assert_called_with(
             ["git", "log", "v1.2.3..HEAD", "--pretty=format:%s"],
             capture_output=True,
