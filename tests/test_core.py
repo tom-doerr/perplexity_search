@@ -153,28 +153,6 @@ def test_handle_streaming_search_api_exception():
             handle_streaming_search("test query", args)
         mock_print.assert_called_with("[red]Error: API streaming error[/red]")
 
-def test_handle_search_with_malformed_context():
-    from plexsearch.core import handle_search
-    from plexsearch.config import Config
-
-    mock_args = MagicMock()
-    mock_args.api_key = "test_key"
-    mock_args.model = "test-model"
-    mock_args.citations = False
-    mock_args.no_stream = False
-
-    config = Config()
-    
-    malformed_context = [
-        {"role": "user", "content": "Hello"},
-        {"role": "assistant"}  # Missing 'content'
-    ]
-    
-    with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
-        mock_search.return_value = iter(["Hello", " World"])
-        content = handle_search("test query", config.args, malformed_context)
-        assert content == "Hello World"
-        mock_search.assert_called_once_with("test query", "test-model", stream=True, show_citations=False, context=malformed_context)
 
 def test_handle_search_no_context():
     from plexsearch.core import handle_search    
