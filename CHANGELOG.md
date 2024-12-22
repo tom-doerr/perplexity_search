@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated interactive mode prompt prefix to ">"
 
+## [0.2.1] - 2024-12-22
+
+### Fixed
+- Correctly handle log file errors to prevent program termination
+
 
 ## [0.1.17] - 2024-12-11
 

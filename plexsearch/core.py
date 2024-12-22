@@ -82,7 +82,8 @@ def log_conversation(log_file: str, new_messages: List[Dict[str, str]]) -> None:
                 json.dump(message, f)
                 f.write("\n")
     except Exception as e:
-        console.print(f"[red]Error writing to log file: {e}[/red]")
+        console.print(f"[red]Error writing to log file: {e}[/red]", file=sys.stderr)
+        logging.error(f"Error writing to log file: {e}", exc_info=True)
 
 import logging
 
