@@ -29,7 +29,6 @@ def get_terminal_size() -> tuple[int, int]:
 
 def clear_new_area() -> None:
     """Clear screen while preserving scrollback buffer."""
-    console.print("[cyan]Clearing screen...[/cyan]")
     # Print newlines to push content up
     height, _ = get_terminal_size()
     # Add additional newlines to push previous content out of view
@@ -62,7 +61,7 @@ def handle_streaming_search(query: str, args, context: Optional[List[Dict[str, s
     accumulated_text = ""
     api = PerplexityAPI(args.api_key)
     try:
-        with Live("", refresh_per_second=10, transient=False) as live:
+        with Live("[cyan]Starting search...[/cyan]", refresh_per_second=10, transient=False) as live:
             for chunk in api.perform_search(query=query,
                                           model=args.model,
                                           stream=True,

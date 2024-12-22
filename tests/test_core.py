@@ -227,3 +227,45 @@ def test_setup_signal_handler():
         # Simulate SIGINT signal
         signal.raise_signal(signal.SIGINT)
         mock_print.assert_called_with("\n[yellow]Search interrupted by user. Press Ctrl-D to exit[/yellow]")
+def test_handle_search_with_malformed_context():
+    from plexsearch.core import handle_search
+    from plexsearch.config import Config
+    
+    mock_args = MagicMock()
+    mock_args.api_key = "test_key"
+    mock_args.model = "test-model"
+    mock_args.citations = False
+    mock_args.no_stream = False
+    
+    config = Config()
+    config.args = mock_args
+    
+    malformed_context = [
+        {"role": "user", "content": "Hello"},
+        {"role": "assistant"}  # Missing 'content'
+    ]
+    
+    with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
+        mock_search.return_value = iter(["Hello", " World"])
+        content = handle_search("test query", config.args, malformed_context)
+        assert content == "Hello World"
+        mock_search.assert_called_once_with("test query", "test-model", stream=True, show_citations=False, context=malformed_context)
+import pytest
+from plexsearch.config import Config
+from unittest.mock import patch
+import argparse
+
+def test_invalid_model():
+    with patch('argparse.ArgumentParser.parse_args', return_value=argparse.Namespace(
+        query=None,
+        api_key=None,
+        model="invalid-model",
+        no_stream=False,
+        citations=False,
+        log_file=None,
+        markdown_file=None,
+        debug=False
+    )):
+        with pytest.raises(ValueError) as exc_info:
+            config = Config()
+        assert "Invalid model: invalid-model" in str(exc_info.value)

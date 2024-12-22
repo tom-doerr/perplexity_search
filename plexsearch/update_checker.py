@@ -65,8 +65,11 @@ class UpdateChecker:
                 os.makedirs(self.state_dir)
             return {"last_check": 0, "last_reminder": 0}
         
-        with open(self.state_file, 'r') as f:
-            return json.load(f)
+        try:
+            with open(self.state_file, 'r') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return {"last_check": 0, "last_reminder": 0}
             
     def save_state(self, state: Dict[str, float]) -> None:
         """Save the state to file."""

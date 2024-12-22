@@ -93,6 +93,7 @@ class PerplexityAPI:
 
     def perform_search(self, query: str, model: str, stream: bool,
                       show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Iterator[str]:
+        logging.debug(f"Starting search with query: {query}, model: {model}, stream: {stream}, citations: {show_citations}")
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations, context)
 
