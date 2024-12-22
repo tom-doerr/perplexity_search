@@ -29,15 +29,16 @@ These notes are for you, the LLM, to help guide development and releases.
 -   In the future, increment the **MINOR** version for significant changes, not just the **PATCH** version.
 -   The **MINOR** version should have been incremented for previous versions that added new features.
 -   Example: The addition of interactive mode should have bumped the version to `0.2.0`.
--   The current version is `0.1.16`.
--   The next version, which will include the interactive mode, should be `0.2.0`.
+-   The current version is `0.2.0`.
+-   The next version should be `0.3.0`.
 
 ## Context from Previous Interactions
 
 -   We've been working on a Python tool called `plexsearch` that uses the Perplexity API.
 -   We've implemented an interactive mode.
--   We've discussed and addressed a bug related to alternating user/assistant roles in the interactive mode, but this fix was removed from this release because it was related to the new interactive mode feature.
--   We've gone through a release process, including updating the changelog, bumping the version to `0.1.16`, building and publishing the package, and creating a Git tag.
+-   We've discussed and addressed a bug related to alternating user/assistant roles in the interactive mode.
+-   We've released version `0.2.0` which includes the interactive mode.
+-   We've gone through a release process, including updating the changelog, bumping the version to `0.2.0`, building and publishing the package, and creating a Git tag.
 -   The user committed the final changes for the `0.1.16` release with git hash `cd852b2` and commit message "docs: Remove bugfix from changelog for v0.1.16".
 -   The user committed the changes for LLM_DEV_NOTES with git hash `9809833` and commit message "docs: Add developer notes for release process and versioning".
 -   The user ran `poetry build` and `poetry publish` for version `0.1.16`.

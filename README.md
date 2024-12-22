@@ -33,19 +33,20 @@ A powerful Python tool for performing technical searches using the Perplexity AP
 
 ## 🌟 Overview
 
-Perplexity Search is a command-line tool and Python library that leverages the power of Perplexity AI to provide accurate, technical search results. It's designed for developers, researchers, and technical users who need quick access to precise information, code examples, and technical documentation.
+Perplexity Search is a command-line tool and Python library that leverages the power of Perplexity AI to provide accurate, technical search results. It's designed for developers, researchers, and technical users who need quick access to precise information, code examples, and technical documentation. It also includes an interactive mode for multi-turn conversations.
 
 ## ✨ Features
 
 - **Interactive Mode:** Engage in a conversational interface where you can ask multiple queries in sequence.
-
+- **Conversation Context:** Maintain context across multiple turns in interactive mode.
+- **Markdown Output:** Save conversation history to a markdown file.
 - **Perform searches using different LLaMA models (small, large, huge)**
 - **Configurable API key support via environment variable or direct input**
-- **Customizable search queries with temperature and other parameters**
 - **Command-line interface for easy usage**
 - **Focused on retrieving technical information with code examples**
 - **Returns responses formatted in markdown**
 - **Optimized for factual and numerical data**
+- **Debug logging**
 
 ## Installation
 
@@ -80,7 +81,7 @@ To enter interactive mode, simply run the command without any query arguments:
 plexsearch
 ```
 
-In interactive mode, you can type your queries one by one. Type `exit` to quit the interactive session.
+In interactive mode, you can type your queries one by one. Type `exit` or press `Ctrl-D` to quit the interactive session.
 
 ```bash
 # Basic search
@@ -126,10 +127,20 @@ The following models can be specified using the `--model` parameter:
 - `llama-3.1-sonar-large-128k-online` (Default, balanced model)
 - `llama-3.1-sonar-huge-128k-online` (Most capable model)
 
+### Conversation Logging
+
+You can log your conversation to a file using the `--log-file` parameter.
+
+### Markdown Output
+
+You can save your conversation to a markdown file using the `--markdown-file` parameter.
+
 ## Requirements
 
 - **Python 3.x**
 - **requests library**
+- **rich library**
+- **feedparser library**
 - **Perplexity API key** (obtain from [Perplexity API](https://docs.perplexity.ai/))
 
 ## Error Handling
