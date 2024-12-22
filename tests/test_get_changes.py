@@ -19,8 +19,8 @@ def test_get_last_release_tag_error():
     with patch('get_changes.subprocess.run') as mock_run, \
          patch('logging.error') as mock_log:
         mock_run.side_effect = subprocess.CalledProcessError(1, [], stderr="Test error")
-        tag = get_last_release_tag()
-        assert tag is None
+        with pytest.raises(subprocess.CalledProcessError):
+            tag = get_last_release_tag()
         mock_log.assert_called_once()
 
 def test_get_changes_since_last_release():
@@ -40,8 +40,8 @@ def test_get_changes_since_last_release_error():
     with patch('get_changes.subprocess.run') as mock_run, \
          patch('logging.error') as mock_log:
         mock_run.side_effect = subprocess.CalledProcessError(1, [], stderr="Test error")
-        changes = get_changes_since_last_release('v1.2.3')
-        assert changes is None
+        with pytest.raises(subprocess.CalledProcessError):
+            changes = get_changes_since_last_release('v1.2.3')
         mock_log.assert_called_once()
 
 def test_main_success(capsys):
