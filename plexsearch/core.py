@@ -159,7 +159,7 @@ def _write_to_markdown_file(markdown_file: str, new_messages: List[Dict[str, str
 def setup_signal_handler():
     """Set up interrupt signal handler."""
     def handle_interrupt(signum, frame):
-        console.print("\n[yellow]Search interrupted by user[/yellow]")
+        console.print("\n[yellow]Search interrupted by user. Press Ctrl-D to exit[/yellow]")
     signal.signal(signal.SIGINT, handle_interrupt)
 
  
