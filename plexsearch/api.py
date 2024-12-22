@@ -4,6 +4,7 @@ import json
 import logging
 from typing import Dict, Iterator, List, Optional, Any
 import requests
+from .config import LLAMA_MODELS
 
 class PerplexityError(Exception):
     """Base exception for Perplexity-related errors."""
@@ -36,6 +37,10 @@ class PerplexityAPI:
     
     # def _build_payload(self, query: str, model: str, stream: bool, show_citations: bool) -> Dict[str, any]:
     def _build_payload(self, query: str, model: str, stream: bool, show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Dict[str, any]:
+        # Convert model name if it's a short name
+        if model in LLAMA_MODELS:
+            model = LLAMA_MODELS[model]
+
         system_message = (
             "You are a technical assistant focused on providing accurate, practical "
             "information. Follow these guidelines:\n"
