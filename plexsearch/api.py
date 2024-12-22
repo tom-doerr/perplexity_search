@@ -100,7 +100,7 @@ class PerplexityAPI:
             self.ENDPOINT,
             headers=self._get_headers(),
             json=payload,
-            stream=stream
+            stream=stream  # Ensure this is set to the value of the `stream` parameter
         )
         
         if response.status_code != 200:
@@ -138,9 +138,9 @@ class PerplexityAPI:
                 content = delta.get('content')
                 if content:
                     accumulated_content += content
+                    yield content  # Yield content as it arrives
                 citations = data.get('citations', citations)
         
-        yield accumulated_content
         if citations and show_citations:
             yield self._format_citations(citations)
 
