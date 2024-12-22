@@ -83,6 +83,9 @@ class UpdateChecker:
         
         if current_time - state["last_check"] < interval_hours * 3600:
             return None
+        # Ensure the interval condition is met
+        if current_time - state["last_reminder"] < interval_hours * 3600:
+            return None
             
         state["last_check"] = current_time
         latest_version = get_latest_version(self.package_name)

@@ -90,6 +90,8 @@ def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = No
     """Handle a single search query execution."""
     logging.debug(f"Handling search for query: {query}")
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
+    if context is None:
+        context = []
     
     if context is None:
         context = []
@@ -99,6 +101,12 @@ def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = No
             "role": "system", 
             "content": "You are a technical assistant focused on providing accurate, practical information..."
         })
+    # Ensure alternating roles
+    for i in range(1, len(context)):
+        if i % 2 == 1 and context[i]['role'] != 'user':
+            raise ValueError("After the (optional) system message(s), user and assistant roles should be alternating.")
+        if i % 2 == 0 and context[i]['role'] != 'assistant':
+            raise ValueError("After the (optional) system message(s), user and assistant roles should be alternating.")
     if no_stream:
         logging.debug("Using no-stream search mode.")
         return handle_no_stream_search(query, args, context)
