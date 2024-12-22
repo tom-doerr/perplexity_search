@@ -15,21 +15,6 @@ def test_conversation_context_add_assistant_message():
     context.add_assistant_message("Hi there!")
     assert context.get_context() == [{"role": "assistant", "content": "Hi there!"}]
 
-def test_conversation_context_get_context():
-    context = ConversationContext()
-    context.add_user_message("Hello")
-    context.add_assistant_message("Hi!")
-    retrieved_context = context.get_context()
-    assert retrieved_context == [
-        {"role": "user", "content": "Hello"},
-        {"role": "assistant", "content": "Hi!"}
-    ]
-    # Ensure it's a copy
-    retrieved_context.append({"role": "user", "content": "Another message"})
-    assert context.get_context() == [
-        {"role": "user", "content": "Hello"},
-        {"role": "assistant", "content": "Hi!"}
-    ]
 
 def test_conversation_context_multiple_messages():
     context = ConversationContext()

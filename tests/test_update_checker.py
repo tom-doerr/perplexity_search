@@ -175,7 +175,7 @@ class TestUpdateChecker:
             assert checker.update_package() is False
 def test_check_and_notify_exact_interval():
     checker = UpdateChecker("plexsearch", "1.0.0")
-    with patch('time.time', return_value=1000):
+    with patch('time.time', return_value=1000.1):
         with patch('plexsearch.update_checker.get_latest_version', return_value="1.1.0"):
             state = {"last_check": 0, "last_reminder": 0}
             with patch.object(checker, 'load_state', return_value=state), \

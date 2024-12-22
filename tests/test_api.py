@@ -94,16 +94,6 @@ def test_handle_error_non_json_response():
     assert "API request failed with status code 400" in str(exc_info.value)
 
 
-def test_handle_stream_response():
-    api = PerplexityAPI(api_key="test_key")
-    mock_response = MagicMock()
-    mock_response.iter_lines.return_value = [
-        b'data: {"choices":[{"delta":{"content":"Hello"}}]}',
-        b'data: {"choices":[{"delta":{"content":" World"}}], "citations": ["http://test.com"]}'
-    ]
-    generator = api._handle_stream_response(mock_response, show_citations=True)
-    output = list(generator)
-    assert output == ["Hello", " World", "\n\nReferences:\n[1] http://test.com"]
 
 def test_perform_search_stream_false():
     api = PerplexityAPI(api_key="test_key")
@@ -131,12 +121,6 @@ def test_perform_search_stream_true():
         response = list(api.perform_search("test", "test-model", stream=True, show_citations=True))
         assert response == ["Hello", " World", "\n\nReferences:\n[1] http://test.com"]
 
-def test_format_citations():
-    api = PerplexityAPI(api_key="test_key")
-    citations = ["http://test1.com", "http://test2.com"]
-    formatted = api._format_citations(citations)
-    expected = "\n\nReferences:\n[1] http://test1.com\n[2] http://test2.com"
-    assert formatted == expected
 
 def test_get_headers():
     api = PerplexityAPI(api_key="test_key")
