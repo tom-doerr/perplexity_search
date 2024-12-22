@@ -2,7 +2,7 @@
 import os
 import json
 import logging
-from typing import Dict, Iterator, List, Optional
+from typing import Dict, Iterator, List, Optional, Any
 import requests
 
 class PerplexityError(Exception):
