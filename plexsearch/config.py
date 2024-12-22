@@ -3,6 +3,12 @@ import argparse
 from typing import Optional, List
 from plexsearch import __version__
 
+LLAMA_MODELS = {
+    "small": "llama-3.1-sonar-small-32k-online",
+    "medium": "llama-3.1-sonar-medium-70k-online",
+    "large": "llama-3.1-sonar-large-128k-online",
+}
+
 class Config:
     """Handle application configuration."""
     
@@ -26,7 +32,10 @@ class Config:
 
     @property
     def model(self) -> str:
-        return self.args.model
+        model = self.args.model
+        if model in LLAMA_MODELS:
+            return LLAMA_MODELS[model]
+        return model
 
     @property
     def no_stream(self) -> bool:
@@ -37,8 +46,13 @@ class Config:
         return self.args.citations
 
     @property
+    @property
     def log_file(self) -> Optional[str]:
         return self.args.log_file
+
+    @property
+    def markdown_file(self) -> str:
+        return self.args.markdown_file or "plex.md"
 
     @property
     def debug(self) -> bool:
