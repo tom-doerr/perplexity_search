@@ -197,8 +197,8 @@ def test_handle_streaming_search_api_exception():
         args.api_key = "test_key"
         args.model = "test_model"
         args.citations = False
-        content = handle_streaming_search("test query", args)
-        assert content == ""
+        with pytest.raises(Exception, match="API streaming error"):
+            handle_streaming_search("test query", args)
         mock_print.assert_called_with("[red]Error: API streaming error[/red]")
 
 def test_handle_search_no_context():
