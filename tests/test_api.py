@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from plexsearch.api import PerplexityAPI, APIError, AuthenticationError
 import json
+import os
 
 def test_get_headers():
     api = PerplexityAPI(api_key="test_key")
