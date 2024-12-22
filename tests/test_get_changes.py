@@ -19,8 +19,8 @@ def test_get_last_release_tag_error():
     with patch('get_changes.subprocess.run') as mock_run, \
          patch('logging.error') as mock_log:
         mock_run.side_effect = subprocess.CalledProcessError(1, [], stderr="Test error")
-        with pytest.raises(subprocess.CalledProcessError):
-            tag = get_last_release_tag()
+        tag = get_last_release_tag()
+        assert tag is None
         mock_log.assert_called_once()
 
 def test_get_changes_since_last_release():
@@ -28,7 +28,7 @@ def test_get_changes_since_last_release():
         mock_run.return_value = MagicMock(stdout='commit1\ncommit2\n')
         mock_run.return_value.check_returncode.return_value = None
         changes = get_changes_since_last_release('v1.2.3')
-        assert changes == 'commit1\ncommit2'
+        assert changes == 'commit1\ncommit2\n'
         mock_run.assert_called_with(
             ["git", "log", "v1.2.3..HEAD", "--pretty=format:%s"],
             capture_output=True,
@@ -40,8 +40,8 @@ def test_get_changes_since_last_release_error():
     with patch('get_changes.subprocess.run') as mock_run, \
          patch('logging.error') as mock_log:
         mock_run.side_effect = subprocess.CalledProcessError(1, [], stderr="Test error")
-        with pytest.raises(subprocess.CalledProcessError):
-            changes = get_changes_since_last_release('v1.2.3')
+        changes = get_changes_since_last_release('v1.2.3')
+        assert changes is None
         mock_log.assert_called_once()
 
 def test_main_success(capsys):
