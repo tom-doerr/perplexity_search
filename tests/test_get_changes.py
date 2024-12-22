@@ -81,7 +81,9 @@ def test_get_last_release_tag():
 
 def test_get_changes_since_last_release():
     with patch('get_changes.get_last_release_tag', return_value='v1.2.3'), \
-         patch('get_changes.subprocess.check_output', return_value=b'commit1\ncommit2\n'):
+         patch('get_changes.subprocess.run') as mock_run:
+        mock_run.return_value.stdout = 'commit1\ncommit2\n'
+        mock_run.return_value.check_returncode.return_value = None
         changes = get_changes_since_last_release('v1.2.3')
         assert changes == 'commit1\ncommit2\n'
 
