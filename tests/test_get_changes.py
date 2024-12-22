@@ -5,7 +5,7 @@ from get_changes import get_last_release_tag, get_changes_since_last_release, ma
 
 def test_get_last_release_tag():
     with patch('get_changes.subprocess.run') as mock_run:
-        mock_run.return_value = MagicMock(stdout='v1.2.3\n')
+        mock_run.return_value = MagicMock(stdout='v1.2.3\n', returncode=0)
         tag = get_last_release_tag()
         assert tag == 'v1.2.3'
         mock_run.assert_called_with(
@@ -25,10 +25,9 @@ def test_get_last_release_tag_error():
 
 def test_get_changes_since_last_release():
     with patch('get_changes.subprocess.run') as mock_run:
-        mock_run.return_value = MagicMock(stdout='commit1\ncommit2\n')
-        mock_run.return_value.check_returncode.return_value = None
+        mock_run.return_value = MagicMock(stdout='commit1\ncommit2\n', returncode=0)
         changes = get_changes_since_last_release('v1.2.3')
-        assert changes == 'commit1\ncommit2'
+        assert changes == 'commit1\ncommit2\n'
         mock_run.assert_called_with(
             ["git", "log", "v1.2.3..HEAD", "--pretty=format:%s"],
             capture_output=True,
