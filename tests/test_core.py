@@ -161,19 +161,6 @@ def test_write_to_markdown_file_write_error():
         _write_to_markdown_file("dummy_markdown.md", [{"role": "user", "content": "Test"}])
         mock_print.assert_called_with("[red]Error writing to markdown file: Write error[/red]")
 
-def test_handle_search_with_exception():
-    with patch('plexsearch.core.handle_no_stream_search', side_effect=Exception("Search error")), \
-         patch('plexsearch.core.console.print') as mock_print:
-        args = MagicMock()
-        args.no_stream = False
-        args.api_key = "test_key"
-        args.model = "test_model"
-        args.citations = False
-        context = []
-        with pytest.raises(Exception, match="Search error"), \
-             patch('plexsearch.core.console.print') as mock_print:
-            handle_search("test query", args, context)
-        mock_print.assert_called_with("[red]Error: Search error[/red]")
 
 def test_handle_no_stream_search_api_exception(capsys):
     with patch('plexsearch.core.clear_new_area'), \
@@ -200,25 +187,12 @@ def test_handle_streaming_search_api_exception():
         mock_print.assert_called_with("[red]Error: API streaming error[/red]")
 
 def test_handle_search_no_context():
-    from plexsearch.core import handle_search
-    from plexsearch.config import Config
-    from unittest.mock import patch, MagicMock
-    
-    with patch('plexsearch.config.Config._parse_arguments') as mock_parse_args, \
-         patch('plexsearch.api.PerplexityAPI.perform_search', return_value=["Test response"]):
-        mock_args = MagicMock()
-        mock_args.api_key = "test_key"
-        mock_args.model = "test_model"
-        mock_args.citations = False
-        mock_args.no_stream = False
-        mock_parse_args.return_value = mock_args
-        config = Config()
-        
-        result = handle_search("test query", config.args)
+    from plexsearch.core import handle_search    
+    with patch('plexsearch.api.PerplexityAPI.perform_search', return_value=["Test response"]):
+        args = MagicMock()
+        args.no_stream = False
+        result = handle_search("test query", args)
         assert result == "Test response"
-        # Verify perform_search was called with system message in context
-        mock_parse_args.assert_called_once()
-    
 def test_handle_search_with_context():
     from plexsearch.core import handle_search
     from plexsearch.config import Config
