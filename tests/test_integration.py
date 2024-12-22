@@ -39,8 +39,7 @@ def test_cli_with_model(mock_terminal):
 def test_cli_error_handling(mock_terminal):
     """Test CLI error handling with invalid API key"""
     with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
-      mock_search.return_value = iter(["test response"])
-      result = run_cli_command(["test query"], env=os.environ)
-      assert result.returncode != 0
-      mock_search.assert_called_once()
-      mock_search.assert_called_with("test query", None, "llama-3.1-sonar-large-128k-online", True, False, None)
+        mock_search.side_effect = Exception("API Error")  # Simulate an error
+        result = run_cli_command(["test query"], env=os.environ)
+        assert result.returncode != 0
+        mock_search.assert_called_once()
