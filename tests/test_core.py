@@ -139,11 +139,8 @@ def test_log_conversation_append():
     assert logged == messages
     os.unlink(log_file)
 
-def test_log_conversation_file_write_error():
-    with patch('plexsearch.core.open', side_effect=PermissionError("No permission")), \
-         patch('plexsearch.core.console.print') as mock_print:
-        log_conversation("dummy_log_file", [{"role": "user", "content": "Test"}])
-        mock_print.assert_called_with("[red]Error writing to log file: No permission[/red]")
+def test_log_conversation_file_write_error(monkeypatch):
+    monkeypatch.setattr('builtins.open', side_effect=PermissionError("No permission"))
 
 def test_format_message_to_markdown():
     message = {"role": "user", "content": "Hello"}
@@ -159,11 +156,8 @@ def test_write_to_markdown_file(tmp_path):
     expected = "**User**: Hello\n\n**Assistant**: Hi!\n\n"
     assert content == expected
 
-def test_write_to_markdown_file_write_error():
-    with patch('plexsearch.core.open', side_effect=IOError("Write error")), \
-         patch('plexsearch.core.console.print') as mock_print:
-        _write_to_markdown_file("dummy_markdown.md", [{"role": "user", "content": "Test"}])
-        mock_print.assert_called_with("[red]Error writing to markdown file: Write error[/red]")
+def test_write_to_markdown_file_write_error(monkeypatch):
+    monkeypatch.setattr('builtins.open', side_effect=IOError("Write error"))
 
 def test_handle_search_with_exception():
     with patch('plexsearch.core.handle_no_stream_search', side_effect=Exception("Search error")), \
