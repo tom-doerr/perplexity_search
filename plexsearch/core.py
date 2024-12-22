@@ -85,8 +85,11 @@ def log_conversation(log_file: str, new_messages: List[Dict[str, str]]) -> None:
     except Exception as e:
         console.print(f"[red]Error writing to log file: {e}[/red]")
 
+import logging
+
 def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = None) -> str:
     """Handle a single search query execution."""
+    logging.debug(f"Handling search for query: {query}")
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
     
     if context is None:
@@ -97,12 +100,15 @@ def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = No
             "role": "system", 
             "content": "You are a technical assistant focused on providing accurate, practical information..."
         })
-    if no_stream:        
-        return handle_no_stream_search(query, args, context)    
+    if no_stream:
+        logging.debug("Using no-stream search mode.")
+        return handle_no_stream_search(query, args, context)
+    logging.debug("Using streaming search mode.")
     return handle_streaming_search(query, args, context)
 
 def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str]]] = None):
     """Handle interactive mode, with optional markdown file output."""
+    logging.debug("Entering interactive mode.")
     if context is None:
         context = []
     console.print("[green]Entering interactive mode. Type 'exit' or press Ctrl-D to exit.[/green]")
@@ -112,6 +118,7 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
             user_input = console.input("\n[cyan]> [/cyan]")
         except EOFError:
             console.print("\n[yellow]Exiting interactive mode.[/yellow]")
+            logging.debug("Exiting interactive mode due to EOFError.")
             break
 
         if user_input.strip() == "":
@@ -119,6 +126,7 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
             continue
         if user_input.lower() == "exit":
             console.print("[yellow]Exiting interactive mode.[/yellow]")
+            logging.debug("Exiting interactive mode due to user input 'exit'.")
             break
 
         clear_new_area()
@@ -136,6 +144,7 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
             context.append(new_assistant_message)
         except Exception as e:
             error_msg = f"[red]Error:[/red] {e}"
+            logging.error(f"Error during interactive mode: {e}", exc_info=True)
             print(error_msg, file=sys.stderr)
             console.print(error_msg)
 
@@ -180,6 +189,7 @@ def perform_search(query: str, api_key: Optional[str] = None,
         
     Returns: The response content
     """
+    logging.debug(f"Performing search with query: {query}, model: {model}, stream: {stream}, citations: {show_citations}")
     api = PerplexityAPI(api_key)
     response = api.perform_search(
         query=query,        
@@ -189,6 +199,7 @@ def perform_search(query: str, api_key: Optional[str] = None,
         context=context
     )
     content = "".join(response)
+    logging.debug(f"Search completed, response content: {content}")
     return content
 
 def check_for_updates(checker: UpdateChecker) -> None:
@@ -234,6 +245,7 @@ def main():
         else:
             handle_interactive_mode(config.args, config.log_file)
     except Exception as e:
+        logging.error(f"Unhandled exception in main: {e}", exc_info=True)
         console.print(f"[red]Error:[/red] {e}")
         print(f"[red]Error:[/red] {e}", file=sys.stderr)
         sys.exit(1)

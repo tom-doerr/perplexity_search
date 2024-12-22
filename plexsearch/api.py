@@ -26,7 +26,11 @@ class PerplexityAPI:
         self.api_key = api_key or os.environ.get("PERPLEXITY_API_KEY")
         log_level = logging.DEBUG if os.environ.get("PLEXSEARCH_DEBUG") else logging.INFO
         logging.basicConfig(level=log_level,
-                          format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                          format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                          handlers=[
+                              logging.StreamHandler(),
+                              logging.FileHandler("plexsearch.log")
+                          ])
         if not self.api_key:
             raise ValueError("API key required via argument or PERPLEXITY_API_KEY environment variable")
     
@@ -96,6 +100,7 @@ class PerplexityAPI:
         logging.debug(f"Starting search with query: {query}, model: {model}, stream: {stream}, citations: {show_citations}")
         """Perform a search using the Perplexity API."""
         payload = self._build_payload(query, model, stream, show_citations, context)
+        logging.debug(f"Payload: {payload}")
 
         response = requests.post(
             self.ENDPOINT,
@@ -109,9 +114,11 @@ class PerplexityAPI:
             self._handle_error(response)
 
         if stream:
+            logging.debug("Streaming response initiated.")
             yield from self._handle_stream_response(response, show_citations)
         else:
-            response_data = response.json()            
+            response_data = response.json()
+            logging.debug(f"Response  {response_data}")
             content = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
             citations = response_data.get("citations", [])
             if citations and show_citations:
