@@ -21,7 +21,7 @@ def test_payload_is_correct(mock_terminal):
     api = PerplexityAPI(api_key="test_key")    
     
     query = "test query"
-    model = "test_model"
+    model = "test_model"    
     stream = True
     show_citations = False
     context = [{"role": "assistant", "content": "context message"}]
