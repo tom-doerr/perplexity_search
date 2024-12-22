@@ -8,11 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2024-12-22
 
 ### Added
--   [Placeholder] Add new features here
+- Added interactive mode for multi-turn conversations
+- Added markdown file output for interactive mode
+- Added conversation context management
+- Refactored code into modules for API interaction, configuration, and context management
+- Improved terminal output handling, including screen clearing
+- Improved update checker with better feedback
+- Added extensive debug logging
+- Added many new tests
+- Improved error handling with specific exceptions
+
 ### Changed
--   [Placeholder] Add changed features here
-### Fixed
--   [Placeholder] Add fixed bugs here
+- Updated interactive mode prompt prefix to ">"
 
 ### Added
 - Added interactive mode for multi-turn conversations
