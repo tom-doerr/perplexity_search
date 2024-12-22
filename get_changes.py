@@ -16,15 +16,15 @@ def get_last_release_tag() -> str:
         return None
 
 def get_changes_since_last_release(last_release_tag: str) -> str:
-    """Get the changes since the last release."""
+    """Get the commit messages since the last release."""
     try:
         result = subprocess.run(
-            ["git", "diff", "--stat", last_release_tag, "HEAD"],
+            ["git", "log", f"{last_release_tag}..HEAD", "--pretty=format:%s"],
             capture_output=True,
             text=True,
             check=True
         )
-        return result.stdout
+        return result.stdout.strip()
     except subprocess.CalledProcessError as e:
         logging.error(f"Error getting changes: {e}")
         return None
@@ -41,7 +41,7 @@ def main():
     
     changes = get_changes_since_last_release(last_release_tag)
     if changes:
-        print("\nChanges since last release:\n")
+        print("\nCommit messages since last release:\n")
         print(changes)
     else:
         print("No changes found since last release.")
