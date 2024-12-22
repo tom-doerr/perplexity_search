@@ -83,7 +83,7 @@ def test_payload_is_correct(mock_terminal):
     log_output = mock_logging.debug.call_args[0][0]
     
     # Extract the payload from the log output
-    payload_str = log_output.split("payload: ", 1)[1].strip()
+    payload_str = log_output.split("Payload: ", 1)[1].strip()
     payload = json.loads(payload_str)
 
     assert payload["model"] == model
@@ -196,7 +196,8 @@ def test_handle_search_with_malformed_context():
     mock_args.citations = False
     mock_args.no_stream = False
     
-    config = Config()
+    with patch('sys.argv', ['plexsearch']):
+        config = Config()
     config.args = mock_args
     
     malformed_context = [
@@ -292,4 +293,5 @@ def test_invalid_model():
     )):
         with pytest.raises(ValueError) as exc_info:
             config = Config()
+            _ = config.model
         assert "Invalid model: invalid-model" in str(exc_info.value)

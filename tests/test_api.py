@@ -250,7 +250,7 @@ def test_handle_stream_response():
     generator = api._handle_stream_response(mock_response, show_citations=True)
     output = list(generator)
     assert output == ["Hello", " World", "\n\nReferences:\n[1] http://test.com"]
-    assert output[1] == "\n\nReferences:\n[1] http://test.com"
+    assert output[2] == "\n\nReferences:\n[1] http://test.com"
 
 def test_handle_stream_response_empty():
     api = PerplexityAPI(api_key="test_key")
@@ -321,7 +321,8 @@ def test_handle_search_with_malformed_context():
     mock_args.citations = False
     mock_args.no_stream = False
     
-    config = Config()
+    with patch('sys.argv', ['plexsearch']):
+        config = Config()
     config.args = mock_args
     
     malformed_context = [

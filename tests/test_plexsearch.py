@@ -203,7 +203,9 @@ def test_handle_search_alternating_roles_error(mock_parse_args, capsys):
          patch('plexsearch.core.console.print') as mock_console_print:
         mock_search.side_effect = Exception("API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating.")
         
-        handle_search("test query", config.args, context)
+        with pytest.raises(Exception) as exc_info:
+            handle_search("test query", config.args, context)
+        assert "API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating." in str(exc_info.value)
 
         expected_error = "API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating."
         console_output = " ".join([str(call.args[0]) for call in mock_console_print.mock_calls])
