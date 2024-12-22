@@ -2,10 +2,11 @@ import pytest
 from unittest.mock import patch, mock_open
 from get_changes import get_last_release_tag, get_changes_since_last_release, main
 
+from unittest.mock import MagicMock, patch
+
 def test_get_last_release_tag():
-    with patch('subprocess.run') as mock_run:
-        mock_run.return_value.stdout = 'v1.2.3\n'
-        mock_run.return_value.check_returncode.return_value = None
+    with patch('get_changes.subprocess.run') as mock_run:
+        mock_run.return_value = MagicMock(stdout='v1.2.3\n')
         tag = get_last_release_tag()
         assert tag == 'v1.2.3'
         mock_run.assert_called_with(
