@@ -92,7 +92,6 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
     if context is None:
         context = []
     console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
-    console.print(f"[blue]Initial context: {context}[/blue]")
     
     while True:
         user_input = console.input("\n[cyan]> [/cyan]")
@@ -102,12 +101,10 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
         if user_input.lower() == "exit":
             console.print("[yellow]Exiting interactive mode.[/yellow]")
             break
-        console.print(f"[blue]Context before user input: {context}[/blue]")
 
         clear_new_area()
         
         try:
-            console.print(f"[blue]Context before handle_search: {context}[/blue]")
             content = handle_search(user_input, args, context)
             new_user_message = {"role": "user", "content": user_input}
             new_assistant_message = {"role": "assistant", "content": content}
@@ -118,7 +115,6 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
 
             context.append(new_user_message)
             context.append(new_assistant_message)
-            console.print(f"[blue]Context after handle_search: {context}[/blue]")
         except Exception as e:
             error_msg = f"[red]Error:[/red] {e}"
             print(error_msg, file=sys.stderr)
