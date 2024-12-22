@@ -287,6 +287,13 @@ def test_handle_stream_response_empty():
     generator = api._handle_stream_response(mock_response, show_citations=True)
     output = list(generator)
     assert output == []
+def test_format_citations():
+    api = PerplexityAPI(api_key="test_key")
+    citations = ["http://test1.com", "http://test2.com"]
+    formatted = api._format_citations(citations)
+    expected = "\n\nReferences:\n[1] http://test1.com\n[2] http://test2.com"
+    assert formatted == expected
+
 def test_missing_api_key():
     with patch.dict(os.environ, {}, clear=True):
         with pytest.raises(ValueError) as exc_info:
