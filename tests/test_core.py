@@ -189,16 +189,14 @@ def test_handle_streaming_search_api_exception():
 def test_handle_search_with_malformed_context():
     from plexsearch.core import handle_search
     from plexsearch.config import Config
-    
+
     mock_args = MagicMock()
     mock_args.api_key = "test_key"
     mock_args.model = "test-model"
     mock_args.citations = False
     mock_args.no_stream = False
-    
-    with patch('sys.argv', ['plexsearch']):
-        config = Config()
-    config.args = mock_args
+
+    config = Config()
     
     malformed_context = [
         {"role": "user", "content": "Hello"},
