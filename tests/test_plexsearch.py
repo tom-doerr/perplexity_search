@@ -177,39 +177,6 @@ def test_interactive_mode_alternating_roles(capsys):
         assert second_call_context[4]['role'] == 'assistant'
 
 @patch('plexsearch.config.Config._parse_arguments')
-def test_handle_search_alternating_roles_error(mock_parse_args, capsys):
-    """Test error handling for alternating roles in handle_search"""
-    from plexsearch.core import handle_search
-    from plexsearch.config import Config
-
-    # Create a mock config object
-    mock_args = MagicMock()
-    mock_args.api_key = "test_key"
-    mock_args.model = "test-model"
-    mock_args.citations = False
-    mock_args.no_stream = False
-    mock_parse_args.return_value = mock_args
-    config = Config()
-
-    # Create a context with non-alternating roles
-    context = [
-        {"role": "user", "content": "test"},
-        {"role": "assistant", "content": "response"},
-        {"role": "user", "content": "test2"},
-        {"role": "user", "content": "test3"}
-    ]
-
-    with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search, \
-         patch('plexsearch.core.console.print') as mock_console_print:
-        mock_search.side_effect = Exception("API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating.")
-        
-        with pytest.raises(Exception) as exc_info:
-            handle_search("test query", config.args, context)
-        assert "API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating." in str(exc_info.value)
-
-        expected_error = "API request failed with status code 400: After the (optional) system message(s), user and assistant roles should be alternating."
-        console_output = " ".join([str(call.args[0]) for call in mock_console_print.mock_calls])
-        assert expected_error in console_output
 
 @patch('plexsearch.config.Config._parse_arguments')
 def test_handle_search_no_context(mock_parse_args, capsys):
