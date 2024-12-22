@@ -7,7 +7,7 @@ class Config:
     """Handle application configuration."""
     
     DEFAULT_MODEL = "llama-3.1-sonar-large-128k-online"
-    DEFAULT_LOG_FILE = "plexsearch_log.json"
+    DEFAULT_LOG_FILE = "plex.json"
     
     def __init__(self):
         self.args = self._parse_arguments()
@@ -56,7 +56,7 @@ class Config:
                            help="Model to use for search")
         parser.add_argument("--no-stream", action="store_true",
                            help="Disable streaming output")
-        parser.add_argument("--markdown-file", "-f", type=str, default=None,
+        parser.add_argument("--markdown-file", "-f", type=str, default="plex.md",
             help="Specify a markdown file to save the conversation.")
         parser.add_argument("-c", "--citations", action="store_true",
                            help="Show numbered citations")
