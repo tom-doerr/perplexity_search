@@ -109,7 +109,6 @@ def test_handle_stream_response():
     generator = api._handle_stream_response(mock_response, show_citations=True)
     output = list(generator)
     assert output == ["Hello", " World", "\n\nReferences:\n[1] http://test.com"]
-    assert output[1] == "\n\nReferences:\n[1] http://test.com"
 
 def test_perform_search_stream_false():
     api = PerplexityAPI(api_key="test_key")
@@ -136,10 +135,13 @@ def test_perform_search_stream_true():
         mock_post.return_value = mock_response
         response = list(api.perform_search("test", "test-model", stream=True, show_citations=True))
         assert response == ["Hello", " World", "\n\nReferences:\n[1] http://test.com"]
-import pytest
-from unittest.mock import patch, MagicMock
-from plexsearch.api import PerplexityAPI, APIError, AuthenticationError
-import json
+
+def test_format_citations():
+    api = PerplexityAPI(api_key="test_key")
+    citations = ["http://test1.com", "http://test2.com"]
+    formatted = api._format_citations(citations)
+    expected = "\n\nReferences:\n[1] http://test1.com\n[2] http://test2.com"
+    assert formatted == expected
 
 def test_get_headers():
     api = PerplexityAPI(api_key="test_key")
@@ -299,6 +301,29 @@ def test_missing_api_key():
         with pytest.raises(ValueError) as exc_info:
             api = PerplexityAPI()
         assert "API key required" in str(exc_info.value)
+
+def test_handle_search_with_malformed_context():
+    from plexsearch.core import handle_search
+    from plexsearch.config import Config
+    
+    mock_args = MagicMock()
+    mock_args.api_key = "test_key"
+    mock_args.model = "test-model"
+    mock_args.citations = False
+    mock_args.no_stream = False
+    
+    config = Config()
+    config.args = mock_args
+    
+    malformed_context = [
+        {"role": "user", "content": "Hello"},
+        {"role": "assistant"}  # Missing 'content'
+    ]
+    
+    with patch('plexsearch.api.PerplexityAPI.perform_search') as mock_search:
+        mock_search.return_value = iter(["Hello", " World"])
+        content = handle_search("test query", config.args, malformed_context)
+        assert content == "Hello World"
 def test_format_citations():
     api = PerplexityAPI(api_key="test_key")
     citations = ["http://test1.com", "http://test2.com"]
