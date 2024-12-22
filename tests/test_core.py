@@ -226,4 +226,4 @@ def test_setup_signal_handler():
         setup_signal_handler()
         # Simulate SIGINT signal
         signal.raise_signal(signal.SIGINT)
-        mock_print.assert_called_with("\n[yellow]Search interrupted by user[/yellow]")
+        mock_print.assert_called_with("\n[yellow]Search interrupted by user. Press Ctrl-D to exit[/yellow]")
