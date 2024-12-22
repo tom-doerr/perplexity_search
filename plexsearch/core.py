@@ -88,7 +88,7 @@ def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = No
         return handle_streaming_search(query, args, context)
 
 def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str]]] = None):
-    """Handle interactive mode search session."""
+    """Handle interactive mode, with optional markdown file output."""
     if context is None:
         context = []
     console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
@@ -113,6 +113,9 @@ def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str
             new_assistant_message = {"role": "assistant", "content": content}
             log_conversation(log_file, [new_user_message, new_assistant_message])
 
+            if args.markdown_file:
+                _write_to_markdown_file(args.markdown_file, [new_user_message, new_assistant_message])
+
             context.append(new_user_message)
             context.append(new_assistant_message)
             console.print(f"[blue]Context after handle_search: {context}[/blue]")
@@ -125,22 +128,6 @@ def setup_signal_handler():
     """Set up interrupt signal handler."""
     def handle_interrupt(signum, frame):
         console.print("\n[yellow]Search interrupted by user[/yellow]")
-def _format_message_to_markdown(message: Dict[str, str]) -> str:
-    """Format a message to markdown."""
-    role = message["role"].capitalize()
-    content = message["content"]
-    return f"**{role}**: {content}\n\n"
-
-
-def _write_to_markdown_file(markdown_file: str, new_messages: List[Dict[str, str]]) -> None:
-    """Write the conversation to a markdown file."""
-    try:
-        with open(markdown_file, "a", encoding="utf-8") as f:
-            for message in new_messages:
-                f.write(_format_message_to_markdown(message))
-    except Exception as e:
-        console.print(f"[red]Error writing to markdown file: {e}[/red]")
-    
     signal.signal(signal.SIGINT, handle_interrupt)
 
     def _build_api_payload(self, query: str, model: str, show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Dict[str, any]:
@@ -239,7 +226,6 @@ def main():
             handle_search(query, config.args)
         else:
             handle_interactive_mode(config.args, config.log_file)
-            
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
         print(f"[red]Error:[/red] {e}", file=sys.stderr)
