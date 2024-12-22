@@ -48,39 +48,20 @@ class PerplexityAPI:
             "[1], [2] format"
         )
 
-        messages = []
+        messages = [{"role": "system", "content": system_message}]
+        
         if context:
             messages.extend(context)
-        else:
-            messages.append({"role": "system", "content": system_message})
         
         messages.append({"role": "user", "content": query})
         
-        # move the user message to be after the context
-        # print("messages:", messages)
-        # user_message = messages.pop(1)
-        # messages.append(user_message)
-
-        
-        # return {
-            # "model": model,
-            # "messages": [
-                # {"role": "system", "content": system_message}
-            # ],
-            # "stream": stream
-        # }
-        # return {
-            # "model": model,
-            # "messages": messages,
-            # "stream": stream,
-            # "show_citations": show_citations
-        # }
         payload = {
             "model": model,
             "messages": messages,
             "stream": stream,
             "show_citations": show_citations
         }
+        
         logging.debug(f"payload: {json.dumps(payload, indent=2)}")
         return payload
 
