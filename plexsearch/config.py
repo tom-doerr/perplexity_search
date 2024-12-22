@@ -46,7 +46,6 @@ class Config:
         return self.args.citations
 
     @property
-    @property
     def log_file(self) -> Optional[str]:
         return self.args.log_file
 
