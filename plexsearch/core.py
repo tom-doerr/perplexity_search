@@ -140,84 +140,12 @@ def _write_to_markdown_file(markdown_file: str, new_messages: List[Dict[str, str
     except Exception as e:
         console.print(f"[red]Error writing to markdown file: {e}[/red]")
 
-def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str]]] = None):
-    """Handle interactive mode, with optional markdown file output."""
-    if context is None:
-        context = []
-    console.print("[green]Entering interactive mode. Type your queries below. Type 'exit' to quit.[/green]")
-    console.print(f"[blue]Initial context: {context}[/blue]")
-    
-    while True:
-        user_input = console.input("\n[cyan]> [/cyan]")
-        if user_input.strip() == "":
-            console.print("[yellow]Please enter a query or type 'exit' to quit.[/yellow]")
-            continue
-        if user_input.lower() == "exit":
-            console.print("[yellow]Exiting interactive mode.[/yellow]")
-            break
-        console.print(f"[blue]Context before user input: {context}[/blue]")
-
-        clear_new_area()
-        
-        try:
-            console.print(f"[blue]Context before handle_search: {context}[/blue]")
-            content = handle_search(user_input, args, context)
-            new_user_message = {"role": "user", "content": user_input}
-            new_assistant_message = {"role": "assistant", "content": content}
-            log_conversation(log_file, [new_user_message, new_assistant_message])
-
-            if args.markdown_file:
-                _write_to_markdown_file(args.markdown_file, [new_user_message, new_assistant_message])
-
-            context.append(new_user_message)
-            context.append(new_assistant_message)
-            console.print(f"[blue]Context after handle_search: {context}[/blue]")
-        except Exception as e:
-            error_msg = f"[red]Error:[/red] {e}"
-            print(error_msg, file=sys.stderr)
-            console.print(error_msg)
-
 def setup_signal_handler():
     """Set up interrupt signal handler."""
     def handle_interrupt(signum, frame):
         console.print("\n[yellow]Search interrupted by user[/yellow]")
     signal.signal(signal.SIGINT, handle_interrupt)
 
-    def _build_api_payload(self, query: str, model: str, show_citations: bool, context: Optional[List[Dict[str, str]]] = None) -> Dict[str, any]:
-        system_message = (
-            "You are a technical assistant focused on providing accurate, practical "
-            "information. Follow these guidelines:\n"
-            "1. Include code examples when relevant to explain concepts\n"
-            "2. Include measurements and numbers when relevant\n"
-            "3. Keep explanations concise and direct\n"
-            "4. Focus on facts, technical details and real-world usage\n"
-            "5. Show basic and advanced usage patterns when relevant\n"
-            "6. Use tables or lists to organize information when appropriate\n"
-            "7. If show_citations is True, add numbered citations at the bottom in "
-            "[1], [2] format"
-        )
-        
-        payload = {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": system_message}
-            ],
-            "stream": True
-        }
-        if context:
-            messages = [payload["messages"][0]]  # Start with the system message
-            
-            for i in range(0, len(context), 2):
-                messages.append(context[i])  # Add user message
-                
-                if i + 1 < len(context):
-                    messages.append(context[i+1]) # Add assistant message
-            
-            
-            payload["messages"] = messages
-        
-        messages.append({"role": "user", "content": query})
-        return payload
 
 def perform_search(query: str, api_key: Optional[str] = None,
                   model: str = "llama-3.1-sonar-large-128k-online",
