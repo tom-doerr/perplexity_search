@@ -112,7 +112,7 @@ class PerplexityAPI:
 
     def _handle_stream_response(self, response: requests.Response, show_citations: bool) -> Iterator[str]:
         """Handle streaming response from Perplexity API."""
-        content_buffer = []
+        accumulated_content = ""
         citations = []
         
         for line in response.iter_lines():
@@ -122,13 +122,13 @@ class PerplexityAPI:
                     if content := (data.get('choices', [{}])[0]
                                  .get('delta', {})
                                  .get('content')):
-                        content_buffer.append(content)
-                        yield content
+                        accumulated_content += content
                     if 'citations' in data:
                         citations = data['citations']
                 except json.JSONDecodeError:
                     continue
 
+        yield accumulated_content
         if citations and show_citations:
             yield self._format_citations(citations)
 

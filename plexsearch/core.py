@@ -82,6 +82,15 @@ def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = No
     """Handle a single search query execution."""
     no_stream = args.no_stream or os.environ.get("OR_APP_NAME") == "Aider"
     
+    if context is None:
+        context = []
+        
+    if not context or context[0].get('role') != 'system':
+        context.insert(0, {
+            "role": "system", 
+            "content": "You are a technical assistant focused on providing accurate, practical information..."
+        })
+    
     if no_stream:
         return handle_no_stream_search(query, args, context)
     else:
