@@ -43,29 +43,37 @@ def handle_no_stream_search(query: str, args, context: Optional[List[Dict[str, s
     spinner_text = "Searching..."
     
     api = PerplexityAPI(args.api_key)
-    with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
-        response = api.perform_search(query=query,
-                                    model=args.model,
-                                    stream=False,
-                                    show_citations=args.citations,
-                                    context=context)
-        content = "".join(response)
-    
+    try:
+        with Live(Spinner("dots", text=spinner_text), refresh_per_second=10, transient=True):
+            response = api.perform_search(query=query,
+                                        model=args.model,
+                                        stream=False,
+                                        show_citations=args.citations,
+                                        context=context)
+            content = "".join(response)
+        
         console.print(f"Perplexity: {content}")
-        return content
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        return ""
+    return content
 
 def handle_streaming_search(query: str, args, context: Optional[List[Dict[str, str]]] = None) -> str:
     """Handle streaming search mode."""
     accumulated_text = ""
     api = PerplexityAPI(args.api_key)
-    with Live("", refresh_per_second=10, transient=False) as live:
-        for chunk in api.perform_search(query=query,
-                                      model=args.model,
-                                      stream=True,
-                                      show_citations=args.citations,
-                                      context=context):
-            accumulated_text += chunk
-            live.update(f"Perplexity: {accumulated_text}")
+    try:
+        with Live("", refresh_per_second=10, transient=False) as live:
+            for chunk in api.perform_search(query=query,
+                                          model=args.model,
+                                          stream=True,
+                                          show_citations=args.citations,
+                                          context=context):
+                accumulated_text += chunk
+                live.update(f"Perplexity: {accumulated_text}")
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        return ""
     return accumulated_text
 
 def log_conversation(log_file: str, new_messages: List[Dict[str, str]]) -> None:
