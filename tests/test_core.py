@@ -53,6 +53,7 @@ def test_handle_streaming_search_error():
         args.api_key = "test_key"
         args.model = "test_model"
         args.citations = False
+        result = ""
         try:
             result = handle_streaming_search("test query", args)
         except Exception as e:
