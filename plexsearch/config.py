@@ -56,8 +56,8 @@ class Config:
         return self.args.log_file
 
     @property
-    def markdown_file(self) -> str:
-        return self.args.markdown_file or "plex.md"
+    def markdown_file(self) -> Optional[str]:
+        return self.args.markdown_file
 
     @property
     def debug(self) -> bool:
@@ -76,7 +76,7 @@ class Config:
         parser.add_argument("--no-stream", action="store_true",
                            help="Disable streaming output")
         parser.add_argument("--markdown-file", "-f", type=str, default=None,
-            help="Specify a markdown file to save the conversation.")
+            help="Specify a markdown file to save the conversation. If not provided, no file will be saved.")
         parser.add_argument("-c", "--citations", action="store_true",
                            help="Show numbered citations")
         parser.add_argument("--log-file", "-l",
