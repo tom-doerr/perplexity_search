@@ -98,11 +98,9 @@ def handle_search(query: str, args, context: Optional[List[Dict[str, str]]] = No
             "role": "system", 
             "content": "You are a technical assistant focused on providing accurate, practical information..."
         })
-     
-    if no_stream:
-        return handle_no_stream_search(query, args, context)
-    else:
-        return handle_streaming_search(query, args, context)
+    if no_stream:        
+        return handle_no_stream_search(query, args, context)    
+    return handle_streaming_search(query, args, context)
 
 def handle_interactive_mode(args, log_file, context: Optional[List[Dict[str, str]]] = None):
     """Handle interactive mode, with optional markdown file output."""
