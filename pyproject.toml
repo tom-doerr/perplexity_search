@@ -1,12 +1,10 @@
 [tool.poetry]
 name = "plexsearch"
-version = "0.2.0"
+version = "0.1.4"
 description = "A powerful Python tool for performing technical searches using the Perplexity API"
 authors = ["Tom Doerr"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/tom-doerr/perplexity_search"
-documentation = "https://github.com/tom-doerr/perplexity_search#readme"
 packages = [{include = "plexsearch"}]
 keywords = ["search", "perplexity", "ai", "llm"]
 classifiers = [
@@ -26,8 +24,12 @@ classifiers = [
 python = ">=3.7"
 requests = "^2.25.0"
 rich = "^13.7.0"
-feedparser = "^6.0.0"
-packaging = "^23.0"
+python-dotenv = "^0.19.0"
+duckduckgo-search = "^4.1.1"
+ollama = "^0.1.4"
+beautifulsoup4 = "^4.12.0"
+html2text = "^2020.1.16"
+aiohttp = "^3.9.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
