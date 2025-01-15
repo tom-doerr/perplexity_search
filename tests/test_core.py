@@ -102,11 +102,11 @@ def test_log_conversation_append():
     assert logged == messages
     os.unlink(log_file)
 
-def test_log_conversation_file_write_error():
-    with patch('plexsearch.core.open', side_effect=PermissionError("No permission")), \
-         patch('plexsearch.core.console.print') as mock_print:
+def test_log_conversation_file_write_error(capsys):
+    with patch('plexsearch.core.open', side_effect=PermissionError("No permission")):
         log_conversation("dummy_log_file", [{"role": "user", "content": "Test"}])
-        mock_print.assert_called_with("[red]Error writing to log file: No permission[/red]")
+        captured = capsys.readouterr()
+        assert "Error writing to log file: No permission" in captured.err
 
 def test_format_message_to_markdown():
     message = {"role": "user", "content": "Hello"}
