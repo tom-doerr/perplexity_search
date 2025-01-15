@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.2] - 2025-01-15
 
+### Added
+- Enabled citations by default (use --no-citations to disable)
+
 ### Fixed
 - Fixed test_log_conversation_file_write_error to match stderr implementation
 - Improved error handling in log_conversation function
