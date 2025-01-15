@@ -49,7 +49,8 @@ class Config:
 
     @property
     def show_citations(self) -> bool:
-        return self.args.citations
+        # Citations are enabled by default unless explicitly disabled
+        return getattr(self.args, 'citations', True)
 
     @property
     def log_file(self) -> Optional[str]:
@@ -76,8 +77,8 @@ class Config:
         parser.add_argument("--no-stream", action="store_true",
                            help="Disable streaming output")
         parser.add_argument("--markdown-file", "-f", type=str, help="Specify a markdown file to save the conversation. If not provided, no file will be saved.")
-        parser.add_argument("-c", "--citations", action="store_true",
-                           help="Show numbered citations")
+        parser.add_argument("--no-citations", action="store_false", dest="citations",
+                           help="Disable numbered citations")
         parser.add_argument("--log-file", "-l",
                             help="Path to log file")
         parser.add_argument("--debug", "-d", action="store_true",
